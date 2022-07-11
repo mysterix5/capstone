@@ -16,3 +16,4 @@ jobs:
         if: github.event.action == 'opened'
         with:
           project: 'https://github.com/mysterix5/capstone/projects/1'
+          column_name: 'Backlog'
