@@ -17,7 +17,7 @@ public class TextController {
 
     private final TextService textService;
 
-    @PutMapping("")
+    @PutMapping
     public ResponseEntity<List<WordResponseDTO>> onSubmittedText(@RequestBody TextSubmitDTO textSubmitDTO){
         log.info("Text in submit text: " + textSubmitDTO.getText());
         return ResponseEntity.ok().body(textService.onSubmittedText(textSubmitDTO.getText()));
