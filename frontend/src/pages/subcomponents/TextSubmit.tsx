@@ -9,7 +9,7 @@ interface TextSubmitProps{
 
 export default function TextSubmit(props: TextSubmitProps){
 
-    const [text, setText] = useState('');
+    const [text, setText] = useState("Ob das bei euch genauso geil ist/");
 
     const sendTextToBackend = (event: FormEvent) => {
         event.preventDefault();
@@ -30,7 +30,7 @@ export default function TextSubmit(props: TextSubmitProps){
                         label="text to audio"
                         multiline
                         rows={4}
-                        defaultValue="Ob das bei euch genauso geil ist"
+                        value={text}
                         margin={"normal"}
                         sx={{margin: 1}}
                         onChange={event => setText(event.target.value)}
