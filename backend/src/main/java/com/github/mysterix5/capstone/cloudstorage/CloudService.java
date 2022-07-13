@@ -29,7 +29,7 @@ public class CloudService {
 
         return audioResponseDTO;
     }
-    public AudioResponseDTO loadListFromCloudAndMerge(List<String> cloudFilePaths) throws IOException {
+    public AudioResponseDTO loadMultipleAudioFromCloudAndMerge(List<String> cloudFilePaths) throws IOException {
 
         final AtomicInteger frameLength = new AtomicInteger(0);
         final AtomicReference<AudioFileFormat> atomicFormat= new AtomicReference<>(null);

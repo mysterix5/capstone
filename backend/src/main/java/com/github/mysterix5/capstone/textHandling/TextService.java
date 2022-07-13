@@ -7,7 +7,6 @@ import com.github.mysterix5.capstone.model.WordResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,15 +60,18 @@ public class TextService {
         return true;
     }
 
-    public AudioResponseDTO loadWavFromCloudAndMerge(List<WordResponseDTO> words) throws UnsupportedAudioFileException, IOException {
-        List<String> urls = new ArrayList<>();
-        for(String word: words.stream().map(WordResponseDTO::getWord).toList()){
-            var wordDb = wordsRepository.findByWord(word);
+    public AudioResponseDTO getMergedWav(List<WordResponseDTO> words) throws IOException {
 
-            wordDb.ifPresentOrElse(wordDbEntity -> urls.add(wordDbEntity.getUrl()), () -> {
-                throw new IllegalArgumentException();
-            });
-        }
-        return cloudService.loadListFromCloudAndMerge(urls);
+        List<String> urls = words.parallelStream()
+                .map((word)-> wordsRepository.findByWord(word.getWord()))
+                .map(wordDb -> {
+                    if(wordDb.isEmpty()){
+                        throw new IllegalArgumentException();
+                    }
+                    return wordDb.get().getUrl();
+                })
+                .toList();
+
+        return cloudService.loadMultipleAudioFromCloudAndMerge(urls);
     }
 }

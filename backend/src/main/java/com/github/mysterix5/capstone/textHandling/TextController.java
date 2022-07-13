@@ -28,9 +28,9 @@ public class TextController {
     }
 
     @PutMapping("/getaudio")
-    public void loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<WordResponseDTO> words) throws UnsupportedAudioFileException, IOException {
+    public void loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<WordResponseDTO> words) throws IOException {
 
-        AudioResponseDTO audioResponseDTO = textService.loadWavFromCloudAndMerge(words);
+        AudioResponseDTO audioResponseDTO = textService.getMergedWav(words);
 
         setWavHttpResponse(httpResponse, audioResponseDTO);
     }
