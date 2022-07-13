@@ -19,7 +19,8 @@ class TextServiceTest {
         String testString = "bester test";
 
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
-        when(mockedWordRepo.existsByWord(anyString())).thenReturn(true);
+        when(mockedWordRepo.existsByWord("bester")).thenReturn(true);
+        when(mockedWordRepo.existsByWord("test")).thenReturn(true);
         TextService textService = new TextService(mockedWordRepo);
 
         var response = textService.onSubmittedText(testString);
