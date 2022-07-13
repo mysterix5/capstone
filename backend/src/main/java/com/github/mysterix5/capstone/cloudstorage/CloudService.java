@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -18,11 +15,10 @@ import java.util.ListIterator;
 public class CloudService {
     private final CloudRepository cloudRepository;
 
-    public AudioResponseDTO createAudioResponseDTO(AudioInputStream audioIn) throws IOException {
+    private AudioResponseDTO createAudioResponseDTO(AudioInputStream audioIn) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         AudioSystem.write(audioIn, AudioFileFormat.Type.WAVE, byteArrayOutputStream);
         byte[] arrayWithHeader = byteArrayOutputStream.toByteArray();
-
 
         AudioResponseDTO audioResponseDTO = new AudioResponseDTO();
         audioResponseDTO.setData(arrayWithHeader);
