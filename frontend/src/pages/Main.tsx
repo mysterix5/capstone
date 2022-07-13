@@ -10,6 +10,7 @@ import {apiGetAudio} from "../services/apiServices";
 export default function Main() {
 
     const [splitText, setSplitText] = useState<WordResponse[]>();
+    const [audioFile, setAudioFile] = useState<any>();
 
     function isAvailable(availibility: string){
         return availibility==="PUBLIC";
@@ -25,15 +26,17 @@ export default function Main() {
     }
 
     function getAudio(){
-        apiGetAudio(splitText!);
+        apiGetAudio(splitText!)
+            .then(setAudioFile);
     }
+
 
     return (
         <Grid container alignContent={"center"} flexDirection={"column"}>
             <Grid item>
                 <TextSubmit setSplitText={setSplitText}/>
             </Grid>
-            <Grid item>
+            <Grid item ml={2} mr={2}>
                 {
                     splitText &&
                     <TextCheck splitText={splitText}/>
@@ -42,7 +45,7 @@ export default function Main() {
             <Grid item>
                 {
                     splitText && checkSplitText() &&
-                    <Audio getAudio={getAudio}/>
+                    <Audio getAudio={getAudio} audioFile={audioFile}/>
                 }
             </Grid>
         </Grid>
