@@ -62,11 +62,14 @@ public class TextService {
     }
 
     public AudioResponseDTO loadWavFromCloudAndMerge(List<WordResponseDTO> words) throws UnsupportedAudioFileException, IOException {
+        List<String> urls = new ArrayList<>();
         for(String word: words.stream().map(WordResponseDTO::getWord).toList()){
-            if(!wordsRepository.existsByWord(word)){
+            var wordDb = wordsRepository.findByWord(word);
+
+            wordDb.ifPresentOrElse(wordDbEntity -> urls.add(wordDbEntity.getUrl()), () -> {
                 throw new IllegalArgumentException();
-            }
+            });
         }
-        return cloudService.loadListFromCloudAndMerge(words.stream().map(wordResponseDTO -> wordResponseDTO.getWord() + ".wav").toList());
+        return cloudService.loadListFromCloudAndMerge(urls);
     }
 }
