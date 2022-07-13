@@ -28,15 +28,13 @@ public class TextService {
     }
 
     private List<WordResponseDTO> createResponses(List<String> wordList){
-        List<WordResponseDTO> textResponseInfo= new ArrayList<>();
-        for(String word: wordList){
-            WordResponseDTO wordResponse = new WordResponseDTO(word.toLowerCase());
-            if(wordValidCheck(wordResponse)){
-                getDbInformation(wordResponse);
-            }
-            textResponseInfo.add(wordResponse);
-        }
-        return textResponseInfo;
+        return wordList.parallelStream()
+                .map(w->new WordResponseDTO(w.toLowerCase()))
+                .peek(wordResponseDTO->{
+                    if(wordValidCheck(wordResponseDTO)){
+                        getDbInformation(wordResponseDTO);
+                    }
+                }).toList();
     }
 
     private void getDbInformation(WordResponseDTO wordResponse){
