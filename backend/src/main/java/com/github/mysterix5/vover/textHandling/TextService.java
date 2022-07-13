@@ -1,7 +1,7 @@
-package com.github.mysterix5.capstone.textHandling;
+package com.github.mysterix5.vover.textHandling;
 
-import com.github.mysterix5.capstone.model.Availability;
-import com.github.mysterix5.capstone.model.WordResponseDTO;
+import com.github.mysterix5.vover.model.Availability;
+import com.github.mysterix5.vover.model.WordResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

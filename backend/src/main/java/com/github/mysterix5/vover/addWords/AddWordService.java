@@ -1,8 +1,8 @@
-package com.github.mysterix5.capstone.addWords;
+package com.github.mysterix5.vover.addWords;
 
-import com.github.mysterix5.capstone.model.WordDbEntity;
-import com.github.mysterix5.capstone.model.WordInput;
-import com.github.mysterix5.capstone.textHandling.WordsMongoRepository;
+import com.github.mysterix5.vover.model.WordDbEntity;
+import com.github.mysterix5.vover.model.WordInput;
+import com.github.mysterix5.vover.textHandling.WordsMongoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

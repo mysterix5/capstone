@@ -1,4 +1,4 @@
-package com.github.mysterix5.capstone.model;
+package com.github.mysterix5.vover.model;
 
 import lombok.Builder;
 import lombok.Data;

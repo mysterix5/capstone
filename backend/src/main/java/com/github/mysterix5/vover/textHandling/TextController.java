@@ -1,7 +1,7 @@
-package com.github.mysterix5.capstone.textHandling;
+package com.github.mysterix5.vover.textHandling;
 
-import com.github.mysterix5.capstone.model.WordResponseDTO;
-import com.github.mysterix5.capstone.model.TextSubmitDTO;
+import com.github.mysterix5.vover.model.WordResponseDTO;
+import com.github.mysterix5.vover.model.TextSubmitDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

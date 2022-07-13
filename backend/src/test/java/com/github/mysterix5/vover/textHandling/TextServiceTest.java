@@ -1,14 +1,13 @@
-package com.github.mysterix5.capstone.textHandling;
+package com.github.mysterix5.vover.textHandling;
 
-import com.github.mysterix5.capstone.model.Availability;
-import com.github.mysterix5.capstone.model.WordResponseDTO;
+import com.github.mysterix5.vover.model.Availability;
+import com.github.mysterix5.vover.model.WordResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 // TODO tests on text valid checks etc should be added here regularly as functionality grows
