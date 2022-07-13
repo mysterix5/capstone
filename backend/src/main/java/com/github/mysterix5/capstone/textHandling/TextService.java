@@ -1,10 +1,14 @@
 package com.github.mysterix5.capstone.textHandling;
 
+import com.github.mysterix5.capstone.cloudstorage.CloudService;
+import com.github.mysterix5.capstone.model.AudioResponseDTO;
 import com.github.mysterix5.capstone.model.Availability;
 import com.github.mysterix5.capstone.model.WordResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TextService {
     private final WordsMongoRepository wordsRepository;
+    private final CloudService cloudService;
     public List<WordResponseDTO> onSubmittedText(String text) {
         List<String> wordList = splitText(text);
 
@@ -56,4 +61,12 @@ public class TextService {
         return true;
     }
 
+    public AudioResponseDTO loadWavFromCloudAndMerge(List<WordResponseDTO> words) throws UnsupportedAudioFileException, IOException {
+        for(String word: words.stream().map(WordResponseDTO::getWord).toList()){
+            if(!wordsRepository.existsByWord(word)){
+                throw new IllegalArgumentException();
+            }
+        }
+        return cloudService.loadListFromCloudAndMerge(words.stream().map(wordResponseDTO -> wordResponseDTO.getWord() + ".wav").toList());
+    }
 }

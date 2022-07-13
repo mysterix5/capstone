@@ -2,14 +2,10 @@ package com.github.mysterix5.capstone.cloudstorage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -33,21 +29,15 @@ public class CloudRepository {
         this.baseUrl = baseUrl;
     }
 
-    public void save() throws RuntimeException {
-
-    }
-
     public byte[] find(String filePath) throws RuntimeException {
         String url = baseUrl + filePath;
 
         ResponseEntity<byte[]> result = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders()), byte[].class);
 
-        log.info(result.toString());
         return result.getBody();
     }
 
-
-    public HttpHeaders createHeaders() {
+        public HttpHeaders createHeaders() {
         return new HttpHeaders(){{
             String auth = username + ":" + password;
             byte[] encodedAuth = Base64.getEncoder().encode(
