@@ -27,10 +27,10 @@ public class TextController {
         return ResponseEntity.ok().body(textService.onSubmittedText(textSubmitDTO.getText()));
     }
 
-    @PutMapping("/getaudio")
-    public void loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<WordResponseDTO> words) throws IOException {
+    @PostMapping("/audio")
+    public void loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<WordResponseDTO> words) throws UnsupportedAudioFileException, IOException {
 
-        AudioResponseDTO audioResponseDTO = textService.getMergedWav(words);
+        AudioResponseDTO audioResponseDTO = textService.loadWavFromCloudAndMerge(words);
 
         setWavHttpResponse(httpResponse, audioResponseDTO);
     }
