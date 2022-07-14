@@ -38,6 +38,12 @@
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.lookfirst</groupId>
+            <artifactId>sardine</artifactId>
+            <version>5.10</version>
+        </dependency>
     </dependencies>
 
     <build>
