@@ -3,53 +3,57 @@ package com.github.mysterix5.capstone.textHandling;
 import com.github.mysterix5.capstone.cloudstorage.CloudService;
 import com.github.mysterix5.capstone.model.AudioResponseDTO;
 import com.github.mysterix5.capstone.model.Availability;
+import com.github.mysterix5.capstone.model.WordDbEntity;
 import com.github.mysterix5.capstone.model.WordResponseDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TextService {
     private final WordsMongoRepository wordsRepository;
     private final CloudService cloudService;
+
     public List<WordResponseDTO> onSubmittedText(String text) {
         List<String> wordList = splitText(text);
 
         return createResponses(wordList);
     }
 
-    private List<String> splitText(String text){
+    private List<String> splitText(String text) {
         return Arrays.stream(text.split(" ")).toList();
     }
 
-    private List<WordResponseDTO> createResponses(List<String> wordList){
-        return wordList.parallelStream()
-                .map(w->new WordResponseDTO(w.toLowerCase()))
-                .peek(wordResponseDTO->{
-                    if(wordValidCheck(wordResponseDTO)){
-                        getDbInformation(wordResponseDTO);
-                    }
-                }).toList();
-    }
+    private List<WordResponseDTO> createResponses(List<String> wordList) {
+        wordList = wordList.stream().map(String::toLowerCase).toList();
+        Set<String> appearingWordsSet = new HashSet<>(wordList);
+        Map<String, List<WordDbEntity>> dbWordsMap = createDbWordsMap(appearingWordsSet);
 
-    private void getDbInformation(WordResponseDTO wordResponse){
-        if(wordsRepository.existsByWord(wordResponse.getWord())){
-            wordResponse.setAvailability(Availability.PUBLIC);
-        }else{
-            wordResponse.setAvailability(Availability.ABSENT);
-        }
+        return wordList.stream()
+                .map(WordResponseDTO::new)
+                .peek(w -> {
+                        if(wordValidCheck(w)){
+                            if(dbWordsMap.containsKey(w.getWord())){
+                                w.setAvailability(Availability.PUBLIC);
+                            }else{
+                                w.setAvailability(Availability.ABSENT);
+                            }
+                        }
+                }).toList();
     }
 
 
     // TODO grow with functionality
-    private boolean wordValidCheck(WordResponseDTO responseWord){
+    private boolean wordValidCheck(WordResponseDTO responseWord) {
         List<String> forbiddenChars = List.of("/", "%");
-        for(String c: forbiddenChars){
-            if(responseWord.getWord().contains(c)){
+        for (String c : forbiddenChars) {
+            if (responseWord.getWord().contains(c)) {
                 responseWord.setAvailability(Availability.INVALID);
                 return false;
             }
@@ -57,16 +61,34 @@ public class TextService {
         return true;
     }
 
-    public AudioResponseDTO getMergedWav(List<WordResponseDTO> words) throws IOException {
+    private Map<String, List<WordDbEntity>> createDbWordsMap(Set<String> textWords){
+        List<WordDbEntity> allDbEntriesForWords = wordsRepository.findByWordIn(textWords);
 
-        List<String> urls = words.parallelStream()
-                .map((word)-> wordsRepository.findByWord(word.getWord()))
-                .map(wordDb -> {
-                    if(wordDb.isEmpty()){
-                        throw new IllegalArgumentException();
-                    }
-                    return wordDb.get().getUrl();
-                })
+        Map<String, List<WordDbEntity>> dbWordsMap = new HashMap<>();
+        for (WordDbEntity w : allDbEntriesForWords) {
+            if (!dbWordsMap.containsKey(w.getWord())) {
+                dbWordsMap.put(w.getWord(), new ArrayList<>());
+            }
+            dbWordsMap.get(w.getWord()).add(w);
+        }
+        return dbWordsMap;
+    }
+
+    public AudioResponseDTO getMergedWav(List<WordResponseDTO> textWordList) throws IOException {
+        Set<String> appearingWordsSet = textWordList.stream().map(WordResponseDTO::getWord).collect(Collectors.toSet());
+
+        Map<String, List<WordDbEntity>> dbWordsMap = createDbWordsMap(appearingWordsSet);
+        if(dbWordsMap.size()< appearingWordsSet.size()){
+            throw new IllegalArgumentException("some of the words are not present in the db");
+        }
+
+        Random rand = new Random();
+        List<String> urls = textWordList.stream()
+                .map(wordResponseDTO -> {
+                    var wordChoices = dbWordsMap.get(wordResponseDTO.getWord());
+                    int randomIndex = rand.nextInt(wordChoices.size());
+                    return wordChoices.get(randomIndex);
+                }).map(wordDbEntity -> ((WordDbEntity) wordDbEntity).getUrl())
                 .toList();
 
         return cloudService.loadMultipleAudioFromCloudAndMerge(urls);
