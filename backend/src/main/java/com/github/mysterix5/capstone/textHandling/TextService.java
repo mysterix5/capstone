@@ -32,29 +32,30 @@ public class TextService {
 
     private List<WordResponseDTO> createResponses(List<String> wordList) {
         wordList = wordList.stream().map(String::toLowerCase).toList();
-        Set<String> appearingWordsSet = new HashSet<>(wordList);
+        Set<String> appearingWordsSet = wordList.stream().filter(this::wordValidCheck).collect(Collectors.toSet());
         Map<String, List<WordDbEntity>> dbWordsMap = createDbWordsMap(appearingWordsSet);
 
         return wordList.stream()
                 .map(WordResponseDTO::new)
                 .peek(w -> {
-                        if(wordValidCheck(w)){
+                        if(appearingWordsSet.contains(w.getWord())){
                             if(dbWordsMap.containsKey(w.getWord())){
                                 w.setAvailability(Availability.PUBLIC);
                             }else{
                                 w.setAvailability(Availability.ABSENT);
                             }
+                        }else{
+                            w.setAvailability(Availability.INVALID);
                         }
                 }).toList();
     }
 
 
     // TODO grow with functionality
-    private boolean wordValidCheck(WordResponseDTO responseWord) {
+    private boolean wordValidCheck(String responseWord) {
         List<String> forbiddenChars = List.of("/", "%");
         for (String c : forbiddenChars) {
-            if (responseWord.getWord().contains(c)) {
-                responseWord.setAvailability(Availability.INVALID);
+            if (responseWord.contains(c)) {
                 return false;
             }
         }
