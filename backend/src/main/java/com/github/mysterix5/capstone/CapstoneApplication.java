@@ -12,8 +12,4 @@ public class CapstoneApplication {
 		SpringApplication.run(CapstoneApplication.class, args);
 	}
 
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
 }
