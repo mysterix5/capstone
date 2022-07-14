@@ -4,6 +4,8 @@ import com.github.mysterix5.vover.cloudstorage.CloudService;
 import com.github.mysterix5.vover.model.Availability;
 import com.github.mysterix5.vover.model.WordDbEntity;
 import com.github.mysterix5.vover.model.WordInput;
+import com.github.mysterix5.vover.model.WordResponseDTO;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -54,7 +56,7 @@ class TextServiceTest {
 
     @Test
     void loadWavFromCloudAndMerge() throws UnsupportedAudioFileException, IOException {
-        List<WordResponseDTO> WordResponseDTOList = List.of(
+        List<WordResponseDTO> wordResponseDTOList = List.of(
                 WordResponseDTO.builder().word("test").availability(Availability.PUBLIC).build(),
                 WordResponseDTO.builder().word("eins").availability(Availability.PUBLIC).build()
         );
@@ -65,7 +67,7 @@ class TextServiceTest {
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
 
-        textService.loadWavFromCloudAndMerge(WordResponseDTOList);
+        textService.loadWavFromCloudAndMerge(wordResponseDTOList);
 
         verify(mockedCloudService).loadListFromCloudAndMerge(List.of("test.wav", "eins.wav"));
     }
