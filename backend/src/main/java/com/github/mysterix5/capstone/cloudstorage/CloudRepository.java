@@ -37,13 +37,13 @@ public class CloudRepository {
         return result.getBody();
     }
 
-        public HttpHeaders createHeaders() {
-        return new HttpHeaders(){{
+    private HttpHeaders createHeaders() {
+        return new HttpHeaders() {{
             String auth = username + ":" + password;
             byte[] encodedAuth = Base64.getEncoder().encode(
                     auth.getBytes(StandardCharsets.US_ASCII));
-            String authHeader = "Basic " + new String( encodedAuth );
-            set( "Authorization", authHeader );
+            String authHeader = "Basic " + new String(encodedAuth);
+            set("Authorization", authHeader);
         }};
     }
 }

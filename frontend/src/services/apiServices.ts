@@ -8,7 +8,7 @@ export function apiSendTextToBackend(text: TextSend) {
 }
 
 export function apiGetAudio(words: WordResponse[]) {
-    return axios.put("/api/main/getaudio",
+    return axios.post("/api/main/audio",
         words,
         {
             responseType: 'arraybuffer'
