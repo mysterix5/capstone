@@ -11,8 +11,8 @@ export default function Main() {
 
     const [splitText, setSplitText] = useState<WordResponse[]>();
 
-    function isAvailable(availibility: string){
-        return availibility==="PUBLIC";
+    function isAvailable(availability: string){
+        return availability==="PUBLIC";
     }
 
     function checkSplitText(){

@@ -8,7 +8,6 @@ import com.github.mysterix5.capstone.model.WordResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +54,7 @@ class TextServiceTest {
     }
 
     @Test
-    void loadWavFromCloudAndMerge() throws UnsupportedAudioFileException, IOException {
+    void loadWavFromCloudAndMerge() throws IOException {
         List<WordResponseDTO> wordResponseDTOList = List.of(
                 WordResponseDTO.builder().word("test").availability(Availability.PUBLIC).build(),
                 WordResponseDTO.builder().word("eins").availability(Availability.PUBLIC).build()
@@ -67,8 +66,8 @@ class TextServiceTest {
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
 
-        textService.loadWavFromCloudAndMerge(wordResponseDTOList);
+        textService.getMergedWav(wordResponseDTOList);
 
-        verify(mockedCloudService).loadListFromCloudAndMerge(List.of("test.wav", "eins.wav"));
+        verify(mockedCloudService).loadMultipleAudioFromCloudAndMerge(List.of("test.wav", "eins.wav"));
     }
 }
