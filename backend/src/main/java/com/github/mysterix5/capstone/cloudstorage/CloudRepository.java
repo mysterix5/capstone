@@ -1,49 +1,42 @@
 package com.github.mysterix5.capstone.cloudstorage;
 
+import com.github.sardine.Sardine;
+import com.github.sardine.SardineFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Repository
 @Slf4j
 public class CloudRepository {
-
-    private final RestTemplate restTemplate;
-
     private final String username;
     private final String password;
     private final String baseUrl;
 
-    public CloudRepository(RestTemplate restTemplate,
-                           @Value("${app.webdav.username}") String username,
+    public CloudRepository(@Value("${app.webdav.username}") String username,
                            @Value("${app.webdav.password}") String password,
                            @Value("${app.webdav.baseurl}") String baseUrl) {
-        this.restTemplate = restTemplate;
         this.username = username;
         this.password = password;
         this.baseUrl = baseUrl;
     }
 
-    public byte[] find(String filePath) throws RuntimeException {
+    public byte[] find(String filePath) throws IOException {
         String url = baseUrl + filePath;
+        Sardine sardine = SardineFactory.begin(username, password);
+        InputStream is = sardine.get(url);
 
-        ResponseEntity<byte[]> result = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders()), byte[].class);
-
-        return result.getBody();
+        return is.readAllBytes();
     }
 
-    private HttpHeaders createHeaders() {
-        return new HttpHeaders() {{
-            String auth = username + ":" + password;
-            byte[] encodedAuth = Base64.getEncoder().encode(
-                    auth.getBytes(StandardCharsets.US_ASCII));
-            String authHeader = "Basic " + new String(encodedAuth);
-            set("Authorization", authHeader);
-        }};
+    public void save(String filePath, byte[] byteArray) throws IOException {
+        String url = baseUrl + filePath;
+        Sardine sardine = SardineFactory.begin(username, password);
+
+        sardine.put(url, byteArray);
     }
+
 }
