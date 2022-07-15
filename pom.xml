@@ -9,9 +9,9 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.github.mysterix5</groupId>
-	<artifactId>capstone-parent</artifactId>
+	<artifactId>vover-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>capstone-parent</name>
+	<name>vover-parent</name>
 	<packaging>pom</packaging>
 	
 	<properties>

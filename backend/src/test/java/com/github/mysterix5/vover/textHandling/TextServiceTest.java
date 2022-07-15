@@ -1,9 +1,9 @@
-package com.github.mysterix5.capstone.textHandling;
+package com.github.mysterix5.vover.textHandling;
 
-import com.github.mysterix5.capstone.cloudstorage.CloudService;
-import com.github.mysterix5.capstone.model.Availability;
-import com.github.mysterix5.capstone.model.WordDbEntity;
-import com.github.mysterix5.capstone.model.WordResponseDTO;
+import com.github.mysterix5.vover.cloudstorage.CloudService;
+import com.github.mysterix5.vover.model.Availability;
+import com.github.mysterix5.vover.model.WordDbEntity;
+import com.github.mysterix5.vover.model.WordResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

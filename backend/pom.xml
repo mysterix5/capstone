@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.mysterix5</groupId>
-        <artifactId>capstone-parent</artifactId>
+        <artifactId>vover-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>capstone-backend</artifactId>
+    <artifactId>vover-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>capstone-backend</name>
+    <name>vover-backend</name>
     <description>NeueFische bootcamp capstone project</description>
     <dependencies>
         <dependency>

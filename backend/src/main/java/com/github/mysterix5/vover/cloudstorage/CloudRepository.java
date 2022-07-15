@@ -1,4 +1,4 @@
-package com.github.mysterix5.capstone.cloudstorage;
+package com.github.mysterix5.vover.cloudstorage;
 
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
