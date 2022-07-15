@@ -12,8 +12,8 @@ export default function Main() {
     const [splitText, setSplitText] = useState<WordResponse[]>();
     const [audioFile, setAudioFile] = useState<any>();
 
-    function isAvailable(availibility: string){
-        return availibility==="PUBLIC";
+    function isAvailable(availability: string){
+        return availability==="PUBLIC";
     }
 
     function checkSplitText(){

@@ -1,7 +1,6 @@
 package com.github.mysterix5.capstone.addWords;
 
 import com.github.mysterix5.capstone.model.WordInput;
-import com.github.mysterix5.capstone.textHandling.WordsMongoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -3,15 +3,13 @@ package com.github.mysterix5.capstone.textHandling;
 import com.github.mysterix5.capstone.cloudstorage.CloudService;
 import com.github.mysterix5.capstone.model.Availability;
 import com.github.mysterix5.capstone.model.WordDbEntity;
-import com.github.mysterix5.capstone.model.WordInput;
 import com.github.mysterix5.capstone.model.WordResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -25,8 +23,11 @@ class TextServiceTest {
         String testString = "bester test";
 
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
-        when(mockedWordRepo.existsByWord("bester")).thenReturn(true);
-        when(mockedWordRepo.existsByWord("test")).thenReturn(true);
+        when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("bester", "test"))))
+                .thenReturn(List.of(
+                        WordDbEntity.builder().word("bester").url("bester.wav").build(),
+                        WordDbEntity.builder().word("test").url("test.wav").build()
+                ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
 
@@ -42,8 +43,10 @@ class TextServiceTest {
         String testString = "beste/r test ever% wirklich";
 
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
-        when(mockedWordRepo.existsByWord("test")).thenReturn(true);
-        when(mockedWordRepo.existsByWord("wirklich")).thenReturn(false);
+        when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("test", "wirklich"))))
+                .thenReturn(List.of(
+                        WordDbEntity.builder().word("test").url("test.wav").build()
+                ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
 
@@ -55,20 +58,23 @@ class TextServiceTest {
     }
 
     @Test
-    void loadWavFromCloudAndMerge() throws UnsupportedAudioFileException, IOException {
+    void loadWavFromCloudAndMerge() throws IOException {
         List<WordResponseDTO> wordResponseDTOList = List.of(
                 WordResponseDTO.builder().word("test").availability(Availability.PUBLIC).build(),
                 WordResponseDTO.builder().word("eins").availability(Availability.PUBLIC).build()
         );
 
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
-        when(mockedWordRepo.findByWord("test")).thenReturn(Optional.of(new WordDbEntity(WordInput.builder().word("test").build())));
-        when(mockedWordRepo.findByWord("eins")).thenReturn(Optional.of(new WordDbEntity(WordInput.builder().word("eins").build())));
+        when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("eins", "test"))))
+                .thenReturn(List.of(
+                        WordDbEntity.builder().word("eins").url("eins.wav").build(),
+                        WordDbEntity.builder().word("test").url("test.wav").build()
+                ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
 
-        textService.loadWavFromCloudAndMerge(wordResponseDTOList);
+        textService.getMergedWav(wordResponseDTOList);
 
-        verify(mockedCloudService).loadListFromCloudAndMerge(List.of("test.wav", "eins.wav"));
+        verify(mockedCloudService).loadMultipleAudioFromCloudAndMerge(List.of("test.wav", "eins.wav"));
     }
 }
