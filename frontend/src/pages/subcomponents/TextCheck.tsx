@@ -32,7 +32,7 @@ export default function TextCheck(props: TextCheckProps) {
     }
 
     return (
-        <Grid container>
+        <Grid container justifyContent={"center"}>
             {
                 props.splitText &&
                 props.splitText!.map((r, i) =>
