@@ -1,6 +1,6 @@
-package com.github.mysterix5.capstone.cloudstorage;
+package com.github.mysterix5.vover.cloudstorage;
 
-import com.github.mysterix5.capstone.model.AudioResponseDTO;
+import com.github.mysterix5.vover.model.AudioResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
