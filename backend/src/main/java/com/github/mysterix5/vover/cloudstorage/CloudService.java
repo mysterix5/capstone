@@ -22,12 +22,11 @@ public class CloudService {
         AudioSystem.write(audioIn, AudioFileFormat.Type.WAVE, byteArrayOutputStream);
         byte[] arrayWithHeader = byteArrayOutputStream.toByteArray();
 
-        AudioResponseDTO audioResponseDTO = new AudioResponseDTO();
-        audioResponseDTO.setData(arrayWithHeader);
-        audioResponseDTO.setContentLength((int) (audioIn.getFrameLength()*audioIn.getFormat().getFrameSize()));
-        audioResponseDTO.setContentType("audio/x-wav");
-
-        return audioResponseDTO;
+        return AudioResponseDTO.builder()
+                .data(arrayWithHeader)
+                .contentLength((int) (audioIn.getFrameLength()*audioIn.getFormat().getFrameSize()))
+                .contentType("audio/x-wav")
+                .build();
     }
     public AudioResponseDTO loadMultipleAudioFromCloudAndMerge(List<String> cloudFilePaths) throws IOException {
 
