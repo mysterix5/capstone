@@ -1,10 +1,11 @@
 import React from 'react';
 import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Main from "./pages/Main";
-import Header from "./pages/subcomponents/Header";
 import {blueGrey} from "@mui/material/colors";
-import Record from './pages/Record';
+
+import Header from "./Header";
+import Main from "./pages/main"
+import Record from './pages/record';
 
 const darkTheme = createTheme({
     palette: {

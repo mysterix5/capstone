@@ -1,11 +1,10 @@
 import {Grid} from "@mui/material";
-import TextSubmit from "./subcomponents/TextSubmit";
 import {useState} from "react";
-import {WordResponse} from "../services/model";
-import TextCheck from "./subcomponents/TextCheck";
-import Audio from "./subcomponents/Audio";
-import {apiGetAudio} from "../services/apiServices";
-
+import {WordResponse} from "../../services/model";
+import {apiGetAudio} from "../../services/apiServices";
+import TextSubmit from "./TextSubmit";
+import TextCheck from "./TextCheck";
+import Audio from "./Audio";
 
 export default function Main() {
 
