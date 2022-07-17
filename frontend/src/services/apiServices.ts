@@ -14,5 +14,5 @@ export function apiGetAudio(words: WordResponse[]) {
             responseType: 'arraybuffer'
         })
         .then((response) => response.data)
-        .then(data => window.URL.createObjectURL(new Blob([data])));
+        .then(data => window.URL.createObjectURL(new Blob([data], {type: "audio/wav; codecs=MS_PCM"})));
 }
