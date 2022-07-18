@@ -32,7 +32,7 @@ export default function Main() {
 
 
     return (
-        <Grid container alignContent={"center"} flexDirection={"column"}>
+        <Grid container alignItems={"center"} flexDirection={"column"}>
             <Grid item>
                 <TextSubmit setSplitText={setSplitText}/>
             </Grid>
