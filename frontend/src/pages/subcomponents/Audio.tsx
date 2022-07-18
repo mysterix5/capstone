@@ -14,7 +14,7 @@ export default function Audio(props: AudioProps) {
             </Grid>
             <Grid item margin={2}>
                 {props.audioFile &&
-                    <audio src={props.audioFile} autoPlay={false} controls={true} title="vover.wav">
+                    <audio src={props.audioFile} autoPlay={false} controls={true} title="vover.mp3">
 
                     </audio>
                 }

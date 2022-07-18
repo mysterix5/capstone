@@ -1,7 +1,6 @@
 package com.github.mysterix5.vover.textHandling;
 
 import com.github.mysterix5.vover.cloudstorage.CloudService;
-import com.github.mysterix5.vover.model.AudioResponseDTO;
 import com.github.mysterix5.vover.model.Availability;
 import com.github.mysterix5.vover.model.WordDbEntity;
 import com.github.mysterix5.vover.model.WordResponseDTO;
@@ -9,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -75,7 +75,7 @@ public class TextService {
         return dbWordsMap;
     }
 
-    public AudioResponseDTO getMergedWav(List<WordResponseDTO> textWordList) throws IOException {
+    public AudioInputStream getMergedAudio(List<WordResponseDTO> textWordList) throws IOException {
         Set<String> appearingWordsSet = textWordList.stream().map(WordResponseDTO::getWord).collect(Collectors.toSet());
 
         Map<String, List<WordDbEntity>> dbWordsMap = createDbWordsMap(appearingWordsSet);

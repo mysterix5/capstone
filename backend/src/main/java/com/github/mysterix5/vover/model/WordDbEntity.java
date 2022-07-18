@@ -22,6 +22,6 @@ public class WordDbEntity {
     public WordDbEntity(WordInput wordInput){
         word = wordInput.getWord().toLowerCase();
         tags = wordInput.getTags();
-        url = word + ".wav";
+        url = word + ".mp3";
     }
 }

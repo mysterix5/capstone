@@ -1,6 +1,5 @@
 package com.github.mysterix5.vover.cloudstorage;
 
-import com.github.mysterix5.vover.model.AudioResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -8,8 +7,6 @@ import org.springframework.stereotype.Service;
 import javax.sound.sampled.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -17,53 +14,45 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CloudService {
     private final CloudRepository cloudRepository;
 
-    private AudioResponseDTO createAudioResponseDTO(AudioInputStream audioIn) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        AudioSystem.write(audioIn, AudioFileFormat.Type.WAVE, byteArrayOutputStream);
-        byte[] arrayWithHeader = byteArrayOutputStream.toByteArray();
+    public AudioInputStream loadMultipleAudioFromCloudAndMerge(List<String> cloudFilePaths) throws IOException {
+        List<AudioInputStream> audioInputStreams = cloudFilePaths.parallelStream().map((path)->{
+            try {
+                return cloudRepository.find(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).map(bytes -> {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            AudioFileFormat baseFormat;
+            try {
+                baseFormat = AudioSystem.getAudioFileFormat(byteArrayInputStream);
+            } catch (UnsupportedAudioFileException | IOException e) {
+                throw new RuntimeException(e);
+            }
+            return new AudioInputStream(byteArrayInputStream, baseFormat.getFormat(), baseFormat.getFrameLength());
+        }).toList();
 
-        return AudioResponseDTO.builder()
-                .data(arrayWithHeader)
-                .contentLength((int) (audioIn.getFrameLength()*audioIn.getFormat().getFrameSize()))
-                .contentType("audio/x-wav")
-                .build();
+        return mergeAudioStreams(audioInputStreams);
     }
-    public AudioResponseDTO loadMultipleAudioFromCloudAndMerge(List<String> cloudFilePaths) throws IOException {
 
-        final AtomicInteger frameLength = new AtomicInteger(0);
-        final AtomicReference<AudioFileFormat> atomicFormat= new AtomicReference<>(null);
+    private AudioInputStream mergeAudioStreams(List<AudioInputStream> audioInputStreams) throws IOException {
+        byte[] data = new byte[512];
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        List<AudioInputStream> audioStreamList = cloudFilePaths.parallelStream()
-                .map(filePath -> {
-                    try {
-                        return cloudRepository.find(filePath);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .map(bytes -> {
-                    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-                    AudioFileFormat format;
-                    try {
-                        format = AudioSystem.getAudioFileFormat(byteArrayInputStream);
-                        atomicFormat.set(format);
-                    } catch (UnsupportedAudioFileException | IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    frameLength.addAndGet(format.getFrameLength());
-                    return new AudioInputStream(byteArrayInputStream, format.getFormat(), format.getFrameLength());
-                })
-                .toList();
-
-        SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.enumeration(audioStreamList));
-
-        AudioInputStream appended =
-                new AudioInputStream(
-                        sequenceInputStream,
-                        atomicFormat.get().getFormat(),
-                        frameLength.get());
-
-        return createAudioResponseDTO(appended);
+        for (AudioInputStream audioInputStream : audioInputStreams) {
+            int nBytesRead = 0;
+            while (nBytesRead != -1) {
+                nBytesRead = audioInputStream.read(data, 0, data.length);
+                if (nBytesRead != -1) {
+                    byteArrayOutputStream.write(data, 0, nBytesRead);
+                }
+            }
+            audioInputStream.close();
+        }
+        var format = audioInputStreams.get(0).getFormat();
+        return new AudioInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()),
+                format,
+                byteArrayOutputStream.size());
     }
 
 }
