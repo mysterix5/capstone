@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// TODO tests on text valid checks etc should be added here regularly as functionality grows
+// TODO tests on text valid checks etc. should be added here regularly as functionality grows
 class TextServiceTest {
 
     @Test
@@ -73,7 +73,7 @@ class TextServiceTest {
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
 
-        textService.getMergedWav(wordResponseDTOList);
+        textService.getMergedAudio(wordResponseDTOList);
 
         verify(mockedCloudService).loadMultipleAudioFromCloudAndMerge(List.of("test.wav", "eins.wav"));
     }

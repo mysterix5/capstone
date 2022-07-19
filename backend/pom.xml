@@ -44,6 +44,12 @@
             <artifactId>sardine</artifactId>
             <version>5.10</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>mp3spi</artifactId>
+            <version>1.9.5.4</version>
+        </dependency>
     </dependencies>
 
     <build>
