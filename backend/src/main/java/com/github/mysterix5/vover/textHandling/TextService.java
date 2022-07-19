@@ -1,9 +1,7 @@
 package com.github.mysterix5.vover.textHandling;
 
 import com.github.mysterix5.vover.cloudstorage.CloudService;
-import com.github.mysterix5.vover.model.Availability;
-import com.github.mysterix5.vover.model.WordDbEntity;
-import com.github.mysterix5.vover.model.WordResponseDTO;
+import com.github.mysterix5.vover.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,7 @@ public class TextService {
     private final WordsMongoRepository wordsRepository;
     private final CloudService cloudService;
 
-    public List<WordResponseDTO> onSubmittedText(String text) {
+    public TextResponseDTO onSubmittedText(String text) {
         List<String> wordList = splitText(text);
 
         return createResponses(wordList);
@@ -30,24 +28,26 @@ public class TextService {
         return Arrays.stream(text.split(" ")).toList();
     }
 
-    private List<WordResponseDTO> createResponses(List<String> wordList) {
+    private TextResponseDTO createResponses(List<String> wordList) {
         wordList = wordList.stream().map(String::toLowerCase).toList();
         Set<String> appearingWordsSet = wordList.stream().filter(this::wordValidCheck).collect(Collectors.toSet());
-        Map<String, List<WordDbEntity>> dbWordsMap = createDbWordsMap(appearingWordsSet);
+        Map<String, List<WordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet);
 
-        return wordList.stream()
+        List<WordResponseDTO> textWordsResponse = wordList.stream()
                 .map(WordResponseDTO::new)
                 .peek(w -> {
-                        if(appearingWordsSet.contains(w.getWord())){
-                            if(dbWordsMap.containsKey(w.getWord())){
-                                w.setAvailability(Availability.PUBLIC);
-                            }else{
-                                w.setAvailability(Availability.ABSENT);
-                            }
-                        }else{
-                            w.setAvailability(Availability.INVALID);
+                    if (appearingWordsSet.contains(w.getWord())) {
+                        if (dbWordsMap.containsKey(w.getWord())) {
+                            w.setAvailability(Availability.PUBLIC);
+                        } else {
+                            w.setAvailability(Availability.ABSENT);
                         }
+                    } else {
+                        w.setAvailability(Availability.INVALID);
+                    }
                 }).toList();
+
+        return new TextResponseDTO(textWordsResponse, dbWordsMap);
     }
 
 
@@ -62,15 +62,15 @@ public class TextService {
         return true;
     }
 
-    private Map<String, List<WordDbEntity>> createDbWordsMap(Set<String> textWords){
+    private Map<String, List<WordDbResponseDTO>> createDbWordsMap(Set<String> textWords) {
         List<WordDbEntity> allDbEntriesForWords = wordsRepository.findByWordIn(textWords);
 
-        Map<String, List<WordDbEntity>> dbWordsMap = new HashMap<>();
+        Map<String, List<WordDbResponseDTO>> dbWordsMap = new HashMap<>();
         for (WordDbEntity w : allDbEntriesForWords) {
             if (!dbWordsMap.containsKey(w.getWord())) {
                 dbWordsMap.put(w.getWord(), new ArrayList<>());
             }
-            dbWordsMap.get(w.getWord()).add(w);
+            dbWordsMap.get(w.getWord()).add(new WordDbResponseDTO(w));
         }
         return dbWordsMap;
     }
@@ -78,18 +78,19 @@ public class TextService {
     public AudioInputStream getMergedAudio(List<WordResponseDTO> textWordList) throws IOException {
         Set<String> appearingWordsSet = textWordList.stream().map(WordResponseDTO::getWord).collect(Collectors.toSet());
 
-        Map<String, List<WordDbEntity>> dbWordsMap = createDbWordsMap(appearingWordsSet);
-        if(dbWordsMap.size()< appearingWordsSet.size()){
+        Map<String, List<WordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet);
+        if (dbWordsMap.size() < appearingWordsSet.size()) {
             throw new IllegalArgumentException("some of the words are not present in the db");
         }
 
         Random rand = new Random();
         List<String> urls = textWordList.stream()
                 .map(wordResponseDTO -> {
-                    var wordChoices = dbWordsMap.get(wordResponseDTO.getWord());
+                    List<WordDbResponseDTO> wordChoices = dbWordsMap.get(wordResponseDTO.getWord());
                     int randomIndex = rand.nextInt(wordChoices.size());
                     return wordChoices.get(randomIndex);
-                }).map(wordDbEntity -> ((WordDbEntity) wordDbEntity).getCloudFileName())
+                    // I know this is very ugly, it will be fixed with one of the next PRs
+                }).map(wordDbResponseDTO -> wordsRepository.findById(wordDbResponseDTO.getId()).orElseThrow().getCloudFileName())
                 .toList();
 
         return cloudService.loadMultipleAudioFromCloudAndMerge(urls);

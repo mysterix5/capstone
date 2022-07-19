@@ -1,13 +1,12 @@
 import axios, {AxiosResponse} from "axios";
-import {WordResponse, TextSend} from "./model";
-
+import {TextSend, TextResponse, WordAvail} from "./model";
 
 export function apiSendTextToBackend(text: TextSend) {
     return axios.put("/api/main", text)
-        .then((response: AxiosResponse<WordResponse[]>) => response.data);
+        .then((response: AxiosResponse<TextResponse>) => response.data);
 }
 
-export function apiGetAudio(words: WordResponse[]) {
+export function apiGetAudio(words: WordAvail[]) {
     return axios.post("/api/main/audio",
         words,
         {

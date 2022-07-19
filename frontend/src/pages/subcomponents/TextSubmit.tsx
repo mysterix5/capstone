@@ -1,10 +1,10 @@
 import {Box, Button, Grid, TextField} from "@mui/material";
 import {FormEvent, useState} from "react";
 import {apiSendTextToBackend} from "../../services/apiServices";
-import {WordResponse} from "../../services/model";
+import {TextResponse} from "../../services/model";
 
 interface TextSubmitProps{
-    setSplitText: (textResponse: WordResponse[])=>void;
+    setSplitText: (textResponse: TextResponse)=>void;
 }
 
 export default function TextSubmit(props: TextSubmitProps){

@@ -1,13 +1,13 @@
 import {Button, Grid} from "@mui/material";
-import {WordResponse} from "../../services/model";
+import {TextResponse, WordAvail} from "../../services/model";
 
 interface TextCheckProps {
-    splitText: WordResponse[]
+    splitText: TextResponse
 }
 
 export default function TextCheck(props: TextCheckProps) {
 
-    function getWordButton(word: WordResponse) {
+    function getWordButton(word: WordAvail) {
         let myColor: string = "#fff";
         let myTextDecoration: string = "none";
 
@@ -35,7 +35,7 @@ export default function TextCheck(props: TextCheckProps) {
         <Grid container justifyContent={"center"}>
             {
                 props.splitText &&
-                props.splitText!.map((r, i) =>
+                props.splitText!.textWords.map((r, i) =>
                     <Grid item key={i} margin={0.5}>
                         {getWordButton(r)}
                     </Grid>
