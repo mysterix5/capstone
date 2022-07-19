@@ -15,9 +15,6 @@ export default function Header() {
                 <Button onClick={() => nav("/record")}>
                     <MicIcon/>
                 </Button>
-                <Button onClick={() => nav("/record2")}>
-                    <MicIcon/>
-                </Button>
             </Grid>
         </Grid>
     )
