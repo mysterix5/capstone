@@ -89,7 +89,7 @@ public class TextService {
                     var wordChoices = dbWordsMap.get(wordResponseDTO.getWord());
                     int randomIndex = rand.nextInt(wordChoices.size());
                     return wordChoices.get(randomIndex);
-                }).map(wordDbEntity -> ((WordDbEntity) wordDbEntity).getUrl())
+                }).map(wordDbEntity -> ((WordDbEntity) wordDbEntity).getCloudFileName())
                 .toList();
 
         return cloudService.loadMultipleAudioFromCloudAndMerge(urls);

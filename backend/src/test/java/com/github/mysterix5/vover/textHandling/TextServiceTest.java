@@ -25,8 +25,8 @@ class TextServiceTest {
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
         when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("bester", "test"))))
                 .thenReturn(List.of(
-                        WordDbEntity.builder().word("bester").url("bester.wav").build(),
-                        WordDbEntity.builder().word("test").url("test.wav").build()
+                        WordDbEntity.builder().word("bester").cloudFileName("bester.wav").build(),
+                        WordDbEntity.builder().word("test").cloudFileName("test.wav").build()
                 ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
@@ -45,7 +45,7 @@ class TextServiceTest {
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
         when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("test", "wirklich"))))
                 .thenReturn(List.of(
-                        WordDbEntity.builder().word("test").url("test.wav").build()
+                        WordDbEntity.builder().word("test").cloudFileName("test.wav").build()
                 ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
@@ -67,8 +67,8 @@ class TextServiceTest {
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
         when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("eins", "test"))))
                 .thenReturn(List.of(
-                        WordDbEntity.builder().word("eins").url("eins.wav").build(),
-                        WordDbEntity.builder().word("test").url("test.wav").build()
+                        WordDbEntity.builder().word("eins").cloudFileName("eins.wav").build(),
+                        WordDbEntity.builder().word("test").cloudFileName("test.wav").build()
                 ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
