@@ -15,7 +15,7 @@ export default function Record() {
     const [audioBlob, setAudioBlob] = useState<Blob>();
 
     const [word, setWord] = useState("");
-    const [creator, setCreator] = useState("Lukas");
+    const [creator, setCreator] = useState("");
     const [tag, setTag] = useState("normal");
 
     const record = async () => {
