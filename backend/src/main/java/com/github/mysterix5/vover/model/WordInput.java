@@ -3,11 +3,10 @@ package com.github.mysterix5.vover.model;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 @Builder
 public class WordInput {
     private String word;
-    private List<WordTag> tags;
+    private String creator;
+    private String tag;
 }

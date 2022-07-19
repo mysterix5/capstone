@@ -4,6 +4,9 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Main from "./pages/Main";
 import Header from "./pages/subcomponents/Header";
 import {blueGrey} from "@mui/material/colors";
+import Record from "./pages/Record";
+import Record2 from "./pages/Record2";
+import Record3 from "./pages/Record3";
 
 const darkTheme = createTheme({
     palette: {
@@ -24,6 +27,9 @@ export default function App() {
                 <Header/>
                 <Routes>
                     <Route path="/" element={<Main/>}/>
+                    <Route path="/record" element={<Record/>}/>
+                    <Route path="/record2" element={<Record2/>}/>
+                    <Route path="/record3" element={<Record3/>}/>
                 </Routes>
             </BrowserRouter>
         </ThemeProvider>
