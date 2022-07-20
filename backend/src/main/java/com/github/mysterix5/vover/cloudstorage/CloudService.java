@@ -15,7 +15,7 @@ public class CloudService {
     private final CloudRepository cloudRepository;
 
     public AudioInputStream loadMultipleAudioFromCloudAndMerge(List<String> cloudFilePaths) throws IOException {
-        List<AudioInputStream> audioInputStreams = cloudFilePaths.parallelStream().map((path)->{
+        List<AudioInputStream> audioInputStreams = cloudFilePaths.stream().map((path)->{
             try {
                 return cloudRepository.find(path);
             } catch (IOException e) {
