@@ -28,7 +28,7 @@ public class TextController {
     }
 
     @PostMapping("/audio")
-    public void loadListFromCloudAndMerge2(HttpServletResponse httpResponse, @RequestBody List<String> ids) throws IOException {
+    public void loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<String> ids) throws IOException {
 
         AudioInputStream mergedAudio = textService.getMergedAudio(ids);
 
