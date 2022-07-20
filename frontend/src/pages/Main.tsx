@@ -5,15 +5,13 @@ import {TextResponse} from "../services/model";
 import TextCheck from "./subcomponents/TextCheck";
 import Audio from "./subcomponents/Audio";
 import {apiGetAudio} from "../services/apiServices";
+import {isAvailable} from "./subcomponents/helpers";
 
 
 export default function Main() {
     const [splitText, setSplitText] = useState<TextResponse>();
     const [audioFile, setAudioFile] = useState<any>();
-
-    function isAvailable(availability: string){
-        return availability==="PUBLIC";
-    }
+    const [ids, setIds] = useState<string[]>([])
 
     function checkSplitText(){
         for(const word of splitText!.textWords){
@@ -38,7 +36,7 @@ export default function Main() {
             <Grid item ml={2} mr={2}>
                 {
                     splitText &&
-                    <TextCheck splitText={splitText}/>
+                    <TextCheck splitText={splitText} ids={ids} setIds={setIds}/>
                 }
             </Grid>
             <Grid item>
