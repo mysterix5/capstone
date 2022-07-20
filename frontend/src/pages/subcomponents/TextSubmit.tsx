@@ -4,7 +4,8 @@ import {apiSendTextToBackend} from "../../services/apiServices";
 import {TextResponse} from "../../services/model";
 
 interface TextSubmitProps{
-    setSplitText: (textResponse: TextResponse)=>void;
+    setSplitText: (textResponse: TextResponse)=>void,
+    setIds: (ids: string[])=>void
 }
 
 export default function TextSubmit(props: TextSubmitProps){
@@ -18,7 +19,21 @@ export default function TextSubmit(props: TextSubmitProps){
             .then(r=>{
                 console.log(r);
                 props.setSplitText(r);
-            });
+                return r;
+            })
+            .then(textResponse => {
+                const ids: string[] = [];
+                for(const word of textResponse.textWords){
+                    const mdl = textResponse.wordMap[word.word];
+                    if(mdl && mdl.length>0){
+                        ids.push(mdl.at(0)!.id);
+                    }else{
+                        ids.push('');
+                    }
+                }
+                props.setIds(ids);
+            })
+        ;
     }
 
     return (

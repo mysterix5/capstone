@@ -75,24 +75,17 @@ public class TextService {
         return dbWordsMap;
     }
 
-    public AudioInputStream getMergedAudio(List<WordResponseDTO> textWordList) throws IOException {
-        Set<String> appearingWordsSet = textWordList.stream().map(WordResponseDTO::getWord).collect(Collectors.toSet());
-
-        Map<String, List<WordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet);
-        if (dbWordsMap.size() < appearingWordsSet.size()) {
-            throw new IllegalArgumentException("some of the words are not present in the db");
+    public AudioInputStream getMergedAudio(List<String> ids) {
+        List<WordDbEntity> wordDbEntities = (List<WordDbEntity>) wordsRepository.findAllById(ids);
+        List<String> filePaths = ids.stream()
+                .map(id->wordDbEntities.stream()
+                        .filter(wordDb -> Objects.equals(wordDb.getId(), id))
+                        .findFirst()
+                        .orElseThrow().getCloudFileName()).toList();
+        try {
+            return cloudService.loadMultipleAudioFromCloudAndMerge(filePaths);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        Random rand = new Random();
-        List<String> urls = textWordList.stream()
-                .map(wordResponseDTO -> {
-                    List<WordDbResponseDTO> wordChoices = dbWordsMap.get(wordResponseDTO.getWord());
-                    int randomIndex = rand.nextInt(wordChoices.size());
-                    return wordChoices.get(randomIndex);
-                    // I know this is very ugly, it will be fixed with one of the next PRs
-                }).map(wordDbResponseDTO -> wordsRepository.findById(wordDbResponseDTO.getId()).orElseThrow().getCloudFileName())
-                .toList();
-
-        return cloudService.loadMultipleAudioFromCloudAndMerge(urls);
     }
 }

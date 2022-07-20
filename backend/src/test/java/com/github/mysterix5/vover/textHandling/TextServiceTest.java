@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -79,23 +76,16 @@ class TextServiceTest {
                 WordResponseDTO.builder().word("test").availability(Availability.PUBLIC).build(),
                 WordResponseDTO.builder().word("eins").availability(Availability.PUBLIC).build()
         );
-        WordDbEntity wordDbEntity1 = WordDbEntity.builder().id("id1").word("eins").creator("creator1").tag("tag1").cloudFileName("eins.mp3").build();
-        WordDbEntity wordDbEntity2 = WordDbEntity.builder().id("id2").word("test").creator("creator2").tag("tag2").cloudFileName("test.mp3").build();
+        WordDbEntity wordDbEntity1 = WordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").build();
+        WordDbEntity wordDbEntity2 = WordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").build();
 
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
-        when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("eins", "test"))))
-                .thenReturn(List.of(
-                                wordDbEntity1,
-                                wordDbEntity2
-                        )
-                );
-        when(mockedWordRepo.findById(wordDbEntity1.getId())).thenReturn(Optional.of(wordDbEntity1));
-        when(mockedWordRepo.findById(wordDbEntity2.getId())).thenReturn(Optional.of(wordDbEntity2));
+        when(mockedWordRepo.findAllById(List.of("id1", "id2"))).thenReturn(List.of(wordDbEntity1, wordDbEntity2));
 
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
 
-        textService.getMergedAudio(wordResponseDTOList);
+        textService.getMergedAudio(List.of("id1", "id2"));
 
         verify(mockedCloudService).loadMultipleAudioFromCloudAndMerge(List.of("test.mp3", "eins.mp3"));
     }

@@ -1,14 +1,14 @@
 import axios, {AxiosResponse} from "axios";
-import {TextSend, TextResponse, WordAvail} from "./model";
+import {TextSend, TextResponse} from "./model";
 
 export function apiSendTextToBackend(text: TextSend) {
-    return axios.put("/api/main", text)
+    return axios.post("/api/main", text)
         .then((response: AxiosResponse<TextResponse>) => response.data);
 }
 
-export function apiGetAudio(words: WordAvail[]) {
+export function apiGetAudio(ids: string[]) {
     return axios.post("/api/main/audio",
-        words,
+        ids,
         {
             responseType: 'arraybuffer'
         })

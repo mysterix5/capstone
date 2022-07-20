@@ -23,7 +23,7 @@ export default function Main() {
     }
 
     function getAudio(){
-        apiGetAudio(splitText!.textWords)
+        apiGetAudio(ids)
             .then(setAudioFile);
     }
 
@@ -31,7 +31,7 @@ export default function Main() {
     return (
         <Grid container alignItems={"center"} flexDirection={"column"}>
             <Grid item>
-                <TextSubmit setSplitText={setSplitText}/>
+                <TextSubmit setSplitText={setSplitText} setIds={setIds}/>
             </Grid>
             <Grid item ml={2} mr={2}>
                 {
