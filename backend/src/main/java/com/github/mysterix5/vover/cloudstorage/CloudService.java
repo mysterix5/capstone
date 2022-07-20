@@ -26,6 +26,7 @@ public class CloudService {
             AudioFileFormat baseFormat;
             try {
                 baseFormat = AudioSystem.getAudioFileFormat(byteArrayInputStream);
+                log.info(String.valueOf(baseFormat));
             } catch (UnsupportedAudioFileException | IOException e) {
                 throw new RuntimeException(e);
             }
