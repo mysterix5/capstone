@@ -21,7 +21,7 @@ public class CloudService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }).map(bytes -> {
+        }).sequential().map(bytes -> {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
             AudioFileFormat baseFormat;
             try {
