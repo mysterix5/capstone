@@ -1,5 +1,5 @@
 import {Recorder} from "vmsg";
-import {Box, Button, Grid, TextField} from "@mui/material";
+import {Box, Button, Grid, TextField, Typography} from "@mui/material";
 import {FormEvent, useState} from "react";
 import {apiSaveAudio} from "../services/apiServices";
 
@@ -55,18 +55,20 @@ export default function Record() {
 
     return (
         <>
-            record 3
+            <Typography variant={"h4"} align={"center"} mb={2}>
+                Record new words
+            </Typography>
             <Grid container alignItems={"center"} alignContent={"center"} flexDirection={"column"}>
                 <Grid item xs={4}>
-                    <button disabled={isLoading} onClick={record}>
+                    <Button variant="contained" disabled={isLoading} onClick={record}>
                         {isRecording ? "Stop" : "Record"}
-                    </button>
+                    </Button>
                 </Grid>
-                <div>
+                <Box mt={2}>
                     { audioLink &&
                         <audio src={audioLink} autoPlay={false} controls={true} title="vover.mp3"/>
                     }
-                </div>
+                </Box>
                 <div>
                     {
                         audioBlob &&
@@ -91,6 +93,7 @@ export default function Record() {
                                     label="Tag"
                                     variant="outlined"
                                     value={tag}
+                                    placeholder={tag}
                                     onChange={event => setTag(event.target.value)}
                                 />
                             </Grid>

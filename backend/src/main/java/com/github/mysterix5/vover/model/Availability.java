@@ -1,5 +1,5 @@
 package com.github.mysterix5.vover.model;
 
 public enum Availability {
-    ABSENT, PUBLIC, INVALID
+    INVALID, ABSENT, SCOPE, PUBLIC
 }
