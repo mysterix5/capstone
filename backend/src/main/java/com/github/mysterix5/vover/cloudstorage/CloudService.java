@@ -15,13 +15,13 @@ public class CloudService {
     private final CloudRepository cloudRepository;
 
     public AudioInputStream loadMultipleAudioFromCloudAndMerge(List<String> cloudFilePaths) throws IOException {
-        List<AudioInputStream> audioInputStreams = cloudFilePaths.stream().map((path)->{
+        List<AudioInputStream> audioInputStreams = cloudFilePaths.parallelStream().map((path)->{
             try {
                 return cloudRepository.find(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }).map(bytes -> {
+        }).sequential().map(bytes -> {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
             AudioFileFormat baseFormat;
             try {
