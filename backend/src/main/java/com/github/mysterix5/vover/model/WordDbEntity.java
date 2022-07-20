@@ -18,14 +18,14 @@ public class WordDbEntity {
     @Id
     private String id;
     private String word;
+    private String creator;
     private String tag;
     private String cloudFileName;
-    private String creator;
 
     public WordDbEntity(String word, String creator, String tag, String cloudFileName){
         this.word = word.toLowerCase();
-        this.tag = tag.toLowerCase();
         this.creator = creator;
+        this.tag = tag.toLowerCase();
         this.cloudFileName = cloudFileName;
     }
 

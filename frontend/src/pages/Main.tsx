@@ -1,15 +1,14 @@
 import {Grid} from "@mui/material";
 import TextSubmit from "./subcomponents/TextSubmit";
 import {useState} from "react";
-import {WordResponse} from "../services/model";
+import {TextResponse} from "../services/model";
 import TextCheck from "./subcomponents/TextCheck";
 import Audio from "./subcomponents/Audio";
 import {apiGetAudio} from "../services/apiServices";
 
 
 export default function Main() {
-
-    const [splitText, setSplitText] = useState<WordResponse[]>();
+    const [splitText, setSplitText] = useState<TextResponse>();
     const [audioFile, setAudioFile] = useState<any>();
 
     function isAvailable(availability: string){
@@ -17,7 +16,7 @@ export default function Main() {
     }
 
     function checkSplitText(){
-        for(const word of splitText!){
+        for(const word of splitText!.textWords){
             if(!isAvailable(word.availability)){
                 return false;
             }
@@ -26,7 +25,7 @@ export default function Main() {
     }
 
     function getAudio(){
-        apiGetAudio(splitText!)
+        apiGetAudio(splitText!.textWords)
             .then(setAudioFile);
     }
 

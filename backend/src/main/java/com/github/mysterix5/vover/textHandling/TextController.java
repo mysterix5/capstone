@@ -1,5 +1,6 @@
 package com.github.mysterix5.vover.textHandling;
 
+import com.github.mysterix5.vover.model.TextResponseDTO;
 import com.github.mysterix5.vover.model.WordResponseDTO;
 import com.github.mysterix5.vover.model.TextSubmitDTO;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,9 @@ public class TextController {
 
     private final TextService textService;
 
+    // TODO put mapping seems wrong
     @PutMapping
-    public ResponseEntity<List<WordResponseDTO>> onSubmittedText(@RequestBody TextSubmitDTO textSubmitDTO){
+    public ResponseEntity<TextResponseDTO> onSubmittedText(@RequestBody TextSubmitDTO textSubmitDTO){
         log.info("Text in submit text: " + textSubmitDTO.getText());
         return ResponseEntity.ok().body(textService.onSubmittedText(textSubmitDTO.getText()));
     }

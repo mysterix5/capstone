@@ -1,6 +1,6 @@
 {
-  "short_name": "Front- & Backend",
-  "name": "Demo project to deploy front- and backend together",
+  "short_name": "Your funny voice messages assistant",
+  "name": "Vover",
   "icons": [],
   "start_url": ".",
   "display": "standalone",
