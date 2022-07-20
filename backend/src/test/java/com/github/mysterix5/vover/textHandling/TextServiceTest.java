@@ -72,10 +72,6 @@ class TextServiceTest {
 
     @Test
     void loadWavFromCloudAndMerge() throws IOException {
-        List<WordResponseDTO> wordResponseDTOList = List.of(
-                WordResponseDTO.builder().word("test").availability(Availability.PUBLIC).build(),
-                WordResponseDTO.builder().word("eins").availability(Availability.PUBLIC).build()
-        );
         WordDbEntity wordDbEntity1 = WordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").build();
         WordDbEntity wordDbEntity2 = WordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").build();
 

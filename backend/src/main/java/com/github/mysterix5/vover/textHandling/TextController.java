@@ -1,7 +1,6 @@
 package com.github.mysterix5.vover.textHandling;
 
 import com.github.mysterix5.vover.model.TextResponseDTO;
-import com.github.mysterix5.vover.model.WordResponseDTO;
 import com.github.mysterix5.vover.model.TextSubmitDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
