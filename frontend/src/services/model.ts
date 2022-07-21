@@ -4,7 +4,7 @@ export interface TextSend{
 }
 
 export interface WordMap {
-    [key: string]: WordMetaData
+    [key: string]: WordMetaData[]
 }
 
 export interface WordMetaData {

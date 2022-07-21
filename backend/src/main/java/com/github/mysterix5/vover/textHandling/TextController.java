@@ -1,7 +1,6 @@
 package com.github.mysterix5.vover.textHandling;
 
 import com.github.mysterix5.vover.model.TextResponseDTO;
-import com.github.mysterix5.vover.model.WordResponseDTO;
 import com.github.mysterix5.vover.model.TextSubmitDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,16 +21,16 @@ public class TextController {
     private final TextService textService;
 
     // TODO put mapping seems wrong
-    @PutMapping
+    @PostMapping
     public ResponseEntity<TextResponseDTO> onSubmittedText(@RequestBody TextSubmitDTO textSubmitDTO){
         log.info("Text in submit text: " + textSubmitDTO.getText());
         return ResponseEntity.ok().body(textService.onSubmittedText(textSubmitDTO.getText()));
     }
 
     @PostMapping("/audio")
-    public void loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<WordResponseDTO> words) throws IOException {
+    public void loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<String> ids) throws IOException {
 
-        AudioInputStream mergedAudio = textService.getMergedAudio(words);
+        AudioInputStream mergedAudio = textService.getMergedAudio(ids);
 
         httpResponse.setContentType("audio/mp3");
         httpResponse.getOutputStream().write(mergedAudio.readAllBytes());
