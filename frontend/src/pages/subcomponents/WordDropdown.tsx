@@ -1,4 +1,4 @@
-import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
+import {FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
 import {isAvailable} from "./helpers";
 import {WordAvail, WordMetaData} from "../../services/model";
 import {useNavigate} from "react-router-dom";
@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 
 interface WordDropdownProps {
     wordAvail: WordAvail,
-    setIdInArray: (id: string)=>void
+    setIdInArray: (id: string) => void
     choicesList: WordMetaData[],
     id: string
 }
@@ -15,7 +15,7 @@ export default function WordDropdown(props: WordDropdownProps) {
 
     const [id, setId] = useState(props.id);
 
-    useEffect(()=>{
+    useEffect(() => {
         props.setIdInArray(id);
     }, [id, props, props.setIdInArray])
 
@@ -27,25 +27,33 @@ export default function WordDropdown(props: WordDropdownProps) {
                 {props.wordAvail.word.toUpperCase()}
             </InputLabel>
             <Select
-                variant={"filled"}
+                size={"medium"}
+                variant={"standard"}
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 autoWidth
                 value={isAvailable(props.wordAvail.availability) ? id : 'record'}
                 label={props.wordAvail.word.toUpperCase()}
+                IconComponent={() => null}
                 onChange={(e: SelectChangeEvent) => setId(e.target.value)}
+                sx={{textAlign: "center"}}
             >
                 {isAvailable(props.wordAvail.availability) ?
                     props.choicesList.map(wmd =>
                         <MenuItem key={wmd.id} value={wmd.id}>
-                            {wmd.creator} - {wmd.tag}
+                            <Typography>{wmd.creator}</Typography>
+                            <Typography>{wmd.tag}</Typography>
                         </MenuItem>
                     )
                     :
-                    <MenuItem key={'record'} value={'record'}>
-                        <Button onClick={() => nav("/record")}>
-                            record
-                        </Button>
+                    <MenuItem key={'record'} value={'record'}
+                              sx={{justifyItems: "center", display: "f"}} onClick={() => nav("/record")}>
+                        <Grid container alignItems={"center"} justifyItems={"center"}>
+                            <Grid item>
+                                <Typography>record</Typography>
+                            </Grid>
+                        </Grid>
+
                     </MenuItem>
                 }
             </Select>

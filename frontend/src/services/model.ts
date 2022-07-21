@@ -23,3 +23,20 @@ export interface TextResponse {
     textWords: WordAvail[],
     wordMap: WordMap
 }
+
+export interface AuthInterface {
+    token : string,
+    username : string,
+    roles : string[],
+    logout: () => void
+    login: (token: string) => void
+}
+
+export interface LoginResponse {
+    token: string;
+}
+
+export interface UserDTO{
+    username: string,
+    password: string
+}
