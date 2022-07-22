@@ -1,21 +1,76 @@
 import {useNavigate} from "react-router-dom";
-import {Button, Grid, Typography} from "@mui/material";
+import {Box, Button, Grid, Typography} from "@mui/material";
 import MicIcon from '@mui/icons-material/Mic';
+import {useAuth} from "../../usermanagement/AuthProvider";
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 
 export default function Header() {
+    const {token, logout} = useAuth();
     const nav = useNavigate();
-    return (
-        <Grid container justifyContent={"center"}>
-            <Grid item xs={11} border={0.1} textAlign={"center"}
-                  borderColor={"lightgrey"} borderRadius={2} marginTop={1} marginLeft={1} marginRight={1} marginBottom={2}>
-                <Button onClick={() => nav("/")}>
-                    <Typography variant={"h3"} color={"lightseagreen"}>{process.env.REACT_APP_APPLICATION_NAME}</Typography>
-                </Button>
 
-                <Button onClick={() => nav("/record")}>
-                    <MicIcon/>
-                </Button>
+    return (
+        <Box display={'flex'} justifyContent={'center'}>
+            <Grid container
+                  border={0.1} borderColor={"lightgrey"} borderRadius={2}
+                  mt={1} ml={1} mr={1} mb={2}
+                  flexGrow={1} justifyContent={'center'} alignItems={'center'}
+            >
+                <Grid item xs={4}>
+                    <Grid container>
+                        <Grid item>
+                            {
+                                token ?
+                                    <Button onClick={() => nav("/record")}>
+                                        <MicIcon/>
+                                    </Button>
+                                    :
+                                    <Box></Box>
+                            }
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={4}>
+                    <Grid container justifyContent={'center'}>
+                        <Button onClick={() => nav("/")}>
+                            <Typography variant={"h4"} color={"lightseagreen"}>
+                                {process.env.REACT_APP_APPLICATION_NAME}
+                            </Typography>
+                        </Button>
+                    </Grid>
+                </Grid>
+                <Grid item xs={4}>
+                    <Grid container justifyContent={'end'} justifyItems={'end'} alignItems={'center'}>
+                        <Grid item>
+                            {token ?
+                                <Grid container direction={'row'} alignItems={'center'} justifyItems={'end'}
+                                      wrap={'nowrap'}>
+                                    <Grid item mr={1}>
+                                        <LogoutIcon onClick={logout} color={'primary'}/>
+                                    </Grid>
+                                    <Grid item ml={0} mr={1}>
+                                        <PersonIcon color={"primary"}/>
+                                        {/*<Chip label={username} sx={{maxWidth: 100}}/>*/}
+                                    </Grid>
+                                </Grid>
+                                :
+                                <Grid container direction={'column'}>
+                                    <Grid item>
+                                        <Button color="inherit" size={"small"} onClick={() => nav("/login")}>
+                                            Login
+                                        </Button>
+                                    </Grid>
+                                    <Grid item>
+                                        <Button color="inherit" size={"small"} onClick={() => nav("/register")}>
+                                            Register
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            }
+                        </Grid>
+                    </Grid>
+                </Grid>
             </Grid>
-        </Grid>
-    )
+        </Box>
+    );
 }
