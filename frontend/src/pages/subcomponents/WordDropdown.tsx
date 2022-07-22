@@ -1,5 +1,5 @@
 import {FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
-import {isAvailable} from "./helpers";
+import {isAvailable} from "../../globalTools/helpers";
 import {WordAvail, WordMetaData} from "../../services/model";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";

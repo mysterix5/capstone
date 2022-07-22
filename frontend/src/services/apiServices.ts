@@ -1,7 +1,7 @@
 import axios, {AxiosResponse} from "axios";
-import {TextSend, TextResponse, UserDTO, LoginResponse} from "./model";
+import {TextSend, TextResponse, UserDTO, LoginResponse, UserRegisterDTO} from "./model";
 
-export function sendRegister(user: UserDTO) {
+export function sendRegister(user: UserRegisterDTO) {
     return axios.post("/api/auth/register", user)
         .then(r => r.data);
 }

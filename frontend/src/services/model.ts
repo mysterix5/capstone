@@ -40,3 +40,14 @@ export interface UserDTO{
     username: string,
     password: string
 }
+
+export interface UserRegisterDTO{
+    username: string,
+    password: string,
+    passwordRepeat: string
+}
+
+export interface VoverError {
+    message: string,
+    subMessages: string[]
+}

@@ -13,4 +13,8 @@ public class VoverUser {
     private String username;
     private String password;
     private List<String> roles = new ArrayList<>();
+
+    public void addRole(String role){
+        roles.add(role);
+    }
 }

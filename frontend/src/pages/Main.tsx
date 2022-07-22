@@ -5,7 +5,7 @@ import {TextResponse} from "../services/model";
 import TextCheck from "./subcomponents/TextCheck";
 import Audio from "./subcomponents/Audio";
 import {apiGetAudio} from "../services/apiServices";
-import {isAvailable} from "./subcomponents/helpers";
+import {isAvailable} from "../globalTools/helpers";
 import {useAuth} from "../usermanagement/AuthProvider";
 import {useNavigate} from "react-router-dom";
 
@@ -22,7 +22,7 @@ export default function Main() {
         if(!token){
             nav("/login")
         }
-    }, [token])
+    }, [token, nav])
 
     function checkSplitText(){
         for(const word of splitText!.textWords){
