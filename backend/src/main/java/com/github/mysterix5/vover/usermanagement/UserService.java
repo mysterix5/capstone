@@ -33,7 +33,8 @@ public class UserService implements UserDetailsService {
         if (userRepository.existsByUsername(userCreationDTO.getUsername())) {
             throw new MultipleSubErrorException("a user with this name already exists");
         }
-        RuleResult passwordValidationResult = passwordValidator.validate(new PasswordData(userCreationDTO.getUsername(), userCreationDTO.getPassword()));
+        var tmp = new PasswordData(userCreationDTO.getUsername(), userCreationDTO.getPassword());
+        RuleResult passwordValidationResult = passwordValidator.validate(tmp);
         if (!passwordValidationResult.isValid()) {
             throw new MultipleSubErrorException("Your password is not secure enough", passwordValidator.getMessages(passwordValidationResult));
         }
