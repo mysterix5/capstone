@@ -15,7 +15,6 @@ export default function Record() {
     const [audioBlob, setAudioBlob] = useState<Blob>();
 
     const [word, setWord] = useState("");
-    const [creator, setCreator] = useState("");
     const [tag, setTag] = useState("normal");
 
     const record = async () => {
@@ -45,7 +44,7 @@ export default function Record() {
         event.preventDefault();
         console.log("save audio");
 
-        apiSaveAudio(word, creator, tag, audioBlob!)
+        apiSaveAudio(word, tag, audioBlob!)
             .then(() => {
                 setAudioLink("");
                 setAudioBlob(undefined);
@@ -78,14 +77,6 @@ export default function Record() {
                                     label="Word"
                                     variant="outlined"
                                     onChange={event => setWord(event.target.value)}
-                                />
-                            </Grid>
-                            <Grid item>
-                                <TextField
-                                    label="Creator"
-                                    variant="outlined"
-                                    value={creator}
-                                    onChange={event => setCreator(event.target.value)}
                                 />
                             </Grid>
                             <Grid item>

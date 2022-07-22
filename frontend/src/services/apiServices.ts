@@ -31,11 +31,10 @@ export function apiGetAudio(ids: string[]) {
 }
 
 
-export function apiSaveAudio(word: string, creator: string, tag: string, audioBlob: Blob) {
+export function apiSaveAudio(word: string, tag: string, audioBlob: Blob) {
     const formData = new FormData();
 
     formData.append("word", word);
-    formData.append("creator", creator);
     formData.append("tag", tag);
     formData.append("audio", audioBlob);
 

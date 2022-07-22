@@ -10,7 +10,7 @@ interface TextSubmitProps{
 
 export default function TextSubmit(props: TextSubmitProps){
 
-    const [text, setText] = useState("Ob das bei euch genauso geil ist i doubt it");
+    const [text, setText] = useState("");
 
     const sendTextToBackend = (event: FormEvent) => {
         event.preventDefault();
