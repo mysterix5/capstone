@@ -35,7 +35,7 @@ export default function AuthProvider({children}:{children :ReactNode}) {
     };
 
     const getToken = () => {
-        if(expired - (Math.floor(Date.now() / 1000))){
+        if((expired - (Math.floor(Date.now() / 1000)))<0){
             logout();
             return '';
         }

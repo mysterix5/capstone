@@ -1,9 +1,9 @@
 import axios, {AxiosResponse} from "axios";
 import {TextSend, TextResponse, UserDTO, LoginResponse, UserRegisterDTO} from "./model";
 
-function createHeaders(){
+function createHeaders(token: string){
     return {
-        headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`}
+        headers: {Authorization: `Bearer ${token}`}
     }
 }
 
@@ -18,19 +18,19 @@ export function sendLogin(user: UserDTO) {
 }
 
 
-export function apiSendTextToBackend(text: TextSend) {
+export function apiSendTextToBackend(token: string, text: TextSend) {
     return axios.post("/api/main",
         text,
-        createHeaders()
+        createHeaders(token)
         )
         .then((response: AxiosResponse<TextResponse>) => response.data);
 }
 
-export function apiGetAudio(ids: string[]) {
+export function apiGetAudio(token: string, ids: string[]) {
     return axios.post("/api/main/audio",
         ids,
         {
-            headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`},
+            headers: {Authorization: `Bearer ${token}`},
             responseType: 'arraybuffer'
         })
         .then((response) => response.data)
@@ -38,7 +38,7 @@ export function apiGetAudio(ids: string[]) {
 }
 
 
-export function apiSaveAudio(word: string, tag: string, accessibility: string, audioBlob: Blob) {
+export function apiSaveAudio(token: string, word: string, tag: string, accessibility: string, audioBlob: Blob) {
     const formData = new FormData();
 
     formData.append("word", word);
@@ -51,7 +51,7 @@ export function apiSaveAudio(word: string, tag: string, accessibility: string, a
         {
             headers: {
                 "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+                Authorization: `Bearer ${token}`
             }
         }
     )
