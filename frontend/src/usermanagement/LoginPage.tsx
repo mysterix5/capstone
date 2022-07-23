@@ -4,12 +4,10 @@ import {FormEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "./AuthProvider";
 import {sendLogin} from "../services/apiServices";
-import {VoverError} from "../services/model";
-import VoverErrorDisplay from "../globalTools/VoverErrorDisplay";
 
 export default function LoginPage() {
 
-    const {username, login} = useAuth();
+    const {username, login, setError} = useAuth();
 
     const nav = useNavigate();
 
@@ -23,7 +21,7 @@ export default function LoginPage() {
     const [inputUsername, setInputUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const [error, setError] = useState<VoverError>();
+    // const [error, setError] = useState<VoverError>();
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -87,9 +85,6 @@ export default function LoginPage() {
                     </Grid>
                 </Grid>
             </Box>
-            {error &&
-                <VoverErrorDisplay error={error}/>
-            }
         </>
     )
 }

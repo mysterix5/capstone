@@ -15,27 +15,34 @@ export default function Main() {
     const [audioFile, setAudioFile] = useState<any>();
     const [ids, setIds] = useState<string[]>([])
 
-    const {username, getToken} = useAuth();
+    const {username, getToken, setError} = useAuth();
     const nav = useNavigate();
 
-    useEffect(()=>{
-        if(!username){
+    useEffect(() => {
+        if (!username) {
             nav("/login")
         }
     }, [username, nav])
 
-    function checkSplitText(){
-        for(const word of splitText!.textWords){
-            if(!isAvailable(word.availability)){
+    function checkSplitText() {
+        for (const word of splitText!.textWords) {
+            if (!isAvailable(word.availability)) {
                 return false;
             }
         }
         return true;
     }
 
-    function getAudio(){
+    function getAudio() {
         apiGetAudio(getToken(), ids)
-            .then(setAudioFile);
+            .then(setAudioFile)
+            .catch((err) => {
+                if (err.response) {
+                    const enc = new TextDecoder('utf-8')
+                    const res = JSON.parse(enc.decode(new Uint8Array(err.response.data)))
+                    setError(res);
+                }
+            });
     }
 
 
