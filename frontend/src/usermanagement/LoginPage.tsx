@@ -9,25 +9,25 @@ import VoverErrorDisplay from "../globalTools/VoverErrorDisplay";
 
 export default function LoginPage() {
 
-    const {token, login} = useAuth();
+    const {username, login} = useAuth();
 
     const nav = useNavigate();
 
     useEffect(() => {
-            if (token) {
+            if (username) {
                 nav("/")
             }
         }
-        , [token, nav]);
+        , [username, nav]);
 
-    const [username, setUsername] = useState("");
+    const [inputUsername, setInputUsername] = useState("");
     const [password, setPassword] = useState("");
 
     const [error, setError] = useState<VoverError>();
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
-        sendLogin({username, password})
+        sendLogin({username: inputUsername, password})
             .then(r => login(r.token))
             .then(() => nav("/"))
             .catch((error) => {
@@ -56,7 +56,7 @@ export default function LoginPage() {
                                     </InputAdornment>
                                 ),
                             }}
-                            onChange={event => setUsername(event.target.value)}
+                            onChange={event => setInputUsername(event.target.value)}
                         />
                     </Grid>
                     <Grid item xs={12} sm={4} textAlign={"center"}>
