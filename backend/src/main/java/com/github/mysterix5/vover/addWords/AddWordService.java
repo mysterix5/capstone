@@ -17,16 +17,12 @@ public class AddWordService {
     private final WordsMongoRepository wordRepository;
     private final CloudRepository cloudRepository;
 
-    public void addWordToDb(String word, String creator, String tag, String accessibility, byte[] audio){
+    public void addWordToDb(String word, String creator, String tag, String accessibility, byte[] audio) throws IOException {
         String cloudId = UUID.randomUUID().toString();
         StringBuilder cloudFileName = new StringBuilder();
         cloudFileName.append(word).append("-").append(creator).append("-").append(tag).append("-").append(cloudId).append(".mp3");
-        wordRepository.save(new WordDbEntity(word, creator, tag, accessibility, cloudFileName.toString()));
-
-        try{
-            cloudRepository.save(cloudFileName.toString(), audio);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        WordDbEntity wordDbEntity = new WordDbEntity(word, creator, tag, accessibility, cloudFileName.toString());
+        cloudRepository.save(cloudFileName.toString(), audio);
+        wordRepository.save(wordDbEntity);
     }
 }
