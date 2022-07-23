@@ -29,8 +29,10 @@ export function apiSendTextToBackend(text: TextSend) {
 export function apiGetAudio(ids: string[]) {
     return axios.post("/api/main/audio",
         ids,
-        createHeaders()
-    )
+        {
+            headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`},
+            responseType: 'arraybuffer'
+        })
         .then((response) => response.data)
         .then(data => window.URL.createObjectURL(new Blob([data])));
 }
@@ -46,7 +48,12 @@ export function apiSaveAudio(word: string, tag: string, accessibility: string, a
 
     return axios.post("/api/addword",
         formData,
-        createHeaders()
-    );
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        }
+    )
 }
 

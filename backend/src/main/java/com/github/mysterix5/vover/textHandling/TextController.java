@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -20,11 +21,10 @@ public class TextController {
 
     private final TextService textService;
 
-    // TODO put mapping seems wrong
     @PostMapping
-    public ResponseEntity<TextResponseDTO> onSubmittedText(@RequestBody TextSubmitDTO textSubmitDTO){
-        log.info("Text in submit text: " + textSubmitDTO.getText());
-        return ResponseEntity.ok().body(textService.onSubmittedText(textSubmitDTO.getText()));
+    public ResponseEntity<TextResponseDTO> onSubmittedText(@RequestBody TextSubmitDTO textSubmitDTO, Principal principal){
+        log.info("Text submitted by user '{}': {}", principal.getName(), textSubmitDTO.getText());
+        return ResponseEntity.ok().body(textService.onSubmittedText(textSubmitDTO.getText(), principal.getName()));
     }
 
     @PostMapping("/audio")
