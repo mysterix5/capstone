@@ -2,6 +2,7 @@ import {Box, Button, Grid, TextField} from "@mui/material";
 import {FormEvent, useState} from "react";
 import {apiSendTextToBackend} from "../../services/apiServices";
 import {TextResponse} from "../../services/model";
+import {useAuth} from "../../usermanagement/AuthProvider";
 
 interface TextSubmitProps{
     setSplitText: (textResponse: TextResponse)=>void,
@@ -11,11 +12,12 @@ interface TextSubmitProps{
 export default function TextSubmit(props: TextSubmitProps){
 
     const [text, setText] = useState("");
+    const {getToken} = useAuth();
 
     const sendTextToBackend = (event: FormEvent) => {
         event.preventDefault();
         console.log("send text to backend");
-        apiSendTextToBackend({text})
+        apiSendTextToBackend(getToken(), {text})
             .then(r=>{
                 console.log(r);
                 props.setSplitText(r);

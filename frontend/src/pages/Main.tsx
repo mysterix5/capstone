@@ -15,7 +15,7 @@ export default function Main() {
     const [audioFile, setAudioFile] = useState<any>();
     const [ids, setIds] = useState<string[]>([])
 
-    const {username} = useAuth();
+    const {username, getToken} = useAuth();
     const nav = useNavigate();
 
     useEffect(()=>{
@@ -34,7 +34,7 @@ export default function Main() {
     }
 
     function getAudio(){
-        apiGetAudio(ids)
+        apiGetAudio(getToken(), ids)
             .then(setAudioFile);
     }
 
