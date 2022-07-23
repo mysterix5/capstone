@@ -33,7 +33,7 @@ class AddWordServiceTest {
             mb.when(UUID::randomUUID).thenReturn(myUuid);
 
 
-            addWordService.addWordToDb(word, creator, tag, null);
+            addWordService.addWordToDb(word, creator, tag, "PUBLIC", null);
 
             try {
                 Mockito.verify(mockedCloudRepo).save(wordDbEntity.getCloudFileName(), null);

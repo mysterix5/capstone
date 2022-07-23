@@ -64,6 +64,7 @@ public class TextService {
 
     private Map<String, List<WordDbResponseDTO>> createDbWordsMap(Set<String> textWords) {
         List<WordDbEntity> allDbEntriesForWords = wordsRepository.findByWordIn(textWords);
+//        List<WordDbEntity> allDbEntriesForWords = wordsRepository.findAllByWordAndAccessibility(textWords, Accessibility.PUBLIC);
 
         Map<String, List<WordDbResponseDTO>> dbWordsMap = new HashMap<>();
         for (WordDbEntity w : allDbEntriesForWords) {

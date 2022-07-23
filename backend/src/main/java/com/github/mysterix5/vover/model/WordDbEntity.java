@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Objects;
-
 @Data
 @Document(collection = "words")
 @NoArgsConstructor
@@ -21,13 +19,22 @@ public class WordDbEntity {
     private String creator;
     private String tag;
     private String cloudFileName;
-    private boolean forAll = true;
+    private Accessibility accessibility = Accessibility.PUBLIC;
 
     public WordDbEntity(String word, String creator, String tag, String cloudFileName){
         this.word = word.toLowerCase();
         this.creator = creator;
         this.tag = tag.toLowerCase();
         this.cloudFileName = cloudFileName;
+    }
+
+    public WordDbEntity(String word, String creator, String tag, String accessibility, String cloudFileName){
+        this.word = word.toLowerCase();
+        this.creator = creator;
+        this.tag = tag.toLowerCase();
+        this.cloudFileName = cloudFileName;
+
+        this.accessibility = Accessibility.valueOf(accessibility);
     }
 
 }

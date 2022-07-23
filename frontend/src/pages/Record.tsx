@@ -1,5 +1,5 @@
 import {Recorder} from "vmsg";
-import {Box, Button, Grid, TextField, Typography} from "@mui/material";
+import {Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
 import {FormEvent, useState} from "react";
 import {apiSaveAudio} from "../services/apiServices";
 
@@ -16,6 +16,7 @@ export default function Record() {
 
     const [word, setWord] = useState("");
     const [tag, setTag] = useState("normal");
+    const [accessibility, setAccessibility] = useState("PUBLIC");
 
     const record = async () => {
         setIsLoading(true);
@@ -44,13 +45,20 @@ export default function Record() {
         event.preventDefault();
         console.log("save audio");
 
-        apiSaveAudio(word, tag, audioBlob!)
+        apiSaveAudio(word, tag, accessibility, audioBlob!)
             .then(() => {
                 setAudioLink("");
                 setAudioBlob(undefined);
                 setWord("");
             });
     }
+
+    const handleAccessibility = (
+        event: React.MouseEvent<HTMLElement>,
+        newAccessibility: string,
+    ) => {
+        setAccessibility(newAccessibility);
+    };
 
     return (
         <>
@@ -64,7 +72,7 @@ export default function Record() {
                     </Button>
                 </Grid>
                 <Box mt={2}>
-                    { audioLink &&
+                    {audioLink &&
                         <audio src={audioLink} autoPlay={false} controls={true} title="vover.mp3"/>
                     }
                 </Box>
@@ -72,14 +80,16 @@ export default function Record() {
                     {
                         audioBlob &&
                         <Box component={"form"} onSubmit={saveAudio} sx={{mt: 7}}>
-                            <Grid item>
+                            <Grid item m={0.5}>
                                 <TextField
                                     label="Word"
                                     variant="outlined"
+                                    value={word}
+                                    placeholder={"your word"}
                                     onChange={event => setWord(event.target.value)}
                                 />
                             </Grid>
-                            <Grid item>
+                            <Grid item m={0.5}>
                                 <TextField
                                     label="Tag"
                                     variant="outlined"
@@ -88,8 +98,21 @@ export default function Record() {
                                     onChange={event => setTag(event.target.value)}
                                 />
                             </Grid>
-
-                            <Grid item>
+                            <Grid item m={0.5}>
+                                <ToggleButtonGroup
+                                    value={accessibility}
+                                    exclusive
+                                    onChange={handleAccessibility}
+                                >
+                                    <ToggleButton value={"PUBLIC"}>
+                                        public
+                                    </ToggleButton>
+                                    <ToggleButton value={"FRIENDS"}>
+                                        friends
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
+                            </Grid>
+                            <Grid item m={0.5}>
                                 <Button
                                     type="submit"
                                     variant="contained"
