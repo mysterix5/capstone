@@ -6,7 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 
 export default function Header() {
-    const {token, logout} = useAuth();
+    const {username, logout} = useAuth();
     const nav = useNavigate();
 
     return (
@@ -20,7 +20,7 @@ export default function Header() {
                     <Grid container>
                         <Grid item>
                             {
-                                token ?
+                                username ?
                                     <Button onClick={() => nav("/record")}>
                                         <MicIcon/>
                                     </Button>
@@ -42,7 +42,7 @@ export default function Header() {
                 <Grid item xs={4}>
                     <Grid container justifyContent={'end'} justifyItems={'end'} alignItems={'center'}>
                         <Grid item>
-                            {token ?
+                            {username ?
                                 <Grid container direction={'row'} alignItems={'center'} justifyItems={'end'}
                                       wrap={'nowrap'}>
                                     <Grid item mr={1}>

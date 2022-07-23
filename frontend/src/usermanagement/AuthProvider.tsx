@@ -7,6 +7,7 @@ export default function AuthProvider({children}:{children :ReactNode}) {
     const [token, setToken] = useState(localStorage.getItem('jwt') ?? '');
     const [roles, setRoles] = useState<string[]>([]);
     const [username, setUsername] = useState('');
+    const [expired, setExpired] = useState<number>(0);
 
     useEffect(() => {
         if (token) {
@@ -14,6 +15,7 @@ export default function AuthProvider({children}:{children :ReactNode}) {
             const decodeJWT = JSON.parse(decoded);
             setUsername(decodeJWT.sub);
             setRoles(decodeJWT.roles)
+            setExpired(decodeJWT.exp)
         }
     }, [token, nav]);
 
@@ -23,6 +25,7 @@ export default function AuthProvider({children}:{children :ReactNode}) {
         setToken('');
         setRoles([]);
         setUsername('');
+        setExpired(0);
         nav("/");
     };
 
@@ -31,7 +34,15 @@ export default function AuthProvider({children}:{children :ReactNode}) {
         setToken(gotToken);
     };
 
-    return <AuthContext.Provider value={{token, roles, username, logout, login}} >{children}</AuthContext.Provider>;
+    const getToken = () => {
+        if(expired - (Math.floor(Date.now() / 1000))){
+            logout();
+            return '';
+        }
+        return token;
+    }
+
+    return <AuthContext.Provider value={{roles, username, getToken, logout, login}} >{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);
