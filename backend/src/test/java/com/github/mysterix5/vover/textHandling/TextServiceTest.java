@@ -21,8 +21,8 @@ class TextServiceTest {
 
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
 
-        WordDbEntity wordDbEntity1 = WordDbEntity.builder().id("id1").word("bester").creator("creator1").tag("tag1").cloudFileName("bester.mp3").build();
-        WordDbEntity wordDbEntity2 = WordDbEntity.builder().id("id2").word("test").creator("creator2").tag("tag2").cloudFileName("test.mp3").build();
+        WordDbEntity wordDbEntity1 = WordDbEntity.builder().id("id1").word("bester").creator("creator1").tag("tag1").cloudFileName("bester.mp3").accessibility(Accessibility.PUBLIC).build();
+        WordDbEntity wordDbEntity2 = WordDbEntity.builder().id("id2").word("test").creator("creator2").tag("tag2").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("bester", "test"))))
                 .thenReturn(List.of(
                         wordDbEntity1,
@@ -31,7 +31,7 @@ class TextServiceTest {
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
 
-        TextResponseDTO response = textService.onSubmittedText(testString);
+        TextResponseDTO response = textService.onSubmittedText(testString, "user");
 
         TextResponseDTO expected = new TextResponseDTO(
                 List.of(new WordResponseDTO("bester", Availability.PUBLIC), new WordResponseDTO("test", Availability.PUBLIC)),
@@ -45,7 +45,7 @@ class TextServiceTest {
     void testOnSubmittedTextWithInvalidAndAbsent() {
         String testString = "beste/r test ever% wirklich";
 
-        WordDbEntity wordDbEntity1 = WordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").build();
+        WordDbEntity wordDbEntity1 = WordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
         when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("test", "wirklich"))))
                 .thenReturn(List.of(
@@ -54,7 +54,7 @@ class TextServiceTest {
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         TextService textService = new TextService(mockedWordRepo, mockedCloudService);
 
-        var response = textService.onSubmittedText(testString);
+        var response = textService.onSubmittedText(testString, "user");
 
         var expected = new TextResponseDTO(
                 List.of(
@@ -72,8 +72,8 @@ class TextServiceTest {
 
     @Test
     void loadWavFromCloudAndMerge() throws IOException {
-        WordDbEntity wordDbEntity1 = WordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").build();
-        WordDbEntity wordDbEntity2 = WordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").build();
+        WordDbEntity wordDbEntity1 = WordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
+        WordDbEntity wordDbEntity2 = WordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").accessibility(Accessibility.PUBLIC).build();
 
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
         when(mockedWordRepo.findAllById(List.of("id1", "id2"))).thenReturn(List.of(wordDbEntity1, wordDbEntity2));
