@@ -1,8 +1,8 @@
 package com.github.mysterix5.vover.usermanagement;
 
-import com.github.mysterix5.vover.model.MultipleSubErrorException;
-import com.github.mysterix5.vover.model.UserRegisterDTO;
-import com.github.mysterix5.vover.model.VoverUser;
+import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
+import com.github.mysterix5.vover.model.security.UserRegisterDTO;
+import com.github.mysterix5.vover.model.security.VoverUserEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class UserServiceTest {
         // when
         userService.createUser(userCreationDTO);
 
-        VoverUser expectedUser = new VoverUser();
+        VoverUserEntity expectedUser = new VoverUserEntity();
         expectedUser.setUsername(username);
         expectedUser.setPassword("hashedPassword");
         expectedUser.addRole("user");

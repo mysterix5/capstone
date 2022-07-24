@@ -1,8 +1,8 @@
 package com.github.mysterix5.vover.usermanagement;
 
-import com.github.mysterix5.vover.model.MultipleSubErrorException;
-import com.github.mysterix5.vover.model.UserRegisterDTO;
-import com.github.mysterix5.vover.model.VoverUser;
+import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
+import com.github.mysterix5.vover.model.security.UserRegisterDTO;
+import com.github.mysterix5.vover.model.security.VoverUserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.PasswordData;
@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
             throw new MultipleSubErrorException("Passwords have to match");
         }
 
-        VoverUser user = new VoverUser();
+        VoverUserEntity user = new VoverUserEntity();
         user.setUsername(userCreationDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userCreationDTO.getPassword()));
         user.setRoles(List.of("user"));
@@ -56,7 +56,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username + " not found"));
     }
 
-    public Optional<VoverUser> findByUsername(String username) {
+    public Optional<VoverUserEntity> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 

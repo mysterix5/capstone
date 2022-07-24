@@ -46,7 +46,7 @@ export function apiSaveAudio(token: string, word: string, tag: string, accessibi
     formData.append("accessibility", accessibility);
     formData.append("audio", audioBlob);
 
-    return axios.post("/api/addword",
+    return axios.post("/api/word",
         formData,
         {
             headers: {
