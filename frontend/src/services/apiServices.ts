@@ -1,7 +1,7 @@
 import axios, {AxiosResponse} from "axios";
-import {TextSend, TextResponse, UserDTO, LoginResponse, UserRegisterDTO} from "./model";
+import {TextSend, TextResponse, UserDTO, LoginResponse, UserRegisterDTO, RecordPage} from "./model";
 
-function createHeaders(token: string){
+function createHeaders(token: string) {
     return {
         headers: {Authorization: `Bearer ${token}`}
     }
@@ -21,7 +21,7 @@ export function apiSendTextToBackend(token: string, text: TextSend) {
     return axios.post("/api/main",
         text,
         createHeaders(token)
-        )
+    )
         .then((response: AxiosResponse<TextResponse>) => response.data);
 }
 
@@ -56,9 +56,9 @@ export function apiSaveAudio(token: string, word: string, tag: string, accessibi
     )
 }
 
-export function apiGetRecordPage(page: number, size: number, searchTerm: string) {
-    return axios.get("/api/word",
-    {page, size, searchTerm},
-
-)
+export function apiGetRecordPage(token: string, page: number, size: number, searchTerm: string) {
+    return axios.get(`/api/word/${page}/${size}?searchTerm=${searchTerm}`,
+        createHeaders(token)
+    )
+        .then((response: AxiosResponse<RecordPage>) => response.data);
 }

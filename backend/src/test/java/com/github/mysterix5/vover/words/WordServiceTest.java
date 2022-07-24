@@ -4,7 +4,6 @@ import com.github.mysterix5.vover.cloudStorage.CloudRepository;
 import com.github.mysterix5.vover.model.other.Accessibility;
 import com.github.mysterix5.vover.model.word.RecordManagementDTO;
 import com.github.mysterix5.vover.model.word.RecordPage;
-import com.github.mysterix5.vover.model.word.RecordPageSubmitDTO;
 import com.github.mysterix5.vover.model.word.WordDbEntity;
 import com.github.mysterix5.vover.main.WordsMongoRepository;
 import org.junit.jupiter.api.Test;
@@ -65,7 +64,6 @@ class WordServiceTest {
         int page = 0;
         int size = 2;
         String searchTerm = "";
-        RecordPageSubmitDTO recordPageSubmitDTO = new RecordPageSubmitDTO(page, size, searchTerm);
         Pageable paging = PageRequest.of(page, size);
 
         String username = "1";

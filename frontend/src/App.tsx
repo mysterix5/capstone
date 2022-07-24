@@ -9,6 +9,7 @@ import RegisterPage from "./usermanagement/RegisterPage";
 import LoginPage from "./usermanagement/LoginPage";
 import AuthProvider from "./usermanagement/AuthProvider";
 import GlobalVoverErrorDisplay from "./globalTools/GlobalVoverErrorDisplay";
+import UserPage from "./pages/UserPage";
 
 const darkTheme = createTheme({
     palette: {
@@ -33,6 +34,7 @@ export default function App() {
                         <Route path="/record" element={<Record/>}/>
                         <Route path="/login" element={<LoginPage/>}/>
                         <Route path="/register" element={<RegisterPage/>}/>
+                        <Route path="/userpage" element={<UserPage/>}/>
                     </Routes>
                     <GlobalVoverErrorDisplay/>
                 </AuthProvider>

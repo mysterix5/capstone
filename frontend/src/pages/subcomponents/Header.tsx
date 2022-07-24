@@ -49,7 +49,7 @@ export default function Header() {
                                         <LogoutIcon onClick={logout} color={'primary'}/>
                                     </Grid>
                                     <Grid item ml={0} mr={1}>
-                                        <PersonIcon color={"primary"}/>
+                                        <PersonIcon color={"primary"} onClick={()=>nav("/userpage")}/>
                                         {/*<Chip label={username} sx={{maxWidth: 100}}/>*/}
                                     </Grid>
                                 </Grid>

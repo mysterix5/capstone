@@ -2,7 +2,6 @@ package com.github.mysterix5.vover.words;
 
 import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import com.github.mysterix5.vover.model.word.RecordPage;
-import com.github.mysterix5.vover.model.word.RecordPageSubmitDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -36,10 +35,10 @@ public class WordController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
-    public ResponseEntity<Object> getRecordPage(@RequestBody RecordPageSubmitDTO recordPageSubmitDTO, Principal principal){
+    @GetMapping("/{page}/{size}")
+    public ResponseEntity<Object> getRecordPage(@PathVariable int page, @PathVariable int size, @RequestParam String searchTerm, Principal principal){
         try{
-            RecordPage RecordPage = wordService.getRecordPage(principal.getName(), recordPageSubmitDTO.getPage(), recordPageSubmitDTO.getSize(), recordPageSubmitDTO.getSearchTerm());
+            RecordPage RecordPage = wordService.getRecordPage(principal.getName(), page, size, searchTerm);
             return ResponseEntity.ok().body(RecordPage);
         }catch (Exception e){
             return ResponseEntity.internalServerError().body(new VoverErrorDTO("Something went wrong fetching your records"));
