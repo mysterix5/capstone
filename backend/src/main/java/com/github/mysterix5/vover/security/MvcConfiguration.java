@@ -1,4 +1,4 @@
-package com.github.mysterix5.vover.config;
+package com.github.mysterix5.vover.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
