@@ -47,24 +47,24 @@ export default function AuthProvider({children}:{children :ReactNode}) {
     }
 
     useEffect(() => {
-        console.log(errorTimer + " " + errorTimerGoal);
         if(errorTimer>=errorTimerGoal){
-            setErrorState(()=>({message: "", subMessages: []}));
-            setErrorTimer(()=>-1);
-            setErrorTimerGoal(()=>-2);
+            setErrorState(({message: "", subMessages: []}));
+            setErrorTimer(-1);
+            setErrorTimerGoal(-2);
         }
         if(errorTimer<errorTimerGoal){
             setTimeout(()=>setErrorTimer((e)=>e+1), 1000);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorTimer])
 
     const setError = (err: VoverError) => {
-        setErrorState(()=>err);
+        setErrorState(err);
         if(errorTimer<0){
-            setErrorTimerGoal(()=>7);
-            setErrorTimer(()=>0);
+            setErrorTimerGoal(7);
+            setErrorTimer(0);
         }else{
-            setErrorTimerGoal(()=>errorTimer + 7);
+            setErrorTimerGoal(errorTimer + 7);
         }
     }
 

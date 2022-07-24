@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.sound.sampled.AudioInputStream;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
