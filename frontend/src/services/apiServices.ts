@@ -17,7 +17,6 @@ export function sendLogin(user: UserDTO) {
         .then((response: AxiosResponse<LoginResponse>) => response.data)
 }
 
-
 export function apiSendTextToBackend(token: string, text: TextSend) {
     return axios.post("/api/main",
         text,
@@ -57,3 +56,9 @@ export function apiSaveAudio(token: string, word: string, tag: string, accessibi
     )
 }
 
+export function apiGetRecordPage(page: number, size: number, searchTerm: string) {
+    return axios.get("/api/word",
+    {page, size, searchTerm},
+
+)
+}
