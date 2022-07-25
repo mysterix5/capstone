@@ -59,7 +59,8 @@ export interface RecordPage {
     noPages: number,
     size: number,
     searchTerm: string,
-    records: RecordInfo[]
+    records: RecordInfo[],
+    accessibilityChoices: string[]
 }
 
 export interface RecordInfo {

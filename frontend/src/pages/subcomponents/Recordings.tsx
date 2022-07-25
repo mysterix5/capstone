@@ -30,7 +30,7 @@ export default function Recordings(){
         <Grid container>
             {
                 recordPage?.records.map(r=>
-                    <RecordDetails key={r.id} record={r}/>
+                    <RecordDetails key={r.id} record={r} accessibilityChoices={recordPage?.accessibilityChoices}/>
                 )
             }
         </Grid>

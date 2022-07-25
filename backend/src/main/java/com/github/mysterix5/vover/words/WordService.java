@@ -1,6 +1,7 @@
 package com.github.mysterix5.vover.words;
 
 import com.github.mysterix5.vover.cloudStorage.CloudRepository;
+import com.github.mysterix5.vover.model.other.Accessibility;
 import com.github.mysterix5.vover.model.word.RecordManagementDTO;
 import com.github.mysterix5.vover.model.word.RecordPage;
 import com.github.mysterix5.vover.model.word.WordDbEntity;
@@ -42,6 +43,7 @@ public class WordService {
                 .size(resultPage.getSize())
                 .searchTerm(searchTerm)
                 .records(resultPage.getContent().stream().map(RecordManagementDTO::new).toList())
+                .accessibilityChoices(Accessibility.values())
                 .build();
     }
 }

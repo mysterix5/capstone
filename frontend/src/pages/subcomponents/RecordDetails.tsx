@@ -5,14 +5,15 @@ import {
     CardContent,
     Grid,
     Switch,
-    TextField,
+    TextField, ToggleButton, ToggleButtonGroup,
     Typography
 } from "@mui/material";
 import {RecordInfo} from "../../services/model";
 import {ChangeEvent, useState} from "react";
 
 interface RecordDetailsProps {
-    record: RecordInfo
+    record: RecordInfo,
+    accessibilityChoices: string[]
 }
 
 export default function RecordDetails(props: RecordDetailsProps) {
@@ -24,6 +25,13 @@ export default function RecordDetails(props: RecordDetailsProps) {
 
     const handleEditSwitch = (event: ChangeEvent<HTMLInputElement>) => {
         setEdit(event.target.checked);
+    };
+
+    const handleAccessibility = (
+        event: React.MouseEvent<HTMLElement>,
+        newAccessibility: string,
+    ) => {
+        setAccessibility(newAccessibility);
     };
 
     return (
@@ -38,6 +46,25 @@ export default function RecordDetails(props: RecordDetailsProps) {
                                                         onChange={event => setTag(event.target.value)}/></Typography>
                             <Typography>access: <TextField size={"small"} value={accessibility}
                                                            onChange={event => setAccessibility(event.target.value)}/></Typography>
+                            <ToggleButtonGroup
+                                value={accessibility}
+                                exclusive
+                                onChange={handleAccessibility}
+                            >
+                                {
+                                    props.accessibilityChoices.map(acc =>
+                                        <ToggleButton key={acc} value={acc}>
+                                            {acc}
+                                        </ToggleButton>
+                                    )
+                                }
+                                <ToggleButton value={"PUBLIC"}>
+                                    public
+                                </ToggleButton>
+                                <ToggleButton value={"FRIENDS"}>
+                                    friends
+                                </ToggleButton>
+                            </ToggleButtonGroup>
                         </>
                         :
                         <>
