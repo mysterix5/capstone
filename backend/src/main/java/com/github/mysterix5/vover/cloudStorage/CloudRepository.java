@@ -19,16 +19,20 @@ public class CloudRepository {
         this.baseUrl = baseUrl;
     }
 
-    public byte[] find(String filePath) throws IOException {
-        String url = baseUrl + filePath;
+    public byte[] find(String cloudFileName) throws IOException {
+        String url = baseUrl + cloudFileName;
         InputStream is = sardine.get(url);
 
         return is.readAllBytes();
     }
 
-    public void save(String filePath, byte[] byteArray) throws IOException {
-        String url = baseUrl + filePath;
+    public void save(String cloudFileName, byte[] byteArray) throws IOException {
+        String url = baseUrl + cloudFileName;
         sardine.put(url, byteArray);
     }
 
+    public void delete(String cloudFileName) throws IOException {
+        String url = baseUrl + cloudFileName;
+        sardine.delete(url);
+    }
 }

@@ -25,9 +25,19 @@ export function apiSendTextToBackend(token: string, text: TextSend) {
         .then((response: AxiosResponse<TextResponse>) => response.data);
 }
 
-export function apiGetAudio(token: string, ids: string[]) {
+export function apiGetMergedAudio(token: string, ids: string[]) {
     return axios.post("/api/main/audio",
         ids,
+        {
+            headers: {Authorization: `Bearer ${token}`},
+            responseType: 'arraybuffer'
+        })
+        .then((response) => response.data)
+        .then(data => window.URL.createObjectURL(new Blob([data])));
+}
+
+export function apiGetSingleRecordedAudio(token: string, id: string) {
+    return axios.get(`/api/word/audio/${id}`,
         {
             headers: {Authorization: `Bearer ${token}`},
             responseType: 'arraybuffer'
@@ -58,6 +68,13 @@ export function apiSaveAudio(token: string, word: string, tag: string, accessibi
 
 export function apiGetRecordPage(token: string, page: number, size: number, searchTerm: string) {
     return axios.get(`/api/word/${page}/${size}?searchTerm=${searchTerm}`,
+        createHeaders(token)
+    )
+        .then((response: AxiosResponse<RecordPage>) => response.data);
+}
+
+export function apiDeleteRecord(token: string, id: string) {
+    return axios.delete(`/api/word/${id}`,
         createHeaders(token)
     )
         .then((response: AxiosResponse<RecordPage>) => response.data);

@@ -9,11 +9,14 @@ import {
     Typography
 } from "@mui/material";
 import {RecordInfo} from "../../services/model";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, MouseEvent, useState} from "react";
+import {useAuth} from "../../usermanagement/AuthProvider";
+import {apiDeleteRecord, apiGetSingleRecordedAudio} from "../../services/apiServices";
 
 interface RecordDetailsProps {
     record: RecordInfo,
-    accessibilityChoices: string[]
+    accessibilityChoices: string[],
+    getRecordPage: ()=>void
 }
 
 export default function RecordDetails(props: RecordDetailsProps) {
@@ -23,49 +26,79 @@ export default function RecordDetails(props: RecordDetailsProps) {
     const [tag, setTag] = useState(props.record.tag);
     const [accessibility, setAccessibility] = useState(props.record.accessibility);
 
+    const [audioFile, setAudioFile] = useState<any>();
+
+    const {getToken, setError} = useAuth();
+
     const handleEditSwitch = (event: ChangeEvent<HTMLInputElement>) => {
         setEdit(event.target.checked);
     };
 
     const handleAccessibility = (
-        event: React.MouseEvent<HTMLElement>,
+        event: MouseEvent<HTMLElement>,
         newAccessibility: string,
     ) => {
         setAccessibility(newAccessibility);
     };
+
+    function saveWord() {
+
+    }
+
+    function getAudio() {
+        apiGetSingleRecordedAudio(getToken(), props.record.id)
+            .then(setAudioFile)
+            .then(props.getRecordPage)
+            .catch((err) => {
+                    if (err.response) {
+                        const enc = new TextDecoder('utf-8')
+                        const res = JSON.parse(enc.decode(new Uint8Array(err.response.data)))
+                        setError(res);
+                    }
+                }
+            );
+    }
+
+    function deleteRecord(){
+        apiDeleteRecord(getToken(), props.record.id);//TODO refresh
+    }
 
     return (
         <Grid item>
             <Card sx={{m: 1, boxShadow: 4}}>
                 <CardContent>
                     {edit ?
-                        <>
-                            <Typography display={'inline'}>word: <TextField size={"small"} value={word}
-                                                                            onChange={event => setWord(event.target.value)}/></Typography>
-                            <Typography>tag: <TextField size={"small"} value={tag}
-                                                        onChange={event => setTag(event.target.value)}/></Typography>
-                            <Typography>access: <TextField size={"small"} value={accessibility}
-                                                           onChange={event => setAccessibility(event.target.value)}/></Typography>
-                            <ToggleButtonGroup
-                                value={accessibility}
-                                exclusive
-                                onChange={handleAccessibility}
-                            >
-                                {
-                                    props.accessibilityChoices.map(acc =>
-                                        <ToggleButton key={acc} value={acc}>
-                                            {acc}
-                                        </ToggleButton>
-                                    )
-                                }
-                                <ToggleButton value={"PUBLIC"}>
-                                    public
-                                </ToggleButton>
-                                <ToggleButton value={"FRIENDS"}>
-                                    friends
-                                </ToggleButton>
-                            </ToggleButtonGroup>
-                        </>
+                        <Grid container direction={"column"}>
+                            <Grid item>
+                                <TextField size={"small"} value={word}
+                                           onChange={event => setWord(event.target.value)}/>
+                            </Grid>
+                            <Grid item>
+                                <TextField size={"small"} value={tag}
+                                           onChange={event => setTag(event.target.value)}/>
+                            </Grid>
+                            <Grid item>
+                                <ToggleButtonGroup
+                                    size={"small"}
+                                    value={accessibility}
+                                    exclusive
+                                    onChange={handleAccessibility}
+                                >
+                                    {
+                                        props.accessibilityChoices.map(acc =>
+                                            <ToggleButton key={acc} value={acc} size={"small"}>
+                                                {acc}
+                                            </ToggleButton>
+                                        )
+                                    }
+                                </ToggleButtonGroup>
+                            </Grid>
+                            <Grid item>
+                                <Button onClick={saveWord}>
+                                    save
+                                </Button>
+                            </Grid>
+                        </Grid>
                         :
                         <>
                             <Typography display={'inline'}>word: {props.record.word}</Typography>
@@ -76,13 +109,24 @@ export default function RecordDetails(props: RecordDetailsProps) {
                     }
                 </CardContent>
                 <CardActions sx={{flexDirection: "column"}}>
-                    <Button>get audio</Button>
-                    <Button>delete</Button>
-                    <Switch
-                        checked={edit}
-                        onChange={handleEditSwitch}
-                        inputProps={{'aria-label': 'controlled'}}
-                    />
+                    <Grid container direction={"column"}>
+                        <Grid item>
+                            <Switch
+                                checked={edit}
+                                onChange={handleEditSwitch}
+                                inputProps={{'aria-label': 'controlled'}}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <Button onClick={getAudio}>get audio</Button>
+                        </Grid>
+                        {audioFile &&
+                            <audio src={audioFile} autoPlay={true} controls={true} title="vover.mp3"/>
+                        }
+                        <Grid item>
+                            <Button onClick={deleteRecord}>delete</Button>
+                        </Grid>
+                    </Grid>
                 </CardActions>
             </Card>
         </Grid>

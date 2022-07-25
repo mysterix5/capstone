@@ -2,6 +2,7 @@ package com.github.mysterix5.vover.words;
 
 import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import com.github.mysterix5.vover.model.word.RecordPage;
+import com.github.mysterix5.vover.model.word.WordDbEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -9,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.sound.sampled.AudioInputStream;
 import java.security.Principal;
 
 @Slf4j
@@ -33,6 +36,28 @@ public class WordController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/audio/{id}")
+    public ResponseEntity<Object> getSingleAudio(@PathVariable String id, HttpServletResponse httpResponse, Principal principal){
+        try {
+            AudioInputStream audio = wordService.getAudio(id, principal.getName());
+            httpResponse.setContentType("audio/mp3");
+            httpResponse.getOutputStream().write(audio.readAllBytes());
+            return ResponseEntity.ok().build();
+        } catch(Exception e){
+            return ResponseEntity.internalServerError().body(new VoverErrorDTO(e));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> getSingleAudio(@PathVariable String id, Principal principal){
+        try {
+            wordService.deleteRecord(id, principal.getName());
+            return ResponseEntity.ok().build();
+        } catch(Exception e){
+            return ResponseEntity.internalServerError().body(new VoverErrorDTO(e));
+        }
     }
 
     @GetMapping("/{page}/{size}")

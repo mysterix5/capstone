@@ -15,7 +15,7 @@ public class CloudService {
     private final CloudRepository cloudRepository;
 
     public AudioInputStream loadMultipleAudioFromCloudAndMerge(List<String> cloudFilePaths) throws IOException {
-        List<AudioInputStream> audioInputStreams = cloudFilePaths.parallelStream().map((path)->{
+        List<AudioInputStream> audioInputStreams = cloudFilePaths.parallelStream().map((path) -> {
             try {
                 return cloudRepository.find(path);
             } catch (IOException e) {
@@ -55,4 +55,27 @@ public class CloudService {
                 byteArrayOutputStream.size());
     }
 
+    public void save(String filePath, byte[] byteArray) throws IOException {
+        cloudRepository.save(filePath, byteArray);
+    }
+
+    public AudioInputStream find(String filePath) throws IOException {
+            byte[] audioBytes = cloudRepository.find(filePath);
+            return convertAudioBytesToAudioInputStream(audioBytes);
+    }
+
+    private AudioInputStream convertAudioBytesToAudioInputStream(byte[] audioBytes) {
+
+        try {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioBytes);
+            AudioFileFormat baseFormat = AudioSystem.getAudioFileFormat(byteArrayInputStream);
+            return new AudioInputStream(byteArrayInputStream, baseFormat.getFormat(), baseFormat.getFrameLength());
+        } catch (UnsupportedAudioFileException | IOException e) {
+            throw new RuntimeException("Something went wrong while processing the audio file");
+        }
+    }
+
+    public void delete(String cloudFileName) throws IOException {
+        cloudRepository.delete(cloudFileName);
+    }
 }
