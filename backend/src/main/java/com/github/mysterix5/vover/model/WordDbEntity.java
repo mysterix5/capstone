@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Objects;
-
 @Data
 @Document(collection = "words")
 @NoArgsConstructor
@@ -21,6 +19,7 @@ public class WordDbEntity {
     private String creator;
     private String tag;
     private String cloudFileName;
+    private Accessibility accessibility = Accessibility.PUBLIC;
 
     public WordDbEntity(String word, String creator, String tag, String cloudFileName){
         this.word = word.toLowerCase();
@@ -29,17 +28,13 @@ public class WordDbEntity {
         this.cloudFileName = cloudFileName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        WordDbEntity that = (WordDbEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(word, that.word) && Objects.equals(tag, that.tag) && Objects.equals(cloudFileName, that.cloudFileName) && Objects.equals(creator, that.creator);
-    }
+    public WordDbEntity(String word, String creator, String tag, String accessibility, String cloudFileName){
+        this.word = word.toLowerCase();
+        this.creator = creator;
+        this.tag = tag.toLowerCase();
+        this.cloudFileName = cloudFileName;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, word, tag, cloudFileName, creator);
+        this.accessibility = Accessibility.valueOf(accessibility);
     }
 
 }

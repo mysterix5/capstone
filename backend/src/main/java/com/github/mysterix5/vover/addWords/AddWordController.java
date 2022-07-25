@@ -20,11 +20,12 @@ public class AddWordController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> addWord(@RequestParam("word") String word,
                                         @RequestParam("tag") String tag,
+                                        @RequestParam("accessibility") String accessibility,
                                         @RequestParam("audio") MultipartFile audio,
                                         Principal principal
     ) throws IOException {
         var audioBytes = audio.getBytes();
-        wordService.addWordToDb(word.toLowerCase(), principal.getName(), tag.toLowerCase(), audioBytes);
+        wordService.addWordToDb(word.toLowerCase(), principal.getName(), tag.toLowerCase(), accessibility, audioBytes);
 
         return ResponseEntity.ok().build();
     }
