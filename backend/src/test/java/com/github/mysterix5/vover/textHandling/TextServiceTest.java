@@ -61,7 +61,7 @@ class TextServiceTest {
                         new WordResponseDTO("beste/r", Availability.INVALID),
                         new WordResponseDTO("test", Availability.PUBLIC),
                         new WordResponseDTO("ever%", Availability.INVALID),
-                        new WordResponseDTO("wirklich", Availability.ABSENT)
+                        new WordResponseDTO("wirklich", Availability.NOT_AVAILABLE)
                 ),
                 Map.of(
                         "test", List.of(new WordDbResponseDTO(wordDbEntity1))
