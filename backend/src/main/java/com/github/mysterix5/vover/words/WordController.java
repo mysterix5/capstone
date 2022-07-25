@@ -1,6 +1,7 @@
 package com.github.mysterix5.vover.words;
 
 import com.github.mysterix5.vover.model.other.VoverErrorDTO;
+import com.github.mysterix5.vover.model.word.RecordManagementDTO;
 import com.github.mysterix5.vover.model.word.RecordPage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,16 @@ public class WordController {
     public ResponseEntity<Object> getSingleAudio(@PathVariable String id, Principal principal){
         try {
             wordService.deleteRecord(id, principal.getName());
+            return ResponseEntity.ok().build();
+        } catch(Exception e){
+            return ResponseEntity.internalServerError().body(new VoverErrorDTO(e));
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<Object> changeRecordMetadata(@RequestBody RecordManagementDTO recordManagementDTO, Principal principal){
+        try {
+            wordService.changeRecordMetadata(recordManagementDTO, principal.getName());
             return ResponseEntity.ok().build();
         } catch(Exception e){
             return ResponseEntity.internalServerError().body(new VoverErrorDTO(e));

@@ -1,5 +1,5 @@
 import axios, {AxiosResponse} from "axios";
-import {TextSend, TextResponse, UserDTO, LoginResponse, UserRegisterDTO, RecordPage} from "./model";
+import {TextSend, TextResponse, UserDTO, LoginResponse, UserRegisterDTO, RecordPage, RecordInfo} from "./model";
 
 function createHeaders(token: string) {
     return {
@@ -75,6 +75,12 @@ export function apiGetRecordPage(token: string, page: number, size: number, sear
 
 export function apiDeleteRecord(token: string, id: string) {
     return axios.delete(`/api/word/${id}`,
+        createHeaders(token)
+    );
+}
+export function apiChangeRecord(token: string, recordInfo: RecordInfo) {
+    return axios.put(`/api/word`,
+        recordInfo,
         createHeaders(token)
     );
 }

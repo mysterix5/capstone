@@ -30,7 +30,7 @@ export default function TextCheck(props: TextCheckProps) {
         } else if (word.availability === "INVALID") {
             myColor = "#881111";
             // myTextDecoration = "line-through";
-        } else if (word.availability === "ABSENT") {
+        } else if (word.availability === "NOT_AVAILABLE") {
             myColor = "#b43535";
         }
 

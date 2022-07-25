@@ -1,8 +1,10 @@
 package com.github.mysterix5.vover.model.word;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class WordDbResponseDTO {
     private String id;
     private String word;

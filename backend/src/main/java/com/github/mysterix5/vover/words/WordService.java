@@ -25,14 +25,23 @@ public class WordService {
     private final CloudService cloudService;
 
     public void addWordToDb(String word, String creator, String tag, String accessibility, byte[] audio) throws IOException {
-        String cloudId = UUID.randomUUID().toString();
-        StringBuilder cloudFileName = new StringBuilder();
-        cloudFileName.append(word).append("-").append(creator).append("-").append(tag).append("-").append(cloudId).append(".mp3");
-        WordDbEntity wordDbEntity = new WordDbEntity(word, creator, tag, accessibility, cloudFileName.toString());
-        cloudService.save(cloudFileName.toString(), audio);
+        String cloudFileName = createCloudFileName(word, creator, tag);
+        WordDbEntity wordDbEntity = new WordDbEntity(word, creator, tag, accessibility, cloudFileName);
+        cloudService.save(cloudFileName, audio);
         wordRepository.save(wordDbEntity);
     }
 
+    private String createCloudFileName(String word, String creator, String tag) {
+        String cloudId = UUID.randomUUID().toString();
+        StringBuilder cloudFileName = new StringBuilder();
+        cloudFileName
+                .append(word).append("-")
+                .append(creator).append("-")
+                .append(tag).append("-")
+                .append(cloudId)
+                .append(".mp3");
+        return cloudFileName.toString();
+    }
 
     public RecordPage getRecordPage(String username, int page, int size, String searchTerm) {
         Pageable paging = PageRequest.of(page, size);
@@ -50,7 +59,7 @@ public class WordService {
 
     public AudioInputStream getAudio(String id, String username) {
         WordDbEntity word = wordRepository.findById(id).orElseThrow();
-        if(!word.getCreator().equals(username)){
+        if (!word.getCreator().equals(username)) {
             throw new RuntimeException("The audio file you requested is not yours. Don't try to hack me! :(");
         }
         try {
@@ -62,14 +71,42 @@ public class WordService {
 
     public void deleteRecord(String id, String username) {
         WordDbEntity word = wordRepository.findById(id).orElseThrow();
-        if(!word.getCreator().equals(username)){
+        if (!word.getCreator().equals(username)) {
             throw new RuntimeException("The audio file you requested is not yours. Don't try to hack me! :(");
         }
         try {
             cloudService.delete(word.getCloudFileName());
-        }catch(IOException e){
+        } catch (IOException e) {
             throw new RuntimeException("Deleting your audio file failed, did nothing");
         }
         wordRepository.delete(word);
+    }
+
+    public void changeRecordMetadata(RecordManagementDTO recordManagementDTO, String username) {
+        WordDbEntity word = wordRepository.findById(recordManagementDTO.getId()).orElseThrow();
+        if (!word.getCreator().equals(username)) {
+            throw new RuntimeException("The audio file you requested is not yours. Don't try to hack me! :(");
+        }
+        if (word.getWord().equals(recordManagementDTO.getWord())
+                && word.getTag().equals(recordManagementDTO.getTag())
+                && word.getAccessibility().equals(recordManagementDTO.getAccessibility())
+        ) {
+            throw new RuntimeException("Nothing was changed");
+        }
+        word.setWord(recordManagementDTO.getWord());
+        word.setTag(recordManagementDTO.getTag());
+        word.setAccessibility(recordManagementDTO.getAccessibility());
+
+        String oldCloudName = word.getCloudFileName();
+        String newCloudName = createCloudFileName(word.getWord(), word.getCreator(), word.getTag());
+
+        try {
+            if(!oldCloudName.equals(newCloudName)){
+                cloudService.move(oldCloudName, newCloudName);
+            }
+            wordRepository.save(word);
+        }catch (Exception e){
+            throw new RuntimeException("Something went wrong changing your record metadata");
+        }
     }
 }

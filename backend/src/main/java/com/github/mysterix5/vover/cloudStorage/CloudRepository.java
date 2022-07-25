@@ -22,7 +22,6 @@ public class CloudRepository {
     public byte[] find(String cloudFileName) throws IOException {
         String url = baseUrl + cloudFileName;
         InputStream is = sardine.get(url);
-
         return is.readAllBytes();
     }
 
@@ -34,5 +33,12 @@ public class CloudRepository {
     public void delete(String cloudFileName) throws IOException {
         String url = baseUrl + cloudFileName;
         sardine.delete(url);
+    }
+
+    public void move(String oldCloudFileName, String newCloudFileName) throws IOException {
+        String oldUrl = baseUrl + oldCloudFileName;
+        String newUrl = baseUrl + newCloudFileName;
+
+        sardine.move(oldUrl, newUrl);
     }
 }

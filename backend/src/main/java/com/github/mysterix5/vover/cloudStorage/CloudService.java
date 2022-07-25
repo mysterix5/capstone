@@ -60,8 +60,8 @@ public class CloudService {
     }
 
     public AudioInputStream find(String filePath) throws IOException {
-            byte[] audioBytes = cloudRepository.find(filePath);
-            return convertAudioBytesToAudioInputStream(audioBytes);
+        byte[] audioBytes = cloudRepository.find(filePath);
+        return convertAudioBytesToAudioInputStream(audioBytes);
     }
 
     private AudioInputStream convertAudioBytesToAudioInputStream(byte[] audioBytes) {
@@ -77,5 +77,9 @@ public class CloudService {
 
     public void delete(String cloudFileName) throws IOException {
         cloudRepository.delete(cloudFileName);
+    }
+
+    public void move(String oldCloudFileName, String newCloudFileName) throws IOException {
+        cloudRepository.move(oldCloudFileName, newCloudFileName);
     }
 }

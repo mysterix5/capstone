@@ -11,7 +11,7 @@ import {
 import {RecordInfo} from "../../services/model";
 import {ChangeEvent, MouseEvent, useState} from "react";
 import {useAuth} from "../../usermanagement/AuthProvider";
-import {apiDeleteRecord, apiGetSingleRecordedAudio} from "../../services/apiServices";
+import {apiChangeRecord, apiDeleteRecord, apiGetSingleRecordedAudio} from "../../services/apiServices";
 import {AxiosError} from "axios";
 
 interface RecordDetailsProps {
@@ -43,7 +43,13 @@ export default function RecordDetails(props: RecordDetailsProps) {
     };
 
     function saveWord() {
-
+        apiChangeRecord(getToken(), {id: props.record.id, word: word, tag: tag, accessibility: accessibility})
+            .then(props.getRecordPage)
+            .catch((error) => {
+                if (error.response) {
+                    setError(error.response.data);
+                }
+            });
     }
 
     function getAudio() {
