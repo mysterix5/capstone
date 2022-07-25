@@ -1,6 +1,5 @@
 package com.github.mysterix5.vover.words;
 
-import com.github.mysterix5.vover.cloudStorage.CloudRepository;
 import com.github.mysterix5.vover.cloudStorage.CloudService;
 import com.github.mysterix5.vover.model.other.Accessibility;
 import com.github.mysterix5.vover.model.word.RecordManagementDTO;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.AudioInputStream;
 import java.io.*;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service

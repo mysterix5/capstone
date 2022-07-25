@@ -35,7 +35,7 @@ export default function Recordings() {
 
     function getRecordPage(){
         apiGetRecordPage(getToken(), recordPage.page, recordPage.size, recordPage.searchTerm)
-            .then(r => setRecordPage(r));
+            .then((r: RecordPage) => setRecordPage(r));
     }
 
     return (

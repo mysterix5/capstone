@@ -2,7 +2,6 @@ package com.github.mysterix5.vover.words;
 
 import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import com.github.mysterix5.vover.model.word.RecordPage;
-import com.github.mysterix5.vover.model.word.WordDbEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;

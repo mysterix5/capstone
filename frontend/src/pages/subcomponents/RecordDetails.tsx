@@ -12,6 +12,7 @@ import {RecordInfo} from "../../services/model";
 import {ChangeEvent, MouseEvent, useState} from "react";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {apiDeleteRecord, apiGetSingleRecordedAudio} from "../../services/apiServices";
+import {AxiosError} from "axios";
 
 interface RecordDetailsProps {
     record: RecordInfo,
@@ -48,8 +49,7 @@ export default function RecordDetails(props: RecordDetailsProps) {
     function getAudio() {
         apiGetSingleRecordedAudio(getToken(), props.record.id)
             .then(setAudioFile)
-            .then(props.getRecordPage)
-            .catch((err) => {
+            .catch((err: AxiosError<ArrayBuffer>) => {
                     if (err.response) {
                         const enc = new TextDecoder('utf-8')
                         const res = JSON.parse(enc.decode(new Uint8Array(err.response.data)))
@@ -60,7 +60,8 @@ export default function RecordDetails(props: RecordDetailsProps) {
     }
 
     function deleteRecord(){
-        apiDeleteRecord(getToken(), props.record.id);//TODO refresh
+        apiDeleteRecord(getToken(), props.record.id)
+            .then(props.getRecordPage);
     }
 
     return (

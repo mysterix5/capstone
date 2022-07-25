@@ -76,6 +76,5 @@ export function apiGetRecordPage(token: string, page: number, size: number, sear
 export function apiDeleteRecord(token: string, id: string) {
     return axios.delete(`/api/word/${id}`,
         createHeaders(token)
-    )
-        .then((response: AxiosResponse<RecordPage>) => response.data);
+    );
 }
