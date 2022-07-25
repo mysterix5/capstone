@@ -1,11 +1,13 @@
 package com.github.mysterix5.vover.model.word;
 
 import com.github.mysterix5.vover.model.other.Accessibility;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class RecordManagementDTO {
     private String id;
     private String word;

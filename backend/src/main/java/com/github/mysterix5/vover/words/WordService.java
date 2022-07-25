@@ -25,19 +25,20 @@ public class WordService {
     private final CloudService cloudService;
 
     public void addWordToDb(String word, String creator, String tag, String accessibility, byte[] audio) throws IOException {
-        String cloudFileName = createCloudFileName(word, creator, tag);
+        String cloudFileName = createCloudFileName(word, creator, tag, accessibility);
         WordDbEntity wordDbEntity = new WordDbEntity(word, creator, tag, accessibility, cloudFileName);
         cloudService.save(cloudFileName, audio);
         wordRepository.save(wordDbEntity);
     }
 
-    private String createCloudFileName(String word, String creator, String tag) {
+    private String createCloudFileName(String word, String creator, String tag, String accessibility) {
         String cloudId = UUID.randomUUID().toString();
         StringBuilder cloudFileName = new StringBuilder();
         cloudFileName
                 .append(word).append("-")
                 .append(creator).append("-")
                 .append(tag).append("-")
+                .append(accessibility).append("-")
                 .append(cloudId)
                 .append(".mp3");
         return cloudFileName.toString();
@@ -65,7 +66,7 @@ public class WordService {
         try {
             return cloudService.find(word.getCloudFileName());
         } catch (IOException e) {
-            throw new RuntimeException("your audio could not be found in the cloud");
+            throw new RuntimeException("Your audio could not be found in the cloud");
         }
     }
 
@@ -76,6 +77,7 @@ public class WordService {
         }
         try {
             cloudService.delete(word.getCloudFileName());
+            wordRepository.delete(word);
         } catch (IOException e) {
             throw new RuntimeException("Deleting your audio file failed, did nothing");
         }
@@ -85,7 +87,7 @@ public class WordService {
     public void changeRecordMetadata(RecordManagementDTO recordManagementDTO, String username) {
         WordDbEntity word = wordRepository.findById(recordManagementDTO.getId()).orElseThrow();
         if (!word.getCreator().equals(username)) {
-            throw new RuntimeException("The audio file you requested is not yours. Don't try to hack me! :(");
+            throw new RuntimeException("The record you requested to change is not yours. Don't try to hack me! :(");
         }
         if (word.getWord().equals(recordManagementDTO.getWord())
                 && word.getTag().equals(recordManagementDTO.getTag())
@@ -96,16 +98,13 @@ public class WordService {
         word.setWord(recordManagementDTO.getWord());
         word.setTag(recordManagementDTO.getTag());
         word.setAccessibility(recordManagementDTO.getAccessibility());
-
         String oldCloudName = word.getCloudFileName();
-        String newCloudName = createCloudFileName(word.getWord(), word.getCreator(), word.getTag());
+        word.setCloudFileName(createCloudFileName(word.getWord(), word.getCreator(), word.getTag(), word.getAccessibility().toString()));
 
         try {
-            if(!oldCloudName.equals(newCloudName)){
-                cloudService.move(oldCloudName, newCloudName);
-            }
+            cloudService.move(oldCloudName, word.getCloudFileName());
             wordRepository.save(word);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Something went wrong changing your record metadata");
         }
     }

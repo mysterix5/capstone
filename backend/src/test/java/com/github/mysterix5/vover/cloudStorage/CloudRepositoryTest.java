@@ -53,4 +53,24 @@ class CloudRepositoryTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    void delete() throws IOException {
+        Sardine mockedSardine = Mockito.mock(Sardine.class);
+        String url = "https://cloud.com/";
+        CloudRepository cloudRepository = new CloudRepository(mockedSardine, url);
+
+        cloudRepository.delete("file.mp3");
+        Mockito.verify(mockedSardine).delete(url + "file.mp3");
+    }
+
+    @Test
+    void move() throws IOException {
+        Sardine mockedSardine = Mockito.mock(Sardine.class);
+        String url = "https://cloud.com/";
+        CloudRepository cloudRepository = new CloudRepository(mockedSardine, url);
+
+        cloudRepository.move("file1.mp3", "file2.mp3");
+        Mockito.verify(mockedSardine).move(url + "file1.mp3", url + "file2.mp3");
+    }
 }

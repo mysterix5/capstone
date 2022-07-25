@@ -91,4 +91,5 @@ class UserServiceTest {
                 .isThrownBy(() -> userService.createUser(userCreationDTO))
                 .withMessage("a user with this name already exists");
     }
+
 }
