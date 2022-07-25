@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {apiGetRecordPage} from "../../services/apiServices";
 import {RecordPage} from "../../services/model";
-import {Grid} from "@mui/material";
+import {Box, Button, Grid} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import RecordDetails from "./RecordDetails";
 
@@ -13,7 +13,7 @@ export default function Recordings() {
         {
             page: 0,
             noPages: 0,
-            size: 10,
+            size: 6,
             searchTerm: "",
             records: [],
             accessibilityChoices: []
@@ -30,21 +30,39 @@ export default function Recordings() {
     }, [username, nav])
 
     useEffect(() => {
-        getRecordPage();
+        updateRecordPage();
     }, [getToken])
 
-    function getRecordPage(){
-        apiGetRecordPage(getToken(), recordPage.page, recordPage.size, recordPage.searchTerm)
+
+    function getSpecificRecordPage(page: number) {
+        apiGetRecordPage(getToken(), page, recordPage.size, recordPage.searchTerm)
             .then((r: RecordPage) => setRecordPage(r));
     }
 
+    function updateRecordPage() {
+        getSpecificRecordPage(recordPage.page);
+    }
+
     return (
-        <Grid container>
-            {
-                recordPage?.records.map(r =>
-                    <RecordDetails key={r.id} record={r} accessibilityChoices={recordPage?.accessibilityChoices} getRecordPage={getRecordPage}/>
-                )
+        <Box>
+            <Grid container>
+                {
+                    recordPage!.records.map(r =>
+                        <RecordDetails key={r.id} record={r} accessibilityChoices={recordPage?.accessibilityChoices}
+                                       getRecordPage={updateRecordPage}/>
+                    )
+                }
+            </Grid>
+            {recordPage && recordPage.page > 0 &&
+                <Button onClick={() => getSpecificRecordPage(recordPage.page-1)}>
+                    prev
+                </Button>
             }
-        </Grid>
+            {recordPage && recordPage.page < recordPage.noPages - 1 &&
+                <Button onClick={() => getSpecificRecordPage(recordPage.page+1)}>
+                    next
+                </Button>
+            }
+        </Box>
     )
 }
