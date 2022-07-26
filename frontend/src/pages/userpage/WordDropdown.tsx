@@ -24,7 +24,16 @@ export default function WordDropdown(props: WordDropdownProps) {
     return (
         <FormControl variant="filled" size="small">
             <InputLabel id="demo-simple-select-label">
-                {props.wordAvail.word.toUpperCase()}
+                <Grid container direction={"row"} wrap={"nowrap"}>
+                    { props.choicesList && props.choicesList.length > 1 &&
+                        <Grid item mr={1} border={1}  bgcolor={"darkgrey"} color={"#577ee0"}>
+                            {props.choicesList.length}
+                        </Grid>
+                    }
+                    <Grid item>
+                        {props.wordAvail.word.toUpperCase()}
+                    </Grid>
+                </Grid>
             </InputLabel>
             <Select
                 size={"medium"}
