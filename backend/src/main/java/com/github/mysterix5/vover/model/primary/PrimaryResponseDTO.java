@@ -14,5 +14,5 @@ import java.util.Map;
 @AllArgsConstructor
 public class PrimaryResponseDTO {
     private List<RecordResponseDTO> textWords;
-    private Map<String, List<RecordDbResponseDTO>> wordMap;
+    private Map<String, List<RecordDbResponseDTO>> wordRecordMap;
 }

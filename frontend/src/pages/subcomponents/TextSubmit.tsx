@@ -1,11 +1,11 @@
 import {Box, Button, Grid, TextField} from "@mui/material";
 import {FormEvent, useState} from "react";
 import {apiSendTextToBackend} from "../../services/apiServices";
-import {TextResponse} from "../../services/model";
+import {TextMetadataResponse} from "../../services/model";
 import {useAuth} from "../../usermanagement/AuthProvider";
 
 interface TextSubmitProps{
-    setSplitText: (textResponse: TextResponse)=>void,
+    setTextMetadataResponse: (textResponse: TextMetadataResponse)=>void,
     setIds: (ids: string[])=>void
 }
 
@@ -20,13 +20,13 @@ export default function TextSubmit(props: TextSubmitProps){
         apiSendTextToBackend(getToken(), {text})
             .then(r=>{
                 console.log(r);
-                props.setSplitText(r);
+                props.setTextMetadataResponse(r);
                 return r;
             })
             .then(textResponse => {
                 const ids: string[] = [];
                 for(const word of textResponse.textWords){
-                    const mdl = textResponse.wordMap[word.word];
+                    const mdl = textResponse.wordRecordMap[word.word];
                     if(mdl && mdl.length>0){
                         ids.push(mdl.at(0)!.id);
                     }else{

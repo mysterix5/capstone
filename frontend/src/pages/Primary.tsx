@@ -1,7 +1,7 @@
 import {Grid} from "@mui/material";
 import TextSubmit from "./subcomponents/TextSubmit";
 import {useEffect, useState} from "react";
-import {TextResponse} from "../services/model";
+import {TextMetadataResponse} from "../services/model";
 import TextCheck from "./subcomponents/TextCheck";
 import Audio from "./subcomponents/Audio";
 import {apiGetMergedAudio} from "../services/apiServices";
@@ -10,8 +10,8 @@ import {useAuth} from "../usermanagement/AuthProvider";
 import {useNavigate} from "react-router-dom";
 
 
-export default function Main() {
-    const [splitText, setSplitText] = useState<TextResponse>();
+export default function Primary() {
+    const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>();
     const [audioFile, setAudioFile] = useState<any>();
     const [ids, setIds] = useState<string[]>([])
 
@@ -24,8 +24,13 @@ export default function Main() {
         }
     }, [username, nav])
 
-    function checkSplitText() {
-        for (const word of splitText!.textWords) {
+    function handleTextMetadataResponse(textMetadataResponse: TextMetadataResponse){
+        setTextMetadataResponse(textMetadataResponse);
+        setAudioFile(null);
+    }
+
+    function checkTextResponseAvailability() {
+        for (const word of textMetadataResponse!.textWords) {
             if (!isAvailable(word.availability)) {
                 return false;
             }
@@ -49,17 +54,17 @@ export default function Main() {
     return (
         <Grid container alignItems={"center"} flexDirection={"column"}>
             <Grid item>
-                <TextSubmit setSplitText={setSplitText} setIds={setIds}/>
+                <TextSubmit setTextMetadataResponse={handleTextMetadataResponse} setIds={setIds}/>
             </Grid>
             <Grid item ml={2} mr={2}>
                 {
-                    splitText &&
-                    <TextCheck splitText={splitText} ids={ids} setIds={setIds}/>
+                    textMetadataResponse &&
+                    <TextCheck textMetadataResponse={textMetadataResponse} ids={ids} setIds={setIds}/>
                 }
             </Grid>
             <Grid item>
                 {
-                    splitText && checkSplitText() &&
+                    textMetadataResponse && checkTextResponseAvailability() &&
                     <Audio getAudio={getAudio} audioFile={audioFile}/>
                 }
             </Grid>

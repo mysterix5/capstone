@@ -1,13 +1,13 @@
 import {FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
 import {isAvailable} from "../../globalTools/helpers";
-import {WordAvail, WordMetaData} from "../../services/model";
+import {WordAvail, RecordMetaData} from "../../services/model";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 
 interface WordDropdownProps {
     wordAvail: WordAvail,
     setIdInArray: (id: string) => void
-    choicesList: WordMetaData[],
+    choicesList: RecordMetaData[],
     id: string
 }
 

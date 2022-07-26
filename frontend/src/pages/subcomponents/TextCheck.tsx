@@ -2,11 +2,11 @@ import {
     Box,
     Grid
 } from "@mui/material";
-import {TextResponse, WordAvail} from "../../services/model";
+import {TextMetadataResponse, WordAvail} from "../../services/model";
 import WordDropdown from "./WordDropdown";
 
 interface TextCheckProps {
-    splitText: TextResponse,
+    textMetadataResponse: TextMetadataResponse,
     ids: string[],
     setIds: (ids: string[]) => void
 }
@@ -36,7 +36,7 @@ export default function TextCheck(props: TextCheckProps) {
 
         return (
             <Box sx={{backgroundColor: myColor}}>
-                <WordDropdown wordAvail={word} setIdInArray={generateIdSetter(index)} choicesList={props.splitText.wordMap[word.word]} id={props.ids[index]}/>
+                <WordDropdown wordAvail={word} setIdInArray={generateIdSetter(index)} choicesList={props.textMetadataResponse.wordRecordMap[word.word]} id={props.ids[index]}/>
             </Box>
         )
     }
@@ -45,8 +45,8 @@ export default function TextCheck(props: TextCheckProps) {
         <>
             <Grid container justifyContent={"center"}>
                 {
-                    props.splitText &&
-                    props.splitText!.textWords.map((r, i) =>
+                    props.textMetadataResponse &&
+                    props.textMetadataResponse!.textWords.map((r, i) =>
                         <Grid item key={i} margin={0.5}>
                             {getWordButton(r, i)}
                         </Grid>

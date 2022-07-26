@@ -1,5 +1,5 @@
 import axios, {AxiosResponse} from "axios";
-import {TextSend, TextResponse, UserDTO, LoginResponse, UserRegisterDTO, RecordPage, RecordInfo} from "./model";
+import {TextSend, TextMetadataResponse, LoginDTO, LoginResponse, RegisterDTO, RecordPage, RecordInfo} from "./model";
 
 function createHeaders(token: string) {
     return {
@@ -7,12 +7,12 @@ function createHeaders(token: string) {
     }
 }
 
-export function sendRegister(user: UserRegisterDTO) {
+export function sendRegister(user: RegisterDTO) {
     return axios.post("/api/auth/register", user)
         .then(r => r.data);
 }
 
-export function sendLogin(user: UserDTO) {
+export function sendLogin(user: LoginDTO) {
     return axios.post("/api/auth/login", user)
         .then((response: AxiosResponse<LoginResponse>) => response.data)
 }
@@ -22,7 +22,7 @@ export function apiSendTextToBackend(token: string, text: TextSend) {
         text,
         createHeaders(token)
     )
-        .then((response: AxiosResponse<TextResponse>) => response.data);
+        .then((response: AxiosResponse<TextMetadataResponse>) => response.data);
 }
 
 export function apiGetMergedAudio(token: string, ids: string[]) {
