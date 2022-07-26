@@ -45,7 +45,7 @@ export default function Header() {
                             {username ?
                                 <Grid container direction={'row'} alignItems={'center'} justifyItems={'end'}
                                       wrap={'nowrap'}>
-                                    <Grid item mr={1}>
+                                    <Grid item mr={2}>
                                         <LogoutIcon onClick={logout} color={'primary'}/>
                                     </Grid>
                                     <Grid item ml={0} mr={1}>
