@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 
 interface WordDropdownProps {
     wordAvail: WordAvail,
-    setIdInArray: (id: string) => void
+    setId: (id: string) => void
     choicesList: RecordMetaData[],
     id: string
 }
@@ -16,8 +16,8 @@ export default function WordDropdown(props: WordDropdownProps) {
     const [id, setId] = useState(props.id);
 
     useEffect(() => {
-        props.setIdInArray(id);
-    }, [id, props, props.setIdInArray])
+        props.setId(id);
+    }, [id, props, props.setId])
 
     const nav = useNavigate();
 

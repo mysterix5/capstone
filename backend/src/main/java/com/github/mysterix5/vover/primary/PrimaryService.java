@@ -34,6 +34,7 @@ public class PrimaryService {
         wordList = wordList.stream().map(String::toLowerCase).toList();
         Set<String> appearingWordsSet = wordList.stream().filter(this::wordValidCheck).collect(Collectors.toSet());
         Map<String, List<RecordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet, username);
+        List<String> defaultIds = new ArrayList<>();
 
         List<RecordResponseDTO> textWordsResponse = wordList.stream()
                 .map(RecordResponseDTO::new)
@@ -41,15 +42,18 @@ public class PrimaryService {
                     if (appearingWordsSet.contains(w.getWord())) {
                         if (dbWordsMap.containsKey(w.getWord())) {
                             w.setAvailability(Availability.PUBLIC);
+                            defaultIds.add(dbWordsMap.get(w.getWord()).get(0).getId());
                         } else {
                             w.setAvailability(Availability.NOT_AVAILABLE);
+                            defaultIds.add(null);
                         }
                     } else {
                         w.setAvailability(Availability.INVALID);
+                        defaultIds.add(null);
                     }
                 }).toList();
 
-        return new PrimaryResponseDTO(textWordsResponse, dbWordsMap);
+        return new PrimaryResponseDTO(textWordsResponse, dbWordsMap, defaultIds);
     }
 
 

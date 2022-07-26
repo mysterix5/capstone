@@ -21,7 +21,8 @@ export interface WordAvail {
 
 export interface TextMetadataResponse {
     textWords: WordAvail[],
-    wordRecordMap: WordRecordMap
+    wordRecordMap: WordRecordMap,
+    defaultIds: string[]
 }
 
 export interface AuthInterface {
