@@ -41,8 +41,12 @@ export default function WordDropdown(props: WordDropdownProps) {
                 {isAvailable(props.wordAvail.availability) ?
                     props.choicesList.map(wmd =>
                         <MenuItem key={wmd.id} value={wmd.id}>
-                            <Typography>{wmd.creator}</Typography>
-                            <Typography>{wmd.tag}</Typography>
+                            <div>
+                                <Typography>{wmd.creator}</Typography>
+                            </div>
+                            <div>
+                                <Typography>{wmd.tag}</Typography>
+                            </div>
                         </MenuItem>
                     )
                     :
@@ -53,7 +57,6 @@ export default function WordDropdown(props: WordDropdownProps) {
                                 <Typography>record</Typography>
                             </Grid>
                         </Grid>
-
                     </MenuItem>
                 }
             </Select>

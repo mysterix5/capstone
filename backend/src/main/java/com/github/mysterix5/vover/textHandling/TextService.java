@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.AudioInputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -96,8 +95,8 @@ public class TextService {
                         .orElseThrow().getCloudFileName()).toList();
         try {
             return cloudService.loadMultipleAudioFromCloudAndMerge(filePaths);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new MultipleSubErrorException("An error occurred while creating your audio file");
         }
     }
 }

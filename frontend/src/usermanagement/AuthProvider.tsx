@@ -1,6 +1,7 @@
 import {ReactNode, useContext, useEffect, useState} from "react";
 import AuthContext from "./AuthContext";
 import {useNavigate} from "react-router-dom";
+import {VoverError} from "../services/model";
 
 export default function AuthProvider({children}:{children :ReactNode}) {
     const nav = useNavigate();
@@ -8,6 +9,9 @@ export default function AuthProvider({children}:{children :ReactNode}) {
     const [roles, setRoles] = useState<string[]>([]);
     const [username, setUsername] = useState('');
     const [expired, setExpired] = useState<number>(0);
+    const [error, setErrorState] = useState<VoverError>({message: "", subMessages: []});
+    const [errorTimer, setErrorTimer] = useState(-1);
+    const [errorTimerGoal, setErrorTimerGoal] = useState(-1);
 
     useEffect(() => {
         if (token) {
@@ -42,7 +46,29 @@ export default function AuthProvider({children}:{children :ReactNode}) {
         return token;
     }
 
-    return <AuthContext.Provider value={{roles, username, getToken, logout, login}} >{children}</AuthContext.Provider>;
+    useEffect(() => {
+        if(errorTimer>=errorTimerGoal){
+            setErrorState(({message: "", subMessages: []}));
+            setErrorTimer(-1);
+            setErrorTimerGoal(-2);
+        }
+        if(errorTimer<errorTimerGoal){
+            setTimeout(()=>setErrorTimer((e)=>e+1), 1000);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [errorTimer])
+
+    const setError = (err: VoverError) => {
+        setErrorState(err);
+        if(errorTimer<0){
+            setErrorTimerGoal(7);
+            setErrorTimer(0);
+        }else{
+            setErrorTimerGoal(errorTimer + 7);
+        }
+    }
+
+    return <AuthContext.Provider value={{roles, username, getToken, error, setError, logout, login}} >{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);

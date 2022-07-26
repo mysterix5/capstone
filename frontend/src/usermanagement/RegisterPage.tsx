@@ -5,8 +5,7 @@ import {
 } from "@mui/icons-material";
 import {useNavigate} from "react-router-dom";
 import {sendRegister} from "../services/apiServices";
-import {VoverError} from "../services/model";
-import VoverErrorDisplay from "../globalTools/VoverErrorDisplay";
+import {useAuth} from "./AuthProvider";
 
 export default function RegisterPage() {
 
@@ -14,7 +13,8 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [passwordRepeat, setPasswordRepeat] = useState("");
 
-    const [error, setError] = useState<VoverError>();
+    const {setError} = useAuth();
+
 
     const nav = useNavigate();
 
@@ -94,9 +94,6 @@ export default function RegisterPage() {
                     </Grid>
                 </Grid>
             </Box>
-            {error &&
-                <VoverErrorDisplay error={error}/>
-            }
         </>
     )
 }

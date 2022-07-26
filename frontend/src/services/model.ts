@@ -28,6 +28,8 @@ export interface AuthInterface {
     username : string,
     roles : string[],
     getToken: () => string,
+    error: VoverError,
+    setError: (error: VoverError)=>void,
     logout: () => void
     login: (token: string) => void
 }

@@ -16,7 +16,7 @@ class AddWordServiceTest {
 
     // TODO only single and valid words allowed
     @Test
-    void addWordToDb() {
+    void addWordToDb() throws IOException {
         WordsMongoRepository mockedWordRepo = Mockito.mock(WordsMongoRepository.class);
         CloudRepository mockedCloudRepo = Mockito.mock(CloudRepository.class);
         AddWordService addWordService = new AddWordService(mockedWordRepo, mockedCloudRepo);
