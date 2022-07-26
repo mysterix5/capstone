@@ -1,7 +1,7 @@
 import axios, {AxiosResponse} from "axios";
-import {TextSend, TextResponse, UserDTO, LoginResponse, UserRegisterDTO} from "./model";
+import {TextSend, TextResponse, UserDTO, LoginResponse, UserRegisterDTO, RecordPage, RecordInfo} from "./model";
 
-function createHeaders(token: string){
+function createHeaders(token: string) {
     return {
         headers: {Authorization: `Bearer ${token}`}
     }
@@ -17,18 +17,27 @@ export function sendLogin(user: UserDTO) {
         .then((response: AxiosResponse<LoginResponse>) => response.data)
 }
 
-
 export function apiSendTextToBackend(token: string, text: TextSend) {
     return axios.post("/api/main",
         text,
         createHeaders(token)
-        )
+    )
         .then((response: AxiosResponse<TextResponse>) => response.data);
 }
 
-export function apiGetAudio(token: string, ids: string[]) {
+export function apiGetMergedAudio(token: string, ids: string[]) {
     return axios.post("/api/main/audio",
         ids,
+        {
+            headers: {Authorization: `Bearer ${token}`},
+            responseType: 'arraybuffer'
+        })
+        .then((response) => response.data)
+        .then(data => window.URL.createObjectURL(new Blob([data])));
+}
+
+export function apiGetSingleRecordedAudio(token: string, id: string) {
+    return axios.get(`/api/word/audio/${id}`,
         {
             headers: {Authorization: `Bearer ${token}`},
             responseType: 'arraybuffer'
@@ -46,7 +55,7 @@ export function apiSaveAudio(token: string, word: string, tag: string, accessibi
     formData.append("accessibility", accessibility);
     formData.append("audio", audioBlob);
 
-    return axios.post("/api/addword",
+    return axios.post("/api/word",
         formData,
         {
             headers: {
@@ -57,3 +66,21 @@ export function apiSaveAudio(token: string, word: string, tag: string, accessibi
     )
 }
 
+export function apiGetRecordPage(token: string, page: number, size: number, searchTerm: string) {
+    return axios.get(`/api/word/${page}/${size}?searchTerm=${searchTerm}`,
+        createHeaders(token)
+    )
+        .then((response: AxiosResponse<RecordPage>) => response.data);
+}
+
+export function apiDeleteRecord(token: string, id: string) {
+    return axios.delete(`/api/word/${id}`,
+        createHeaders(token)
+    );
+}
+export function apiChangeRecord(token: string, recordInfo: RecordInfo) {
+    return axios.put(`/api/word`,
+        recordInfo,
+        createHeaders(token)
+    );
+}

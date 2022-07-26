@@ -1,6 +1,10 @@
 package com.github.mysterix5.vover.security;
 
-import com.github.mysterix5.vover.model.*;
+import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
+import com.github.mysterix5.vover.model.other.VoverErrorDTO;
+import com.github.mysterix5.vover.model.security.UserAuthenticationDTO;
+import com.github.mysterix5.vover.model.security.UserRegisterDTO;
+import com.github.mysterix5.vover.model.security.VoverUserEntity;
 import com.github.mysterix5.vover.usermanagement.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +30,7 @@ public class AuthenticationController {
             userService.createUser(registerData);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (MultipleSubErrorException e){
-            log.warn("registering user {} failed", registerData, e);
+            log.warn("registering user {} failed", registerData);
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         }
     }
@@ -34,13 +38,13 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody UserAuthenticationDTO loginData) {
         try{
-            VoverUser user = userService.findByUsername(loginData.getUsername()).orElseThrow();
+            VoverUserEntity user = userService.findByUsername(loginData.getUsername()).orElseThrow();
             return ResponseEntity.ok(loginService.login(user, loginData));
         }catch(NoSuchElementException e){
-            log.warn("login user {} failed", loginData, e);
+            log.warn("login user {} failed, user not found", loginData);
             return ResponseEntity.badRequest().body(new VoverErrorDTO("Login failed", "This user does not exist"));
         }catch(BadCredentialsException e){
-            log.warn("login user {} failed", loginData, e);
+            log.warn("login user {} failed, authentication failed", loginData);
             return ResponseEntity.badRequest().body(new VoverErrorDTO("Login failed", "It was not possible to authenticate this 'user', 'password' combination", "Are you sure your credentials are correct?"));
         }
     }

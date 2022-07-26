@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {TextResponse} from "../services/model";
 import TextCheck from "./subcomponents/TextCheck";
 import Audio from "./subcomponents/Audio";
-import {apiGetAudio} from "../services/apiServices";
+import {apiGetMergedAudio} from "../services/apiServices";
 import {isAvailable} from "../globalTools/helpers";
 import {useAuth} from "../usermanagement/AuthProvider";
 import {useNavigate} from "react-router-dom";
@@ -34,7 +34,7 @@ export default function Main() {
     }
 
     function getAudio() {
-        apiGetAudio(getToken(), ids)
+        apiGetMergedAudio(getToken(), ids)
             .then(setAudioFile)
             .catch((err) => {
                 if (err.response) {

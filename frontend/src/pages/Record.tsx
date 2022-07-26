@@ -1,6 +1,6 @@
 import {Recorder} from "vmsg";
 import {Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
-import {FormEvent, useState} from "react";
+import {FormEvent, MouseEvent, useState} from "react";
 import {apiSaveAudio} from "../services/apiServices";
 import {useAuth} from "../usermanagement/AuthProvider";
 
@@ -57,7 +57,7 @@ export default function Record() {
     }
 
     const handleAccessibility = (
-        event: React.MouseEvent<HTMLElement>,
+        event: MouseEvent<HTMLElement>,
         newAccessibility: string,
     ) => {
         setAccessibility(newAccessibility);

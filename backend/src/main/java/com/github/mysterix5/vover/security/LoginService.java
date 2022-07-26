@@ -1,8 +1,8 @@
 package com.github.mysterix5.vover.security;
 
-import com.github.mysterix5.vover.model.LoginResponse;
-import com.github.mysterix5.vover.model.UserAuthenticationDTO;
-import com.github.mysterix5.vover.model.VoverUser;
+import com.github.mysterix5.vover.model.security.LoginResponse;
+import com.github.mysterix5.vover.model.security.UserAuthenticationDTO;
+import com.github.mysterix5.vover.model.security.VoverUserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class LoginService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    public LoginResponse login(VoverUser user, UserAuthenticationDTO loginData) {
+    public LoginResponse login(VoverUserEntity user, UserAuthenticationDTO loginData) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginData.getUsername(), loginData.getPassword()));
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", user.getRoles());

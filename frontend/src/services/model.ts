@@ -53,3 +53,19 @@ export interface VoverError {
     message: string,
     subMessages: string[]
 }
+
+export interface RecordPage {
+    page: number,
+    noPages: number,
+    size: number,
+    searchTerm: string,
+    records: RecordInfo[],
+    accessibilityChoices: string[]
+}
+
+export interface RecordInfo {
+    id: string,
+    word: string,
+    tag: string,
+    accessibility: string
+}
