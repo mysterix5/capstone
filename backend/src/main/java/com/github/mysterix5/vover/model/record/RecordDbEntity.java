@@ -1,6 +1,5 @@
-package com.github.mysterix5.vover.model.word;
+package com.github.mysterix5.vover.model.record;
 
-import com.github.mysterix5.vover.model.other.Accessibility;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +8,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Document(collection = "words")
+@Document(collection = "records")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class WordDbEntity {
+public class RecordDbEntity {
     @Id
     private String id;
     private String word;
@@ -22,14 +21,14 @@ public class WordDbEntity {
     private String cloudFileName;
     private Accessibility accessibility = Accessibility.PUBLIC;
 
-    public WordDbEntity(String word, String creator, String tag, String cloudFileName){
+    public RecordDbEntity(String word, String creator, String tag, String cloudFileName){
         this.word = word.toLowerCase();
         this.creator = creator;
         this.tag = tag.toLowerCase();
         this.cloudFileName = cloudFileName;
     }
 
-    public WordDbEntity(String word, String creator, String tag, String accessibility, String cloudFileName){
+    public RecordDbEntity(String word, String creator, String tag, String accessibility, String cloudFileName){
         this.word = word.toLowerCase();
         this.creator = creator;
         this.tag = tag.toLowerCase();

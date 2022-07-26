@@ -1,11 +1,10 @@
-package com.github.mysterix5.vover.words;
+package com.github.mysterix5.vover.records;
 
-import com.github.mysterix5.vover.cloudStorage.CloudService;
-import com.github.mysterix5.vover.model.other.Accessibility;
-import com.github.mysterix5.vover.model.word.RecordManagementDTO;
-import com.github.mysterix5.vover.model.word.RecordPage;
-import com.github.mysterix5.vover.model.word.WordDbEntity;
-import com.github.mysterix5.vover.main.WordsMongoRepository;
+import com.github.mysterix5.vover.cloud_storage.CloudService;
+import com.github.mysterix5.vover.model.record.Accessibility;
+import com.github.mysterix5.vover.model.record.RecordManagementDTO;
+import com.github.mysterix5.vover.model.record.RecordPage;
+import com.github.mysterix5.vover.model.record.RecordDbEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,15 +19,15 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WordService {
-    private final WordsMongoRepository wordRepository;
+public class RecordService {
+    private final RecordMongoRepository wordRepository;
     private final CloudService cloudService;
 
     public void addWordToDb(String word, String creator, String tag, String accessibility, byte[] audio) throws IOException {
         String cloudFileName = createCloudFileName(word, creator, tag, accessibility);
-        WordDbEntity wordDbEntity = new WordDbEntity(word, creator, tag, accessibility, cloudFileName);
+        RecordDbEntity recordDbEntity = new RecordDbEntity(word, creator, tag, accessibility, cloudFileName);
         cloudService.save(cloudFileName, audio);
-        wordRepository.save(wordDbEntity);
+        wordRepository.save(recordDbEntity);
     }
 
     private String createCloudFileName(String word, String creator, String tag, String accessibility) {
@@ -46,7 +45,7 @@ public class WordService {
 
     public RecordPage getRecordPage(String username, int page, int size, String searchTerm) {
         Pageable paging = PageRequest.of(page, size);
-        Page<WordDbEntity> resultPage = wordRepository.findAllByCreator(username, paging);
+        Page<RecordDbEntity> resultPage = wordRepository.findAllByCreator(username, paging);
 
         return RecordPage.builder()
                 .page(resultPage.getNumber())
@@ -59,7 +58,7 @@ public class WordService {
     }
 
     public AudioInputStream getAudio(String id, String username) {
-        WordDbEntity word = wordRepository.findById(id).orElseThrow();
+        RecordDbEntity word = wordRepository.findById(id).orElseThrow();
         if (!word.getCreator().equals(username)) {
             throw new RuntimeException("The audio file you requested is not yours. Don't try to hack me! :(");
         }
@@ -71,7 +70,7 @@ public class WordService {
     }
 
     public void deleteRecord(String id, String username) {
-        WordDbEntity word = wordRepository.findById(id).orElseThrow();
+        RecordDbEntity word = wordRepository.findById(id).orElseThrow();
         if (!word.getCreator().equals(username)) {
             throw new RuntimeException("The audio file you requested is not yours. Don't try to hack me! :(");
         }
@@ -85,7 +84,7 @@ public class WordService {
     }
 
     public void changeRecordMetadata(RecordManagementDTO recordManagementDTO, String username) {
-        WordDbEntity word = wordRepository.findById(recordManagementDTO.getId()).orElseThrow();
+        RecordDbEntity word = wordRepository.findById(recordManagementDTO.getId()).orElseThrow();
         if (!word.getCreator().equals(username)) {
             throw new RuntimeException("The record you requested to change is not yours. Don't try to hack me! :(");
         }

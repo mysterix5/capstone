@@ -1,4 +1,4 @@
-package com.github.mysterix5.vover.usermanagement;
+package com.github.mysterix5.vover.security;
 
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.security.UserRegisterDTO;

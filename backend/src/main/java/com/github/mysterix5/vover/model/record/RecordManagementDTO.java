@@ -1,6 +1,5 @@
-package com.github.mysterix5.vover.model.word;
+package com.github.mysterix5.vover.model.record;
 
-import com.github.mysterix5.vover.model.other.Accessibility;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,7 @@ public class RecordManagementDTO {
     private String tag;
     private Accessibility accessibility;
 
-    public RecordManagementDTO(WordDbEntity wordDb){
+    public RecordManagementDTO(RecordDbEntity wordDb){
         id = wordDb.getId();
         word = wordDb.getWord();
         tag = wordDb.getTag();

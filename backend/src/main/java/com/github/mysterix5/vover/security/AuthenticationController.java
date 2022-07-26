@@ -5,7 +5,6 @@ import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import com.github.mysterix5.vover.model.security.UserAuthenticationDTO;
 import com.github.mysterix5.vover.model.security.UserRegisterDTO;
 import com.github.mysterix5.vover.model.security.VoverUserEntity;
-import com.github.mysterix5.vover.usermanagement.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

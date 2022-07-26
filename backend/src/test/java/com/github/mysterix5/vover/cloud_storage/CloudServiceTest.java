@@ -1,4 +1,4 @@
-package com.github.mysterix5.vover.cloudStorage;
+package com.github.mysterix5.vover.cloud_storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -21,9 +21,9 @@ class CloudServiceTest {
         CloudRepository cloudRepository = Mockito.mock(CloudRepository.class);
         CloudService cloudService = new CloudService(cloudRepository);
 
-        var obFile = new File("src/test/resources/cloudStorage/ob.mp3");
-        var dasFile = new File("src/test/resources/cloudStorage/das.mp3");
-        var obDasFile = new File("src/test/resources/cloudStorage/obDas.mp3");
+        var obFile = new File("src/test/resources/cloud_storage/ob.mp3");
+        var dasFile = new File("src/test/resources/cloud_storage/das.mp3");
+        var obDasFile = new File("src/test/resources/cloud_storage/obDas.mp3");
 
         try (var obStream = new FileInputStream(obFile);
              var dasStream = new FileInputStream(dasFile);
@@ -48,7 +48,7 @@ class CloudServiceTest {
         CloudRepository cloudRepository = Mockito.mock(CloudRepository.class);
         CloudService cloudService = new CloudService(cloudRepository);
 
-        var obFile = new File("src/test/resources/cloudStorage/ob.mp3");
+        var obFile = new File("src/test/resources/cloud_storage/ob.mp3");
 
         try (var obStream = new FileInputStream(obFile)) {
             byte[] bytes = obStream.readAllBytes();
@@ -65,7 +65,7 @@ class CloudServiceTest {
         CloudRepository cloudRepository = Mockito.mock(CloudRepository.class);
         CloudService cloudService = new CloudService(cloudRepository);
 
-        var obFile = new File("src/test/resources/cloudStorage/ob.mp3");
+        var obFile = new File("src/test/resources/cloud_storage/ob.mp3");
 
         try (var obStream = new FileInputStream(obFile)) {
             byte[] bytes = obStream.readAllBytes();

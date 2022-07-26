@@ -1,4 +1,4 @@
-package com.github.mysterix5.vover.cloudStorage;
+package com.github.mysterix5.vover.cloud_storage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

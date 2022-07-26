@@ -1,7 +1,7 @@
-package com.github.mysterix5.vover.main;
+package com.github.mysterix5.vover.primary;
 
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
-import com.github.mysterix5.vover.model.text.TextSubmitDTO;
+import com.github.mysterix5.vover.model.primary.PrimarySubmitDTO;
 import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,15 +17,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/main")
-public class MainController {
+public class PrimaryController {
 
-    private final MainService mainService;
+    private final PrimaryService primaryService;
 
     @PostMapping
-    public ResponseEntity<Object> onSubmittedText(@RequestBody TextSubmitDTO textSubmitDTO, Principal principal) {
-        log.info("Text submitted by user '{}': {}", principal.getName(), textSubmitDTO.getText());
+    public ResponseEntity<Object> onSubmittedText(@RequestBody PrimarySubmitDTO primarySubmitDTO, Principal principal) {
+        log.info("Text submitted by user '{}': {}", principal.getName(), primarySubmitDTO.getText());
         try {
-            return ResponseEntity.ok().body(mainService.onSubmittedText(textSubmitDTO.getText(), principal.getName()));
+            return ResponseEntity.ok().body(primaryService.onSubmittedText(primarySubmitDTO.getText(), principal.getName()));
         } catch (MultipleSubErrorException e) {
             return ResponseEntity.internalServerError().body(new VoverErrorDTO(e));
         } catch (Exception e) {
@@ -37,7 +37,7 @@ public class MainController {
     public ResponseEntity<Object> loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<String> ids) {
         AudioInputStream mergedAudio;
         try {
-            mergedAudio = mainService.getMergedAudio(ids);
+            mergedAudio = primaryService.getMergedAudio(ids);
             httpResponse.setContentType("audio/mp3");
             httpResponse.getOutputStream().write(mergedAudio.readAllBytes());
             return ResponseEntity.ok().build();

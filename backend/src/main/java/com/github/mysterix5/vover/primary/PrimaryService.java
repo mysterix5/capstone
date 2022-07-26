@@ -1,11 +1,12 @@
-package com.github.mysterix5.vover.main;
+package com.github.mysterix5.vover.primary;
 
-import com.github.mysterix5.vover.cloudStorage.CloudService;
-import com.github.mysterix5.vover.model.other.Accessibility;
-import com.github.mysterix5.vover.model.other.Availability;
+import com.github.mysterix5.vover.cloud_storage.CloudService;
+import com.github.mysterix5.vover.model.record.Accessibility;
+import com.github.mysterix5.vover.model.record.Availability;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
-import com.github.mysterix5.vover.model.text.TextResponseDTO;
-import com.github.mysterix5.vover.model.word.*;
+import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
+import com.github.mysterix5.vover.model.record.*;
+import com.github.mysterix5.vover.records.RecordMongoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MainService {
-    private final WordsMongoRepository wordsRepository;
+public class PrimaryService {
+    private final RecordMongoRepository wordsRepository;
     private final CloudService cloudService;
 
-    public TextResponseDTO onSubmittedText(String text, String username) {
+    public PrimaryResponseDTO onSubmittedText(String text, String username) {
         List<String> wordList = splitText(text);
 
         return createResponses(wordList, username);
@@ -31,13 +32,13 @@ public class MainService {
         return Arrays.stream(text.split(" ")).toList();
     }
 
-    private TextResponseDTO createResponses(List<String> wordList, String username) {
+    private PrimaryResponseDTO createResponses(List<String> wordList, String username) {
         wordList = wordList.stream().map(String::toLowerCase).toList();
         Set<String> appearingWordsSet = wordList.stream().filter(this::wordValidCheck).collect(Collectors.toSet());
-        Map<String, List<WordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet, username);
+        Map<String, List<RecordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet, username);
 
-        List<WordResponseDTO> textWordsResponse = wordList.stream()
-                .map(WordResponseDTO::new)
+        List<RecordResponseDTO> textWordsResponse = wordList.stream()
+                .map(RecordResponseDTO::new)
                 .peek(w -> {
                     if (appearingWordsSet.contains(w.getWord())) {
                         if (dbWordsMap.containsKey(w.getWord())) {
@@ -50,7 +51,7 @@ public class MainService {
                     }
                 }).toList();
 
-        return new TextResponseDTO(textWordsResponse, dbWordsMap);
+        return new PrimaryResponseDTO(textWordsResponse, dbWordsMap);
     }
 
 
@@ -65,9 +66,9 @@ public class MainService {
         return true;
     }
 
-    private boolean allowedWordForUser(String username, WordDbEntity wordDbEntity) {
-        if (wordDbEntity.getAccessibility() == Accessibility.PUBLIC
-                || Objects.equals(wordDbEntity.getCreator(), username)
+    private boolean allowedWordForUser(String username, RecordDbEntity recordDbEntity) {
+        if (recordDbEntity.getAccessibility() == Accessibility.PUBLIC
+                || Objects.equals(recordDbEntity.getCreator(), username)
         ) {
             return true;
         }
@@ -75,23 +76,23 @@ public class MainService {
         return false;
     }
 
-    private Map<String, List<WordDbResponseDTO>> createDbWordsMap(Set<String> textWords, String username) {
-        List<WordDbEntity> allDbEntriesForWords = wordsRepository.findByWordIn(textWords);
+    private Map<String, List<RecordDbResponseDTO>> createDbWordsMap(Set<String> textWords, String username) {
+        List<RecordDbEntity> allDbEntriesForWords = wordsRepository.findByWordIn(textWords);
 
         allDbEntriesForWords = allDbEntriesForWords.stream().filter(wordDb -> allowedWordForUser(username, wordDb)).toList();
 
-        Map<String, List<WordDbResponseDTO>> dbWordsMap = new HashMap<>();
-        for (WordDbEntity w : allDbEntriesForWords) {
+        Map<String, List<RecordDbResponseDTO>> dbWordsMap = new HashMap<>();
+        for (RecordDbEntity w : allDbEntriesForWords) {
             if (!dbWordsMap.containsKey(w.getWord())) {
                 dbWordsMap.put(w.getWord(), new ArrayList<>());
             }
-            dbWordsMap.get(w.getWord()).add(new WordDbResponseDTO(w));
+            dbWordsMap.get(w.getWord()).add(new RecordDbResponseDTO(w));
         }
         return dbWordsMap;
     }
 
     public AudioInputStream getMergedAudio(List<String> ids) {
-        List<WordDbEntity> wordDbEntities = (List<WordDbEntity>) wordsRepository.findAllById(ids);
+        List<RecordDbEntity> wordDbEntities = (List<RecordDbEntity>) wordsRepository.findAllById(ids);
         List<String> filePaths = ids.stream()
                 .map(id -> wordDbEntities.stream()
                         .filter(wordDb -> Objects.equals(wordDb.getId(), id))

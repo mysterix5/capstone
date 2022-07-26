@@ -1,6 +1,5 @@
-package com.github.mysterix5.vover.model.word;
+package com.github.mysterix5.vover.model.record;
 
-import com.github.mysterix5.vover.model.other.Availability;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class WordResponseDTO {
+public class RecordResponseDTO {
     private String word;
     private Availability availability;
 
-    public WordResponseDTO(String word){
+    public RecordResponseDTO(String word){
         this.word = word;
     }
 }

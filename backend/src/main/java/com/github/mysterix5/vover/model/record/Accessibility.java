@@ -1,4 +1,4 @@
-package com.github.mysterix5.vover.model.other;
+package com.github.mysterix5.vover.model.record;
 
 public enum Accessibility {
     PRIVATE, FRIENDS, PUBLIC

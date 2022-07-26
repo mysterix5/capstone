@@ -1,6 +1,5 @@
-package com.github.mysterix5.vover.model.word;
+package com.github.mysterix5.vover.model.record;
 
-import com.github.mysterix5.vover.model.other.Accessibility;
 import lombok.Builder;
 import lombok.Data;
 
