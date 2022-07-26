@@ -31,7 +31,7 @@ export default function Recordings() {
 
     useEffect(() => {
         updateRecordPage();
-    }, [getToken])
+    }, [getToken, updateRecordPage])
 
 
     function getSpecificRecordPage(page: number) {
