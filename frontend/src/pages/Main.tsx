@@ -15,14 +15,14 @@ export default function Main() {
     const [audioFile, setAudioFile] = useState<any>();
     const [ids, setIds] = useState<string[]>([])
 
-    const {token} = useAuth();
+    const {username, getToken} = useAuth();
     const nav = useNavigate();
 
     useEffect(()=>{
-        if(!token){
+        if(!username){
             nav("/login")
         }
-    }, [token, nav])
+    }, [username, nav])
 
     function checkSplitText(){
         for(const word of splitText!.textWords){
@@ -34,7 +34,7 @@ export default function Main() {
     }
 
     function getAudio(){
-        apiGetAudio(ids)
+        apiGetAudio(getToken(), ids)
             .then(setAudioFile);
     }
 

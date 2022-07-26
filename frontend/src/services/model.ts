@@ -25,9 +25,9 @@ export interface TextResponse {
 }
 
 export interface AuthInterface {
-    token : string,
     username : string,
     roles : string[],
+    getToken: () => string,
     logout: () => void
     login: (token: string) => void
 }

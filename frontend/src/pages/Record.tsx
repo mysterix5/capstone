@@ -2,6 +2,7 @@ import {Recorder} from "vmsg";
 import {Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
 import {FormEvent, useState} from "react";
 import {apiSaveAudio} from "../services/apiServices";
+import {useAuth} from "../usermanagement/AuthProvider";
 
 const recorder = new Recorder({
     wasmURL: "https://unpkg.com/vmsg@0.4.0/vmsg.wasm"
@@ -17,6 +18,8 @@ export default function Record() {
     const [word, setWord] = useState("");
     const [tag, setTag] = useState("normal");
     const [accessibility, setAccessibility] = useState("PUBLIC");
+
+    const {getToken} = useAuth();
 
     const record = async () => {
         setIsLoading(true);
@@ -45,7 +48,7 @@ export default function Record() {
         event.preventDefault();
         console.log("save audio");
 
-        apiSaveAudio(word, tag, accessibility, audioBlob!)
+        apiSaveAudio(getToken(), word, tag, accessibility, audioBlob!)
             .then(() => {
                 setAudioLink("");
                 setAudioBlob(undefined);
