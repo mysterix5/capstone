@@ -1,4 +1,4 @@
-import Recordings from "./subcomponents/Recordings";
+import Recordings from "./Recordings";
 
 
 export default function UserPage(){

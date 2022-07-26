@@ -1,8 +1,6 @@
 package com.github.mysterix5.vover.primary;
 
 import com.github.mysterix5.vover.cloud_storage.CloudService;
-import com.github.mysterix5.vover.model.record.Accessibility;
-import com.github.mysterix5.vover.model.record.Availability;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
 import com.github.mysterix5.vover.model.record.*;

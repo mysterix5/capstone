@@ -1,12 +1,12 @@
 import {Grid} from "@mui/material";
-import TextSubmit from "./subcomponents/TextSubmit";
+import TextSubmit from "./TextSubmit";
 import {useEffect, useState} from "react";
-import {TextMetadataResponse} from "../services/model";
-import TextCheck from "./subcomponents/TextCheck";
-import Audio from "./subcomponents/Audio";
-import {apiGetMergedAudio} from "../services/apiServices";
-import {isAvailable} from "../globalTools/helpers";
-import {useAuth} from "../usermanagement/AuthProvider";
+import {TextMetadataResponse} from "../../services/model";
+import TextCheck from "./TextCheck";
+import Audio from "./Audio";
+import {apiGetMergedAudio} from "../../services/apiServices";
+import {isAvailable} from "../../globalTools/helpers";
+import {useAuth} from "../../usermanagement/AuthProvider";
 import {useNavigate} from "react-router-dom";
 
 

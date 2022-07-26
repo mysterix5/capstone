@@ -1,15 +1,15 @@
 import React from 'react';
 import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Primary from "./pages/Primary";
-import Header from "./pages/subcomponents/Header";
+import Primary from "./pages/primary";
+import Header from "./pages/header";
 import {blueGrey} from "@mui/material/colors";
-import Record from "./pages/Record";
+import Record from "./pages/record";
 import RegisterPage from "./usermanagement/RegisterPage";
 import LoginPage from "./usermanagement/LoginPage";
 import AuthProvider from "./usermanagement/AuthProvider";
 import GlobalVoverErrorDisplay from "./globalTools/GlobalVoverErrorDisplay";
-import UserPage from "./pages/UserPage";
+import UserPage from "./pages/userpage";
 
 const darkTheme = createTheme({
     palette: {

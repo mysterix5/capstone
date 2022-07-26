@@ -1,8 +1,8 @@
 import {Recorder} from "vmsg";
 import {Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
 import {FormEvent, MouseEvent, useState} from "react";
-import {apiSaveAudio} from "../services/apiServices";
-import {useAuth} from "../usermanagement/AuthProvider";
+import {apiSaveAudio} from "../../services/apiServices";
+import {useAuth} from "../../usermanagement/AuthProvider";
 
 const recorder = new Recorder({
     wasmURL: "https://unpkg.com/vmsg@0.4.0/vmsg.wasm"

@@ -3,7 +3,7 @@ import {
     Grid
 } from "@mui/material";
 import {TextMetadataResponse, WordAvail} from "../../services/model";
-import WordDropdown from "./WordDropdown";
+import WordDropdown from "../userpage/WordDropdown";
 
 interface TextCheckProps {
     textMetadataResponse: TextMetadataResponse,
