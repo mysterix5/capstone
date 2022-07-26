@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Card,
     CardActions,
@@ -17,7 +18,7 @@ import {AxiosError} from "axios";
 interface RecordDetailsProps {
     record: RecordInfo,
     accessibilityChoices: string[],
-    getRecordPage: ()=>void
+    getRecordPage: () => void
 }
 
 export default function RecordDetails(props: RecordDetailsProps) {
@@ -45,6 +46,7 @@ export default function RecordDetails(props: RecordDetailsProps) {
     function saveWord() {
         apiChangeRecord(getToken(), {id: props.record.id, word: word, tag: tag, accessibility: accessibility})
             .then(props.getRecordPage)
+            .then(() => setEdit(false))
             .catch((error) => {
                 if (error.response) {
                     setError(error.response.data);
@@ -65,7 +67,7 @@ export default function RecordDetails(props: RecordDetailsProps) {
             );
     }
 
-    function deleteRecord(){
+    function deleteRecord() {
         apiDeleteRecord(getToken(), props.record.id)
             .then(props.getRecordPage);
     }
@@ -118,11 +120,15 @@ export default function RecordDetails(props: RecordDetailsProps) {
                 <CardActions sx={{flexDirection: "column"}}>
                     <Grid container direction={"column"}>
                         <Grid item>
-                            <Switch
-                                checked={edit}
-                                onChange={handleEditSwitch}
-                                inputProps={{'aria-label': 'controlled'}}
-                            />
+                            <Box>
+                                edit:
+                                <Switch
+                                    checked={edit}
+                                    onChange={handleEditSwitch}
+                                    inputProps={{'aria-label': 'controlled'}}
+                                />
+                            </Box>
+
                         </Grid>
                         <Grid item>
                             <Button onClick={getAudio}>get audio</Button>

@@ -21,8 +21,6 @@ export default function LoginPage() {
     const [inputUsername, setInputUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    // const [error, setError] = useState<VoverError>();
-
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
         sendLogin({username: inputUsername, password})
