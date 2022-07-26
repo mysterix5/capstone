@@ -31,7 +31,8 @@ export default function Recordings() {
 
     useEffect(() => {
         updateRecordPage();
-    }, [getToken, updateRecordPage])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [getToken])
 
 
     function getSpecificRecordPage(page: number) {
