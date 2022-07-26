@@ -39,7 +39,7 @@ public class TextService {
                         if (dbWordsMap.containsKey(w.getWord())) {
                             w.setAvailability(Availability.PUBLIC);
                         } else {
-                            w.setAvailability(Availability.ABSENT);
+                            w.setAvailability(Availability.NOT_AVAILABLE);
                         }
                     } else {
                         w.setAvailability(Availability.INVALID);
