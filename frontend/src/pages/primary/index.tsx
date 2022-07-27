@@ -11,9 +11,12 @@ import {useNavigate} from "react-router-dom";
 
 
 export default function Primary() {
-    const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>();
+    const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>({
+        textWords: [],
+        defaultIds: [],
+        wordRecordMap: {}
+    });
     const [audioFile, setAudioFile] = useState<any>();
-    const [ids, setIds] = useState<string[]>([])
 
     const {username, getToken, setError} = useAuth();
     const nav = useNavigate();
@@ -24,7 +27,7 @@ export default function Primary() {
         }
     }, [username, nav])
 
-    function handleTextMetadataResponse(textMetadataResponse: TextMetadataResponse){
+    function handleTextMetadataResponse(textMetadataResponse: TextMetadataResponse) {
         setTextMetadataResponse(textMetadataResponse);
         setAudioFile(null);
     }
@@ -39,7 +42,7 @@ export default function Primary() {
     }
 
     function getAudio() {
-        apiGetMergedAudio(getToken(), ids)
+        apiGetMergedAudio(getToken(), textMetadataResponse?.defaultIds!)
             .then(setAudioFile)
             .catch((err) => {
                 if (err.response) {
@@ -50,16 +53,21 @@ export default function Primary() {
             });
     }
 
+    function setId(id: string, index: number) {
+        let tmp = {...textMetadataResponse};
+        tmp.defaultIds[index] = id
+        setTextMetadataResponse(tmp);
+    }
 
     return (
         <Grid container alignItems={"center"} flexDirection={"column"}>
             <Grid item>
-                <TextSubmit setTextMetadataResponse={handleTextMetadataResponse} setIds={setIds}/>
+                <TextSubmit setTextMetadataResponse={handleTextMetadataResponse}/>
             </Grid>
             <Grid item ml={2} mr={2}>
                 {
                     textMetadataResponse &&
-                    <TextCheck textMetadataResponse={textMetadataResponse} ids={ids} setIds={setIds}/>
+                    <TextCheck textMetadataResponse={textMetadataResponse} setId={setId}/>
                 }
             </Grid>
             <Grid item>

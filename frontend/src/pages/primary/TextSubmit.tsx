@@ -5,8 +5,7 @@ import {TextMetadataResponse} from "../../services/model";
 import {useAuth} from "../../usermanagement/AuthProvider";
 
 interface TextSubmitProps{
-    setTextMetadataResponse: (textResponse: TextMetadataResponse)=>void,
-    setIds: (ids: string[])=>void
+    setTextMetadataResponse: (textResponse: TextMetadataResponse)=>void
 }
 
 export default function TextSubmit(props: TextSubmitProps){
@@ -22,20 +21,7 @@ export default function TextSubmit(props: TextSubmitProps){
                 console.log(r);
                 props.setTextMetadataResponse(r);
                 return r;
-            })
-            .then(textResponse => {
-                const ids: string[] = [];
-                for(const word of textResponse.textWords){
-                    const mdl = textResponse.wordRecordMap[word.word];
-                    if(mdl && mdl.length>0){
-                        ids.push(mdl.at(0)!.id);
-                    }else{
-                        ids.push('');
-                    }
-                }
-                props.setIds(ids);
-            })
-        ;
+            });
     }
 
     return (

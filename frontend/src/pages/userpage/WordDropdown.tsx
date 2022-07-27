@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 
 interface WordDropdownProps {
     wordAvail: WordAvail,
-    setIdInArray: (id: string) => void
+    setId: (id: string) => void
     choicesList: RecordMetaData[],
     id: string
 }
@@ -16,15 +16,24 @@ export default function WordDropdown(props: WordDropdownProps) {
     const [id, setId] = useState(props.id);
 
     useEffect(() => {
-        props.setIdInArray(id);
-    }, [id, props, props.setIdInArray])
+        props.setId(id);
+    }, [id, props, props.setId])
 
     const nav = useNavigate();
 
     return (
         <FormControl variant="filled" size="small">
             <InputLabel id="demo-simple-select-label">
-                {props.wordAvail.word.toUpperCase()}
+                <Grid container direction={"row"} wrap={"nowrap"}>
+                    { props.choicesList && props.choicesList.length > 1 &&
+                        <Grid item mr={1} border={1}  bgcolor={"darkgrey"} color={"#577ee0"}>
+                            {props.choicesList.length}
+                        </Grid>
+                    }
+                    <Grid item>
+                        {props.wordAvail.word.toUpperCase()}
+                    </Grid>
+                </Grid>
             </InputLabel>
             <Select
                 size={"medium"}

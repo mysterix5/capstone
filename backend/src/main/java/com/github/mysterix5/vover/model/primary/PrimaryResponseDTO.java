@@ -15,4 +15,5 @@ import java.util.Map;
 public class PrimaryResponseDTO {
     private List<RecordResponseDTO> textWords;
     private Map<String, List<RecordDbResponseDTO>> wordRecordMap;
+    private List<String> defaultIds;
 }

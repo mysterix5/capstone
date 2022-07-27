@@ -7,17 +7,14 @@ import WordDropdown from "../userpage/WordDropdown";
 
 interface TextCheckProps {
     textMetadataResponse: TextMetadataResponse,
-    ids: string[],
-    setIds: (ids: string[]) => void
+    setId: (id: string, index: number) => void
 }
 
 export default function TextCheck(props: TextCheckProps) {
 
     function generateIdSetter(index: number){
         return (id: string) => {
-            let localIds = props.ids;
-            localIds[index] = id;
-            props.setIds(localIds);
+            props.setId(id, index);
         }
     }
 
@@ -36,7 +33,7 @@ export default function TextCheck(props: TextCheckProps) {
 
         return (
             <Box sx={{backgroundColor: myColor}}>
-                <WordDropdown wordAvail={word} setIdInArray={generateIdSetter(index)} choicesList={props.textMetadataResponse.wordRecordMap[word.word]} id={props.ids[index]}/>
+                <WordDropdown wordAvail={word} setId={generateIdSetter(index)} choicesList={props.textMetadataResponse.wordRecordMap[word.word]} id={props.textMetadataResponse.defaultIds[index]}/>
             </Box>
         )
     }
