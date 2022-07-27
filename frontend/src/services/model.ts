@@ -3,11 +3,11 @@ export interface TextSend{
     text: string
 }
 
-export interface WordMap {
-    [key: string]: WordMetaData[]
+export interface WordRecordMap {
+    [key: string]: RecordMetaData[]
 }
 
-export interface WordMetaData {
+export interface RecordMetaData {
     id: string,
     word: string,
     creator: string,
@@ -19,9 +19,9 @@ export interface WordAvail {
     availability: string
 }
 
-export interface TextResponse {
+export interface TextMetadataResponse {
     textWords: WordAvail[],
-    wordMap: WordMap
+    wordRecordMap: WordRecordMap
 }
 
 export interface AuthInterface {
@@ -38,12 +38,12 @@ export interface LoginResponse {
     token: string;
 }
 
-export interface UserDTO{
+export interface LoginDTO {
     username: string,
     password: string
 }
 
-export interface UserRegisterDTO{
+export interface RegisterDTO {
     username: string,
     password: string,
     passwordRepeat: string
