@@ -42,7 +42,8 @@ class PrimaryServiceTest {
         PrimaryResponseDTO expected = new PrimaryResponseDTO(
                 List.of(new RecordResponseDTO("bester", Availability.PUBLIC), new RecordResponseDTO("test", Availability.PUBLIC)),
                 Map.of("bester", List.of(new RecordDbResponseDTO(recordDbEntity1)),
-                        "test", List.of(new RecordDbResponseDTO(recordDbEntity2))));
+                        "test", List.of(new RecordDbResponseDTO(recordDbEntity2))),
+                List.of("id1","id2"));
 
         assertThat(response).isEqualTo(expected);
     }
@@ -62,6 +63,12 @@ class PrimaryServiceTest {
 
         var response = primaryService.onSubmittedText(testString, "user");
 
+        List<String> defaultIds = new ArrayList<>();
+        defaultIds.add(null);
+        defaultIds.add("id1");
+        defaultIds.add(null);
+        defaultIds.add(null);
+
         var expected = new PrimaryResponseDTO(
                 List.of(
                         new RecordResponseDTO("beste/r", Availability.INVALID),
@@ -71,7 +78,8 @@ class PrimaryServiceTest {
                 ),
                 Map.of(
                         "test", List.of(new RecordDbResponseDTO(recordDbEntity1))
-                ));
+                ),
+                defaultIds);
 
         assertThat(response).isEqualTo(expected);
     }
