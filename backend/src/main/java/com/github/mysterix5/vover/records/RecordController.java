@@ -51,7 +51,7 @@ public class RecordController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> getSingleAudio(@PathVariable String id, Principal principal){
+    public ResponseEntity<Object> deleteRecord(@PathVariable String id, Principal principal){
         try {
             recordService.deleteRecord(id, principal.getName());
             return ResponseEntity.ok().build();
