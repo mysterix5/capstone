@@ -1,4 +1,4 @@
-import {Box, Button, Grid, Link, Slider} from "@mui/material";
+import {Box, Button, Grid, Link, Slider, Typography} from "@mui/material";
 import {Download, Pause, PlayArrow, Stop} from "@mui/icons-material";
 import {useRef, useState} from "react";
 
@@ -99,6 +99,7 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
                                 aria-label="Small"
                                 valueLabelDisplay="auto"
                                 onChangeCommitted={(e, v) => {
+                                    audioRef.current!.pause();
                                     audioRef.current!.currentTime = (typeof v === "number") ? v : v[0];
                                     setCurrentTime(audioRef.current!.currentTime);
                                 }}
@@ -107,6 +108,11 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
                     </>
                 }
             </Box>
+            <Typography>{currentTime}/{duration}</Typography>
+
+            { audioRef && audioRef.current && audioRef.current.currentTime &&
+                <Typography>||{audioRef.current!.currentTime}/{audioRef.current!.duration}</Typography>
+            }
         </Box>
     )
 }
