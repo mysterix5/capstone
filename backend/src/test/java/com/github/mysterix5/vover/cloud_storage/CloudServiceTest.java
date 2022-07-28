@@ -21,22 +21,22 @@ class CloudServiceTest {
         CloudRepository cloudRepository = Mockito.mock(CloudRepository.class);
         CloudService cloudService = new CloudService(cloudRepository);
 
-        var obFile = new File("src/test/resources/cloud_storage/ob.mp3");
-        var dasFile = new File("src/test/resources/cloud_storage/das.mp3");
-        var obDasFile = new File("src/test/resources/cloud_storage/obDas.mp3");
+        var obFile = new File("src/test/resources/cloud_storage/eins.mp3");
+        var dasFile = new File("src/test/resources/cloud_storage/zwei.mp3");
+        var obDasFile = new File("src/test/resources/cloud_storage/einszwei.mp3");
 
         try (var obStream = new FileInputStream(obFile);
              var dasStream = new FileInputStream(dasFile);
              var obDasStream = new FileInputStream(obDasFile)
         ) {
-            Mockito.when(cloudRepository.find("ob.mp3")).thenReturn(obStream.readAllBytes());
-            Mockito.when(cloudRepository.find("das.mp3")).thenReturn(dasStream.readAllBytes());
+            Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(obStream.readAllBytes());
+            Mockito.when(cloudRepository.find("zwei.mp3")).thenReturn(dasStream.readAllBytes());
 
             var obDasBytes = obDasStream.readAllBytes();
 
-            AudioInputStream mergedAudio = cloudService.loadMultipleAudioFromCloudAndMerge(List.of("ob.mp3", "das.mp3"));
+            byte[] mergedAudio = cloudService.loadMultipleMp3FromCloudAndMerge(List.of("eins.mp3", "zwei.mp3"));
 
-            assertThat(mergedAudio.readAllBytes()).isEqualTo(obDasBytes);
+            assertThat(mergedAudio).isEqualTo(obDasBytes);
         } catch (IOException e) {
             throw new RuntimeException();
         }
@@ -48,13 +48,13 @@ class CloudServiceTest {
         CloudRepository cloudRepository = Mockito.mock(CloudRepository.class);
         CloudService cloudService = new CloudService(cloudRepository);
 
-        var obFile = new File("src/test/resources/cloud_storage/ob.mp3");
+        var obFile = new File("src/test/resources/cloud_storage/eins.mp3");
 
         try (var obStream = new FileInputStream(obFile)) {
             byte[] bytes = obStream.readAllBytes();
-            cloudService.save("ob.mp3", bytes);
+            cloudService.save("eins.mp3", bytes);
 
-            Mockito.verify(cloudRepository).save("ob.mp3", bytes);
+            Mockito.verify(cloudRepository).save("eins.mp3", bytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -65,13 +65,13 @@ class CloudServiceTest {
         CloudRepository cloudRepository = Mockito.mock(CloudRepository.class);
         CloudService cloudService = new CloudService(cloudRepository);
 
-        var obFile = new File("src/test/resources/cloud_storage/ob.mp3");
+        var obFile = new File("src/test/resources/cloud_storage/eins.mp3");
 
         try (var obStream = new FileInputStream(obFile)) {
             byte[] bytes = obStream.readAllBytes();
-            Mockito.when(cloudRepository.find("ob.mp3")).thenReturn(bytes);
+            Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(bytes);
 
-            AudioInputStream actual = cloudService.find("ob.mp3");
+            AudioInputStream actual = cloudService.find("eins.mp3");
 
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
             AudioFileFormat baseFormat = AudioSystem.getAudioFileFormat(byteArrayInputStream);
@@ -91,9 +91,9 @@ class CloudServiceTest {
         CloudService cloudService = new CloudService(cloudRepository);
 
         try{
-            cloudService.delete("ob.mp3");
+            cloudService.delete("eins.mp3");
 
-            Mockito.verify(cloudRepository).delete("ob.mp3");
+            Mockito.verify(cloudRepository).delete("eins.mp3");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -105,9 +105,9 @@ class CloudServiceTest {
         CloudService cloudService = new CloudService(cloudRepository);
 
         try{
-            cloudService.move("ob.mp3", "das.mp3");
+            cloudService.move("eins.mp3", "zwei.mp3");
 
-            Mockito.verify(cloudRepository).move("ob.mp3", "das.mp3");
+            Mockito.verify(cloudRepository).move("eins.mp3", "zwei.mp3");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

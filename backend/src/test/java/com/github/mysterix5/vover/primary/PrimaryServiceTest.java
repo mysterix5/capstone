@@ -85,7 +85,7 @@ class PrimaryServiceTest {
     }
 
     @Test
-    void loadWavFromCloudAndMerge() throws IOException {
+    void loadWavFromCloudAndMerge() {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         RecordDbEntity recordDbEntity2 = RecordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").accessibility(Accessibility.PUBLIC).build();
 
@@ -97,6 +97,6 @@ class PrimaryServiceTest {
 
         primaryService.getMergedAudio(List.of("id1", "id2"));
 
-        verify(mockedCloudService).loadMultipleAudioFromCloudAndMerge(List.of("test.mp3", "eins.mp3"));
+        verify(mockedCloudService).loadMultipleMp3FromCloudAndMerge(List.of("test.mp3", "eins.mp3"));
     }
 }
