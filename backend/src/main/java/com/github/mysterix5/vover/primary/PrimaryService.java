@@ -81,12 +81,11 @@ public class PrimaryService {
 
     public AudioInputStream getMergedAudio(List<String> ids, String username) {
         List<RecordDbEntity> recordDbEntities = (List<RecordDbEntity>) wordsRepository.findAllById(ids);
-        recordDbEntities.stream().map(r->{
+        for(var r: recordDbEntities){
             if(!recordIsAllowedForUser(r, username)){
                 throw new MultipleSubErrorException("You are not allowed to get one of the records! Don't try to hack me! :(");
             }
-            return null;
-        });
+        }
         List<String> filePaths = ids.stream()
                 .map(id -> recordDbEntities.stream()
                         .filter(wordDb -> Objects.equals(wordDb.getId(), id))
