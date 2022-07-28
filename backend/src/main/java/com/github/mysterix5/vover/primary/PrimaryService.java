@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.sound.sampled.AudioInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,7 +92,7 @@ public class PrimaryService {
         return dbWordsMap;
     }
 
-    public AudioInputStream getMergedAudio(List<String> ids) {
+    public byte[] getMergedAudio(List<String> ids) {
         List<RecordDbEntity> wordDbEntities = (List<RecordDbEntity>) wordsRepository.findAllById(ids);
         List<String> filePaths = ids.stream()
                 .map(id -> wordDbEntities.stream()
@@ -101,7 +100,7 @@ public class PrimaryService {
                         .findFirst()
                         .orElseThrow().getCloudFileName()).toList();
         try {
-            return cloudService.loadMultipleAudioFromCloudAndMerge(filePaths);
+            return cloudService.loadMultipleMp3FromCloudAndMerge(filePaths);
         } catch (Exception e) {
             throw new MultipleSubErrorException("An error occurred while creating your audio file");
         }

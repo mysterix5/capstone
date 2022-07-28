@@ -35,11 +35,10 @@ public class PrimaryController {
 
     @PostMapping("/audio")
     public ResponseEntity<Object> loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<String> ids) {
-        AudioInputStream mergedAudio;
         try {
-            mergedAudio = primaryService.getMergedAudio(ids);
+            byte[] mergedAudio = primaryService.getMergedAudio(ids);
             httpResponse.setContentType("audio/mp3");
-            httpResponse.getOutputStream().write(mergedAudio.readAllBytes());
+            httpResponse.getOutputStream().write(mergedAudio);
             return ResponseEntity.ok().build();
         } catch (MultipleSubErrorException e) {
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
@@ -47,6 +46,4 @@ public class PrimaryController {
             return ResponseEntity.badRequest().body(new VoverErrorDTO("Unknown error while handling your request :("));
         }
     }
-
-
 }
