@@ -1,6 +1,7 @@
 package com.github.mysterix5.vover.records;
 
 import com.github.mysterix5.vover.cloud_storage.CloudService;
+import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.record.Accessibility;
 import com.github.mysterix5.vover.model.record.RecordManagementDTO;
 import com.github.mysterix5.vover.model.record.RecordPage;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.AudioInputStream;
 import java.io.*;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,6 +26,14 @@ public class RecordService {
     private final CloudService cloudService;
 
     public void addWordToDb(String word, String creator, String tag, String accessibility, byte[] audio) throws IOException {
+        if(!StringOperations.isWord(word)){
+            throw new MultipleSubErrorException("The metadata you send with your record was not acceptable",
+                    List.of("This is not a valid word", "only letters, no white spaces, numbers or special characters"));
+        }
+        if(!StringOperations.isWord(tag)){
+            throw new MultipleSubErrorException("The metadata you send with your record was not acceptable",
+                    List.of("This is not a valid tag", "only letters, no white spaces, numbers or special characters"));
+        }
         String cloudFileName = createCloudFileName(word, creator, tag, accessibility);
         RecordDbEntity recordDbEntity = new RecordDbEntity(word, creator, tag, accessibility, cloudFileName);
         cloudService.save(cloudFileName, audio);

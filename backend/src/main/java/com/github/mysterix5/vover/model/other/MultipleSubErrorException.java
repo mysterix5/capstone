@@ -5,10 +5,6 @@ import java.util.List;
 public class MultipleSubErrorException extends RuntimeException {
     private List<String> subMessages;
 
-    public  MultipleSubErrorException(){
-        super();
-    }
-
     public  MultipleSubErrorException(String message){
         super(message);
     }
