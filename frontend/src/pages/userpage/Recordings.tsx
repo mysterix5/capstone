@@ -19,21 +19,17 @@ export default function Recordings() {
             accessibilityChoices: []
         });
 
-    const {getToken, username} = useAuth();
+    const {getToken} = useAuth();
 
     const nav = useNavigate();
 
     useEffect(() => {
-        if (!username) {
+        if (!getToken()) {
             nav("/login")
         }
-    }, [username, nav])
-
-    useEffect(() => {
         updateRecordPage();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [getToken])
-
+    }, [nav])
 
     function getSpecificRecordPage(page: number) {
         apiGetRecordPage(getToken(), page, recordPage.size, recordPage.searchTerm)

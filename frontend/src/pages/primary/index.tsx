@@ -18,17 +18,17 @@ export default function Primary() {
     });
     const [audioFile, setAudioFile] = useState<any>();
 
-    const {username, getToken, setError} = useAuth();
+    const {getToken, setError} = useAuth();
     const nav = useNavigate();
 
     useEffect(() => {
-        if (!username) {
+        if (!getToken()) {
             nav("/login")
         }
-    }, [username, nav])
+    }, [getToken, nav])
 
-    function handleTextMetadataResponse(textMetadataResponse: TextMetadataResponse) {
-        setTextMetadataResponse(textMetadataResponse);
+    function handleTextMetadataResponse(textMetadataResponseLocal: TextMetadataResponse) {
+        setTextMetadataResponse(textMetadataResponseLocal);
         setAudioFile(null);
     }
 
@@ -54,9 +54,11 @@ export default function Primary() {
     }
 
     function setId(id: string, index: number) {
-        let tmp = {...textMetadataResponse};
-        tmp.defaultIds[index] = id
-        setTextMetadataResponse(tmp);
+        setTextMetadataResponse(current=>{
+            let tmp = {...current};
+            tmp.defaultIds[index] = id;
+            return tmp;
+        });
     }
 
     return (
@@ -67,7 +69,7 @@ export default function Primary() {
             <Grid item ml={2} mr={2}>
                 {
                     textMetadataResponse &&
-                    <TextCheck textMetadataResponse={textMetadataResponse} setId={setId}/>
+                    <TextCheck key={"textcheck"} textMetadataResponse={textMetadataResponse} setId={setId}/>
                 }
             </Grid>
             <Grid item>
