@@ -15,10 +15,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.util.List;
 import java.util.Optional;
@@ -108,16 +104,12 @@ class RecordServiceTest {
         try (var obStream = new FileInputStream(obFile)) {
             byte[] bytes = obStream.readAllBytes();
 
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-            AudioFileFormat baseFormat = AudioSystem.getAudioFileFormat(byteArrayInputStream);
-            AudioInputStream audioInputStream = new AudioInputStream(byteArrayInputStream, baseFormat.getFormat(), baseFormat.getFrameLength());
+            Mockito.when(mockedCloudService.find(recordDbEntity1.getCloudFileName())).thenReturn(bytes);
 
-            Mockito.when(mockedCloudService.find(recordDbEntity1.getCloudFileName())).thenReturn(audioInputStream);
+            byte[] actual = recordService.getAudio(recordDbEntity1.getId(), username);
 
-            AudioInputStream actual = recordService.getAudio(recordDbEntity1.getId(), username);
-
-            assertThat(actual).isEqualTo(audioInputStream);
-        } catch (IOException | UnsupportedAudioFileException e) {
+            assertThat(actual).isEqualTo(bytes);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

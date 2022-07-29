@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.sound.sampled.AudioInputStream;
 import java.io.*;
 import java.util.List;
 import java.util.UUID;
@@ -67,7 +66,7 @@ public class RecordService {
                 .build();
     }
 
-    public AudioInputStream getAudio(String id, String username) {
+    public byte[] getAudio(String id, String username) {
         RecordDbEntity word = wordRepository.findById(id).orElseThrow();
         if (!word.getCreator().equals(username)) {
             throw new RuntimeException("The audio file you requested is not yours. Don't try to hack me! :(");

@@ -4,10 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.util.List;
 
@@ -69,16 +65,10 @@ class CloudServiceTest {
             byte[] bytes = obStream.readAllBytes();
             Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(bytes);
 
-            AudioInputStream actual = cloudService.find("eins.mp3");
+            byte[] actual = cloudService.find("eins.mp3");
 
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-            AudioFileFormat baseFormat = AudioSystem.getAudioFileFormat(byteArrayInputStream);
-            AudioInputStream expected = new AudioInputStream(byteArrayInputStream, baseFormat.getFormat(), baseFormat.getFrameLength());
-
-            assertThat(actual.getFormat().getEncoding()).isEqualTo(expected.getFormat().getEncoding());
-            assertThat(actual.getFormat().getSampleRate()).isEqualTo(expected.getFormat().getSampleRate());
-            assertThat(actual.getFrameLength()).isEqualTo(expected.getFrameLength());
-        } catch (IOException | UnsupportedAudioFileException e) {
+            assertThat(actual).isEqualTo(bytes);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

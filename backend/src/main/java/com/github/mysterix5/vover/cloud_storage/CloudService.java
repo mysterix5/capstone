@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.sound.sampled.*;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,20 +55,8 @@ public class CloudService {
         cloudRepository.save(filePath, byteArray);
     }
 
-    public AudioInputStream find(String filePath) throws IOException {
-        byte[] audioBytes = cloudRepository.find(filePath);
-        return convertAudioBytesToAudioInputStream(audioBytes);
-    }
-
-    private AudioInputStream convertAudioBytesToAudioInputStream(byte[] audioBytes) {
-
-        try {
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioBytes);
-            AudioFileFormat baseFormat = AudioSystem.getAudioFileFormat(byteArrayInputStream);
-            return new AudioInputStream(byteArrayInputStream, baseFormat.getFormat(), baseFormat.getFrameLength());
-        } catch (UnsupportedAudioFileException | IOException e) {
-            throw new RuntimeException("Something went wrong while processing the audio file");
-        }
+    public byte[] find(String filePath) throws IOException {
+        return cloudRepository.find(filePath);
     }
 
     public void delete(String cloudFileName) throws IOException {
