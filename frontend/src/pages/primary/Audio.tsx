@@ -15,7 +15,7 @@ export default function Audio(props: AudioProps) {
             </Grid>
             <Grid item margin={2}>
                 {props.audioFile &&
-                    <CustomAudioPlayer audiofile={props.audioFile}/>
+                    <CustomAudioPlayer audiofile={props.audioFile} slider={true} download={true} autoPlay={true}/>
                 }
             </Grid>
         </Grid>

@@ -14,6 +14,7 @@ import {ChangeEvent, MouseEvent, useState} from "react";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {apiChangeRecord, apiDeleteRecord, apiGetSingleRecordedAudio} from "../../services/apiServices";
 import {AxiosError} from "axios";
+import CustomAudioPlayer from "../primary/CustomAudioPlayer";
 
 interface RecordDetailsProps {
     record: RecordInfo,
@@ -134,7 +135,7 @@ export default function RecordDetails(props: RecordDetailsProps) {
                             <Button onClick={getAudio}>get audio</Button>
                         </Grid>
                         {audioFile &&
-                            <audio src={audioFile} autoPlay={true} controls={true} title="vover.mp3"/>
+                            <CustomAudioPlayer audiofile={audioFile} slider={false} download={false} autoPlay={true}/>
                         }
                         <Grid item>
                             <Button onClick={deleteRecord}>delete</Button>

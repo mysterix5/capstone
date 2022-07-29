@@ -3,6 +3,7 @@ import {Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typograph
 import {FormEvent, MouseEvent, useState} from "react";
 import {apiSaveAudio} from "../../services/apiServices";
 import {useAuth} from "../../usermanagement/AuthProvider";
+import CustomAudioPlayer from "../primary/CustomAudioPlayer";
 
 const recorder = new Recorder({
     wasmURL: "https://unpkg.com/vmsg@0.4.0/vmsg.wasm"
@@ -80,7 +81,7 @@ export default function Record() {
                 </Grid>
                 <Box mt={2}>
                     {audioLink &&
-                        <audio src={audioLink} autoPlay={false} controls={true} title="vover.mp3"/>
+                        <CustomAudioPlayer audiofile={audioLink} slider={true} download={false} autoPlay={false}/>
                     }
                 </Box>
                 <div>
