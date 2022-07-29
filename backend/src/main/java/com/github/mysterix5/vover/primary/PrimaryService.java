@@ -5,6 +5,7 @@ import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
 import com.github.mysterix5.vover.model.record.*;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
+import com.github.mysterix5.vover.records.StringOperations;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,18 +22,14 @@ public class PrimaryService {
     private final CloudService cloudService;
 
     public PrimaryResponseDTO onSubmittedText(String text, String username) {
-        List<String> wordList = splitText(text);
+        List<String> wordList = StringOperations.splitText(text);
 
         return createResponses(wordList, username);
     }
 
-    private List<String> splitText(String text) {
-        return Arrays.stream(text.split(" ")).toList();
-    }
-
     private PrimaryResponseDTO createResponses(List<String> wordList, String username) {
         wordList = wordList.stream().map(String::toLowerCase).toList();
-        Set<String> appearingWordsSet = wordList.stream().filter(this::wordValidCheck).collect(Collectors.toSet());
+        Set<String> appearingWordsSet = wordList.stream().filter(StringOperations::isWord).collect(Collectors.toSet());
         Map<String, List<RecordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet, username);
         List<String> defaultIds = new ArrayList<>();
 
@@ -56,32 +53,10 @@ public class PrimaryService {
         return new PrimaryResponseDTO(textWordsResponse, dbWordsMap, defaultIds);
     }
 
-
-    // TODO grow with functionality
-    private boolean wordValidCheck(String responseWord) {
-        List<String> forbiddenChars = List.of("/", "%");
-        for (String c : forbiddenChars) {
-            if (responseWord.contains(c)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean allowedWordForUser(String username, RecordDbEntity recordDbEntity) {
-        if (recordDbEntity.getAccessibility() == Accessibility.PUBLIC
-                || Objects.equals(recordDbEntity.getCreator(), username)
-        ) {
-            return true;
-        }
-        // if from friend return true
-        return false;
-    }
-
     private Map<String, List<RecordDbResponseDTO>> createDbWordsMap(Set<String> textWords, String username) {
         List<RecordDbEntity> allDbEntriesForWords = wordsRepository.findByWordIn(textWords);
 
-        allDbEntriesForWords = allDbEntriesForWords.stream().filter(wordDb -> allowedWordForUser(username, wordDb)).toList();
+        allDbEntriesForWords = allDbEntriesForWords.stream().filter(wordDb -> recordIsAllowedForUser(wordDb, username)).toList();
 
         Map<String, List<RecordDbResponseDTO>> dbWordsMap = new HashMap<>();
         for (RecordDbEntity w : allDbEntriesForWords) {
@@ -93,10 +68,26 @@ public class PrimaryService {
         return dbWordsMap;
     }
 
-    public AudioInputStream getMergedAudio(List<String> ids) {
-        List<RecordDbEntity> wordDbEntities = (List<RecordDbEntity>) wordsRepository.findAllById(ids);
+    private boolean recordIsAllowedForUser(RecordDbEntity recordDbEntity, String username) {
+        if(recordDbEntity.getAccessibility().equals(Accessibility.PUBLIC)){
+            return true;
+        }
+        if(recordDbEntity.getCreator().equals(username)){
+            return true;
+        }
+        // TODO if user->friends().contains(recordDbEntity.getCreator() && recordDbEntity.getAccessibility().equals(Accessibility.Friends)) return true;
+        return false;
+    }
+
+    public AudioInputStream getMergedAudio(List<String> ids, String username) {
+        List<RecordDbEntity> recordDbEntities = (List<RecordDbEntity>) wordsRepository.findAllById(ids);
+        for(var r: recordDbEntities){
+            if(!recordIsAllowedForUser(r, username)){
+                throw new MultipleSubErrorException("You are not allowed to get one of the records! Don't try to hack me! :(");
+            }
+        }
         List<String> filePaths = ids.stream()
-                .map(id -> wordDbEntities.stream()
+                .map(id -> recordDbEntities.stream()
                         .filter(wordDb -> Objects.equals(wordDb.getId(), id))
                         .findFirst()
                         .orElseThrow().getCloudFileName()).toList();
