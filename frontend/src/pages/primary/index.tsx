@@ -9,27 +9,26 @@ import {isAvailable} from "../../globalTools/helpers";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {useNavigate} from "react-router-dom";
 
-const textMetadataResponse_initial = {
-    textWords: [],
-    defaultIds: [],
-    wordRecordMap: {}
-};
+
 export default function Primary() {
-    const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>(textMetadataResponse_initial);
+    const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>({
+        textWords: [],
+        defaultIds: [],
+        wordRecordMap: {}
+    });
     const [audioFile, setAudioFile] = useState<any>();
 
-    const {username, getToken, setError} = useAuth();
+    const {getToken, setError} = useAuth();
     const nav = useNavigate();
 
     useEffect(() => {
-        if (!username) {
+        if (!getToken()) {
             nav("/login")
         }
-    }, [username, nav])
+    }, [getToken, nav])
 
-    function handleTextMetadataResponse(textMetadataResponse: TextMetadataResponse) {
-        setTextMetadataResponse(textMetadataResponse_initial);
-        setTextMetadataResponse(textMetadataResponse);
+    function handleTextMetadataResponse(textMetadataResponseLocal: TextMetadataResponse) {
+        setTextMetadataResponse(textMetadataResponseLocal);
         setAudioFile(null);
     }
 
@@ -55,9 +54,11 @@ export default function Primary() {
     }
 
     function setId(id: string, index: number) {
-        let tmp = {...textMetadataResponse};
-        tmp.defaultIds[index] = id
-        setTextMetadataResponse(tmp);
+        setTextMetadataResponse(current=>{
+            let tmp = {...current};
+            tmp.defaultIds[index] = id;
+            return tmp;
+        });
     }
 
     return (
