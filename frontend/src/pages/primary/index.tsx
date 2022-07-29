@@ -9,13 +9,13 @@ import {isAvailable} from "../../globalTools/helpers";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {useNavigate} from "react-router-dom";
 
-
+const textMetadataResponse_initial = {
+    textWords: [],
+    defaultIds: [],
+    wordRecordMap: {}
+};
 export default function Primary() {
-    const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>({
-        textWords: [],
-        defaultIds: [],
-        wordRecordMap: {}
-    });
+    const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>(textMetadataResponse_initial);
     const [audioFile, setAudioFile] = useState<any>();
 
     const {username, getToken, setError} = useAuth();
@@ -28,6 +28,7 @@ export default function Primary() {
     }, [username, nav])
 
     function handleTextMetadataResponse(textMetadataResponse: TextMetadataResponse) {
+        setTextMetadataResponse(textMetadataResponse_initial);
         setTextMetadataResponse(textMetadataResponse);
         setAudioFile(null);
     }
@@ -67,7 +68,7 @@ export default function Primary() {
             <Grid item ml={2} mr={2}>
                 {
                     textMetadataResponse &&
-                    <TextCheck textMetadataResponse={textMetadataResponse} setId={setId}/>
+                    <TextCheck key={"textcheck"} textMetadataResponse={textMetadataResponse} setId={setId}/>
                 }
             </Grid>
             <Grid item>
