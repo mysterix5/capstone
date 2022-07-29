@@ -11,7 +11,6 @@ import com.github.mysterix5.vover.records.RecordMongoRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
