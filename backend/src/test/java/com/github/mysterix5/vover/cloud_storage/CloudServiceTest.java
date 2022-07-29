@@ -17,26 +17,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CloudServiceTest {
 
     @Test
-    void loadMultipleAudioFromCloudAndMerge() {
+    void loadMultipleMp3FromCloudAndMerge() {
         CloudRepository cloudRepository = Mockito.mock(CloudRepository.class);
         CloudService cloudService = new CloudService(cloudRepository);
 
-        var obFile = new File("src/test/resources/cloud_storage/eins.mp3");
-        var dasFile = new File("src/test/resources/cloud_storage/zwei.mp3");
-        var obDasFile = new File("src/test/resources/cloud_storage/einszwei.mp3");
+        var einsFile = new File("src/test/resources/cloud_storage/eins.mp3");
+        var zweiFile = new File("src/test/resources/cloud_storage/zwei.mp3");
+        var einszweiFile = new File("src/test/resources/cloud_storage/einszwei.mp3");
 
-        try (var obStream = new FileInputStream(obFile);
-             var dasStream = new FileInputStream(dasFile);
-             var obDasStream = new FileInputStream(obDasFile)
+        try (var einsStream = new FileInputStream(einsFile);
+             var zweiStream = new FileInputStream(zweiFile);
+             var einszweiStream = new FileInputStream(einszweiFile)
         ) {
-            Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(obStream.readAllBytes());
-            Mockito.when(cloudRepository.find("zwei.mp3")).thenReturn(dasStream.readAllBytes());
-
-            var obDasBytes = obDasStream.readAllBytes();
+            Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(einsStream.readAllBytes());
+            Mockito.when(cloudRepository.find("zwei.mp3")).thenReturn(zweiStream.readAllBytes());
 
             byte[] mergedAudio = cloudService.loadMultipleMp3FromCloudAndMerge(List.of("eins.mp3", "zwei.mp3"));
 
-            assertThat(mergedAudio).isEqualTo(obDasBytes);
+            assertThat(mergedAudio).isEqualTo(einszweiStream.readAllBytes());
         } catch (IOException e) {
             throw new RuntimeException();
         }
