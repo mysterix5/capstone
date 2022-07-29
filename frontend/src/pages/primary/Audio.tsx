@@ -1,4 +1,5 @@
 import {Button, Grid} from "@mui/material";
+import CustomAudioPlayer from "./CustomAudioPlayer";
 
 interface AudioProps {
     getAudio: () => any,
@@ -14,7 +15,7 @@ export default function Audio(props: AudioProps) {
             </Grid>
             <Grid item margin={2}>
                 {props.audioFile &&
-                    <audio src={props.audioFile} autoPlay={true} controls={true} title="vover.mp3"/>
+                    <CustomAudioPlayer audiofile={props.audioFile}/>
                 }
             </Grid>
         </Grid>
