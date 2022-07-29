@@ -1,5 +1,6 @@
 package com.github.mysterix5.vover.records;
 
+import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import com.github.mysterix5.vover.model.record.RecordManagementDTO;
 import com.github.mysterix5.vover.model.record.RecordPage;
@@ -29,8 +30,10 @@ public class RecordController {
                                         Principal principal
     ) {
         try {
-            var audioBytes = audio.getBytes();
+            byte[] audioBytes = audio.getBytes();
             recordService.addWordToDb(word.toLowerCase(), principal.getName(), tag.toLowerCase(), accessibility, audioBytes);
+        }catch(MultipleSubErrorException e){
+            return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         }catch(Exception e){
             return ResponseEntity.internalServerError().body(new VoverErrorDTO("Something went wrong while saving your recording"));
         }

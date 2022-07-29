@@ -19,7 +19,7 @@ export default function Record() {
     const [tag, setTag] = useState("normal");
     const [accessibility, setAccessibility] = useState("PUBLIC");
 
-    const {getToken} = useAuth();
+    const {getToken, setError} = useAuth();
 
     const record = async () => {
         setIsLoading(true);
@@ -53,6 +53,10 @@ export default function Record() {
                 setAudioLink("");
                 setAudioBlob(undefined);
                 setWord("");
+            }).catch((error) => {
+                if (error.response) {
+                    setError(error.response.data);
+                }
             });
     }
 
@@ -112,6 +116,9 @@ export default function Record() {
                                     </ToggleButton>
                                     <ToggleButton value={"FRIENDS"}>
                                         friends
+                                    </ToggleButton>
+                                    <ToggleButton value={"PRIVATE"}>
+                                        private
                                     </ToggleButton>
                                 </ToggleButtonGroup>
                             </Grid>
