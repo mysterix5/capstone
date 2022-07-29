@@ -28,7 +28,8 @@ export default function Recordings() {
             nav("/login")
         }
         updateRecordPage();
-    }, [nav, getToken, updateRecordPage])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [nav])
 
     function getSpecificRecordPage(page: number) {
         apiGetRecordPage(getToken(), page, recordPage.size, recordPage.searchTerm)
