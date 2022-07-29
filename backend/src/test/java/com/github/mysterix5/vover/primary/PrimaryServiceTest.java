@@ -1,6 +1,7 @@
 package com.github.mysterix5.vover.primary;
 
 import com.github.mysterix5.vover.cloud_storage.CloudService;
+import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.record.Accessibility;
 import com.github.mysterix5.vover.model.record.Availability;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
@@ -8,6 +9,7 @@ import com.github.mysterix5.vover.model.record.RecordDbEntity;
 import com.github.mysterix5.vover.model.record.RecordDbResponseDTO;
 import com.github.mysterix5.vover.model.record.RecordResponseDTO;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -84,7 +86,22 @@ class PrimaryServiceTest {
     }
 
     @Test
-    void loadWavFromCloudAndMerge() {
+    void getMergedAudioFailBecauseOneRecordNotAllowedForUser() {
+        RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
+        RecordDbEntity recordDbEntity2 = RecordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").accessibility(Accessibility.PRIVATE).build();
+
+        RecordMongoRepository mockedWordRepo = Mockito.mock(RecordMongoRepository.class);
+        when(mockedWordRepo.findAllById(List.of("id1", "id2"))).thenReturn(List.of(recordDbEntity1, recordDbEntity2));
+
+        CloudService mockedCloudService = Mockito.mock(CloudService.class);
+        PrimaryService primaryService = new PrimaryService(mockedWordRepo, mockedCloudService);
+
+        Assertions.assertThatExceptionOfType(MultipleSubErrorException.class)
+                .isThrownBy(() -> primaryService.getMergedAudio(List.of("id1", "id2"), "creator1"))
+                .withMessage("You are not allowed to get one of the records! Don't try to hack me! :(");
+    }
+    @Test
+    void getMergedAudio() {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         RecordDbEntity recordDbEntity2 = RecordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").accessibility(Accessibility.PUBLIC).build();
 
@@ -94,7 +111,7 @@ class PrimaryServiceTest {
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         PrimaryService primaryService = new PrimaryService(mockedWordRepo, mockedCloudService);
 
-        primaryService.getMergedAudio(List.of("id1", "id2"));
+        primaryService.getMergedAudio(List.of("id1", "id2"), "creator1");
 
         verify(mockedCloudService).loadMultipleMp3FromCloudAndMerge(List.of("test.mp3", "eins.mp3"));
     }

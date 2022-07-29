@@ -34,6 +34,7 @@ public class PrimaryController {
 
     @PostMapping("/audio")
     public ResponseEntity<Object> loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<String> ids) {
+        log.info("user '{}' requests and audio with '{}' words. ids: {}", principal.getName(), ids.size(), ids);
         try {
             byte[] mergedAudio = primaryService.getMergedAudio(ids);
             httpResponse.setContentType("audio/mp3");
