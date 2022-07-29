@@ -28,7 +28,7 @@ export default function Recordings() {
             nav("/login")
         }
         updateRecordPage();
-    }, [nav, getToken])
+    }, [nav, getToken, updateRecordPage])
 
     function getSpecificRecordPage(page: number) {
         apiGetRecordPage(getToken(), page, recordPage.size, recordPage.searchTerm)
