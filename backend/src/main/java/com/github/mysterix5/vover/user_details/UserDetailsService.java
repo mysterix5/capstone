@@ -17,16 +17,11 @@ public class UserDetailsService {
 
     public void addRequestToHistory(String username, List<String> wordList) {
         String text = String.join(" ", wordList);
-        LocalDateTime now = LocalDateTime.now();
-        var historyEntry = new HistoryEntry(text, now);
-        addHistoryEntry(username, historyEntry);
-        log.info("text '{}' is added to history of user '{}'", text, username);
-    }
-
-    private void addHistoryEntry(String username, HistoryEntry historyEntry){
+        HistoryEntry historyEntry = new HistoryEntry(text, LocalDateTime.now());
         VoverUserDetails voverUserDetails = getUserDetails(username);
         voverUserDetails.getHistory().add(historyEntry);
         userDetailsRepository.save(voverUserDetails);
+        log.info("text '{}' is added to history of user '{}'", text, username);
     }
 
     public List<HistoryEntry> getHistory(String username) {
@@ -34,7 +29,7 @@ public class UserDetailsService {
     }
 
     private VoverUserDetails getUserDetails(String username) {
-        return userDetailsRepository.findByUsername(username).orElse(new VoverUserDetails(username));
+        return userDetailsRepository.findById(username).orElse(new VoverUserDetails(username));
     }
 
 }
