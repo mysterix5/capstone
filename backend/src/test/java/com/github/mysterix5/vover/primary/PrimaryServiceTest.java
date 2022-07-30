@@ -13,7 +13,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -102,7 +101,7 @@ class PrimaryServiceTest {
                 .withMessage("You are not allowed to get one of the records! Don't try to hack me! :(");
     }
     @Test
-    void getMergedAudio() throws IOException {
+    void getMergedAudio() {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         RecordDbEntity recordDbEntity2 = RecordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").accessibility(Accessibility.PUBLIC).build();
 
@@ -114,6 +113,6 @@ class PrimaryServiceTest {
 
         primaryService.getMergedAudio(List.of("id1", "id2"), "creator1");
 
-        verify(mockedCloudService).loadMultipleAudioFromCloudAndMerge(List.of("test.mp3", "eins.mp3"));
+        verify(mockedCloudService).loadMultipleMp3FromCloudAndMerge(List.of("test.mp3", "eins.mp3"));
     }
 }
