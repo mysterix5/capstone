@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -26,8 +24,13 @@ public class UserDetailsService {
     }
 
     private void addHistoryEntry(String username, HistoryEntry historyEntry){
-        VoverUserDetails voverUserDetails = userDetailsRepository.findByUsername(username).orElseThrow();
+        VoverUserDetails voverUserDetails = userDetailsRepository.findByUsername(username).orElse(new VoverUserDetails(username));
         voverUserDetails.getHistory().add(historyEntry);
         userDetailsRepository.save(voverUserDetails);
     }
+
+    public List<HistoryEntry> getHistory(String username) {
+        return userDetailsRepository.findByUsername(username).orElseThrow().getHistory();
+    }
+
 }
