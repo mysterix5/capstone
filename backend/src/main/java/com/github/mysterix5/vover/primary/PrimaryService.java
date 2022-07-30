@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class PrimaryService {
-    private final RecordMongoRepository wordsRepository;
+    private final RecordMongoRepository recordRepository;
     private final CloudService cloudService;
 
     public PrimaryResponseDTO onSubmittedText(String text, String username) {
@@ -53,7 +53,7 @@ public class PrimaryService {
     }
 
     private Map<String, List<RecordDbResponseDTO>> createDbWordsMap(Set<String> textWords, String username) {
-        List<RecordDbEntity> allDbEntriesForWords = wordsRepository.findByWordIn(textWords);
+        List<RecordDbEntity> allDbEntriesForWords = recordRepository.findByWordIn(textWords);
 
         allDbEntriesForWords = allDbEntriesForWords.stream().filter(wordDb -> recordIsAllowedForUser(wordDb, username)).toList();
 
@@ -79,7 +79,7 @@ public class PrimaryService {
     }
 
     public byte[] getMergedAudio(List<String> ids, String username) {
-        List<RecordDbEntity> recordDbEntities = (List<RecordDbEntity>) wordsRepository.findAllById(ids);
+        List<RecordDbEntity> recordDbEntities = (List<RecordDbEntity>) recordRepository.findAllById(ids);
         for(var r: recordDbEntities){
             if(!recordIsAllowedForUser(r, username)){
                 throw new MultipleSubErrorException("You are not allowed to get one of the records! Don't try to hack me! :(");

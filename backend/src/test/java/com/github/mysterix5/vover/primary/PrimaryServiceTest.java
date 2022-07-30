@@ -26,17 +26,17 @@ class PrimaryServiceTest {
     void testOnSubmittedTextSimpleValid() {
         String testString = "bester test";
 
-        RecordMongoRepository mockedWordRepo = Mockito.mock(RecordMongoRepository.class);
+        RecordMongoRepository mockedRecordRepo = Mockito.mock(RecordMongoRepository.class);
 
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("bester").creator("creator1").tag("tag1").cloudFileName("bester.mp3").accessibility(Accessibility.PUBLIC).build();
         RecordDbEntity recordDbEntity2 = RecordDbEntity.builder().id("id2").word("test").creator("creator2").tag("tag2").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
-        when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("bester", "test"))))
+        when(mockedRecordRepo.findByWordIn(new HashSet<>(List.of("bester", "test"))))
                 .thenReturn(List.of(
                         recordDbEntity1,
                         recordDbEntity2
                 ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
-        PrimaryService primaryService = new PrimaryService(mockedWordRepo, mockedCloudService);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService);
 
         PrimaryResponseDTO response = primaryService.onSubmittedText(testString, "user");
 
@@ -54,13 +54,13 @@ class PrimaryServiceTest {
         String testString = "beste/r test ever% wirklich";
 
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
-        RecordMongoRepository mockedWordRepo = Mockito.mock(RecordMongoRepository.class);
-        when(mockedWordRepo.findByWordIn(new HashSet<>(List.of("test", "wirklich"))))
+        RecordMongoRepository mockedRecordRepo = Mockito.mock(RecordMongoRepository.class);
+        when(mockedRecordRepo.findByWordIn(new HashSet<>(List.of("test", "wirklich"))))
                 .thenReturn(List.of(
                         recordDbEntity1
                 ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
-        PrimaryService primaryService = new PrimaryService(mockedWordRepo, mockedCloudService);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService);
 
         var response = primaryService.onSubmittedText(testString, "user");
 
@@ -90,11 +90,11 @@ class PrimaryServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         RecordDbEntity recordDbEntity2 = RecordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").accessibility(Accessibility.PRIVATE).build();
 
-        RecordMongoRepository mockedWordRepo = Mockito.mock(RecordMongoRepository.class);
-        when(mockedWordRepo.findAllById(List.of("id1", "id2"))).thenReturn(List.of(recordDbEntity1, recordDbEntity2));
+        RecordMongoRepository mockedRecordRepo = Mockito.mock(RecordMongoRepository.class);
+        when(mockedRecordRepo.findAllById(List.of("id1", "id2"))).thenReturn(List.of(recordDbEntity1, recordDbEntity2));
 
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
-        PrimaryService primaryService = new PrimaryService(mockedWordRepo, mockedCloudService);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService);
 
         Assertions.assertThatExceptionOfType(MultipleSubErrorException.class)
                 .isThrownBy(() -> primaryService.getMergedAudio(List.of("id1", "id2"), "creator1"))
@@ -105,11 +105,11 @@ class PrimaryServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         RecordDbEntity recordDbEntity2 = RecordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").accessibility(Accessibility.PUBLIC).build();
 
-        RecordMongoRepository mockedWordRepo = Mockito.mock(RecordMongoRepository.class);
-        when(mockedWordRepo.findAllById(List.of("id1", "id2"))).thenReturn(List.of(recordDbEntity1, recordDbEntity2));
+        RecordMongoRepository mockedRecordRepo = Mockito.mock(RecordMongoRepository.class);
+        when(mockedRecordRepo.findAllById(List.of("id1", "id2"))).thenReturn(List.of(recordDbEntity1, recordDbEntity2));
 
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
-        PrimaryService primaryService = new PrimaryService(mockedWordRepo, mockedCloudService);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService);
 
         primaryService.getMergedAudio(List.of("id1", "id2"), "creator1");
 

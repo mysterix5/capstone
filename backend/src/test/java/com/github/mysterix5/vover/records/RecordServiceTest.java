@@ -26,20 +26,20 @@ import static org.mockito.ArgumentMatchers.notNull;
 
 class RecordServiceTest {
 
-    RecordMongoRepository mockedWordRepo;
+    RecordMongoRepository mockedRecordRepo;
     CloudService mockedCloudService;
     RecordService recordService;
 
     @BeforeEach
     void setupUserService() {
-        mockedWordRepo = Mockito.mock(RecordMongoRepository.class);
+        mockedRecordRepo = Mockito.mock(RecordMongoRepository.class);
         mockedCloudService = Mockito.mock(CloudService.class);
-        recordService = new RecordService(mockedWordRepo, mockedCloudService);
+        recordService = new RecordService(mockedRecordRepo, mockedCloudService);
     }
 
     // TODO only single and valid records allowed
     @Test
-    void addWordToDb() throws IOException {
+    void addRecordToDb() throws IOException {
 
         UUID myUuid = new UUID(10, 10);
 
@@ -49,11 +49,11 @@ class RecordServiceTest {
         Accessibility accessibility = Accessibility.PUBLIC;
         RecordDbEntity recordDbEntity = new RecordDbEntity(word, creator, tag, word + "-" + creator + "-" + tag + "-" + accessibility + "-" + myUuid + ".mp3");
 
-        Mockito.when(mockedWordRepo.save(notNull())).thenReturn(recordDbEntity);
+        Mockito.when(mockedRecordRepo.save(notNull())).thenReturn(recordDbEntity);
         try (MockedStatic<UUID> mb = Mockito.mockStatic(UUID.class)) {
             mb.when(UUID::randomUUID).thenReturn(myUuid);
 
-            recordService.addWordToDb(word, creator, tag, accessibility.toString(), null);
+            recordService.addRecordToDb(word, creator, tag, accessibility.toString(), null);
 
             try {
                 Mockito.verify(mockedCloudService).save(recordDbEntity.getCloudFileName(), null);
@@ -78,7 +78,7 @@ class RecordServiceTest {
 
         Page<RecordDbEntity> resultPage = new PageImpl<>(List.of(recordDbEntity1, recordDbEntity2), paging, 2);
 
-        Mockito.when(mockedWordRepo.findAllByCreator(username, paging)).thenReturn(resultPage);
+        Mockito.when(mockedRecordRepo.findAllByCreator(username, paging)).thenReturn(resultPage);
 
         RecordPage recordPage = recordService.getRecordPage(username, page, size, searchTerm);
 
@@ -98,7 +98,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         String username = "user1";
 
-        Mockito.when(mockedWordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         var obFile = new File("src/test/resources/cloud_storage/eins.mp3");
         try (var obStream = new FileInputStream(obFile)) {
@@ -119,7 +119,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         String username = "user2";
 
-        Mockito.when(mockedWordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         Assertions.assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> recordService.getAudio(recordDbEntity1.getId(), username))
@@ -131,7 +131,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         String username = "user1";
 
-        Mockito.when(mockedWordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         Mockito.when(mockedCloudService.find(recordDbEntity1.getCloudFileName())).thenThrow(new IOException());
 
@@ -145,7 +145,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         String username = "user1";
 
-        Mockito.when(mockedWordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         recordService.deleteRecord(recordDbEntity1.getId(), username);
         Mockito.verify(mockedCloudService).delete(recordDbEntity1.getCloudFileName());
@@ -156,7 +156,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         String username = "user2";
 
-        Mockito.when(mockedWordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         Assertions.assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> recordService.deleteRecord(recordDbEntity1.getId(), username))
@@ -168,7 +168,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         String username = "user1";
 
-        Mockito.when(mockedWordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         Mockito.doThrow(new IOException()).when(mockedCloudService).delete(recordDbEntity1.getCloudFileName());
 
@@ -184,7 +184,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName(oldCloudFileName).accessibility(Accessibility.PUBLIC).build();
         String username = "user1";
 
-        Mockito.when(mockedWordRepo.findById(recordManagementDTO.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordManagementDTO.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         try (MockedStatic<UUID> mb = Mockito.mockStatic(UUID.class)) {
             UUID myUuid = new UUID(10, 10);
@@ -211,7 +211,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         String username = "user2";
 
-        Mockito.when(mockedWordRepo.findById(recordManagementDTO.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordManagementDTO.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         Assertions.assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> recordService.changeRecordMetadata(recordManagementDTO, username))
@@ -224,7 +224,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         String username = "user1";
 
-        Mockito.when(mockedWordRepo.findById(recordManagementDTO.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordManagementDTO.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         Assertions.assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> recordService.changeRecordMetadata(recordManagementDTO, username))
@@ -237,7 +237,7 @@ class RecordServiceTest {
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("user1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         String username = "user1";
 
-        Mockito.when(mockedWordRepo.findById(recordManagementDTO.getId())).thenReturn(Optional.of(recordDbEntity1));
+        Mockito.when(mockedRecordRepo.findById(recordManagementDTO.getId())).thenReturn(Optional.of(recordDbEntity1));
 
         try (MockedStatic<UUID> mb = Mockito.mockStatic(UUID.class)) {
             UUID myUuid = new UUID(10, 10);
