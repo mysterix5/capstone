@@ -1,5 +1,8 @@
 package com.github.mysterix5.vover.primary;
 
+import com.github.kokorin.jaffree.ffmpeg.FFmpeg;
+import com.github.kokorin.jaffree.ffmpeg.PipeInput;
+import com.github.kokorin.jaffree.ffmpeg.PipeOutput;
 import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
@@ -10,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,10 +74,10 @@ public class PrimaryService {
     }
 
     private boolean recordIsAllowedForUser(RecordDbEntity recordDbEntity, String username) {
-        if(recordDbEntity.getAccessibility().equals(Accessibility.PUBLIC)){
+        if (recordDbEntity.getAccessibility().equals(Accessibility.PUBLIC)) {
             return true;
         }
-        if(recordDbEntity.getCreator().equals(username)){
+        if (recordDbEntity.getCreator().equals(username)) {
             return true;
         }
         // TODO if user->friends().contains(recordDbEntity.getCreator() && recordDbEntity.getAccessibility().equals(Accessibility.Friends)) return true;
@@ -80,8 +86,8 @@ public class PrimaryService {
 
     public byte[] getMergedAudio(List<String> ids, String username) {
         List<RecordDbEntity> recordDbEntities = (List<RecordDbEntity>) recordRepository.findAllById(ids);
-        for(var r: recordDbEntities){
-            if(!recordIsAllowedForUser(r, username)){
+        for (var r : recordDbEntities) {
+            if (!recordIsAllowedForUser(r, username)) {
                 throw new MultipleSubErrorException("You are not allowed to get one of the records! Don't try to hack me! :(");
             }
         }
@@ -89,11 +95,34 @@ public class PrimaryService {
                 .map(id -> recordDbEntities.stream()
                         .filter(wordDb -> Objects.equals(wordDb.getId(), id))
                         .findFirst()
-                        .orElseThrow().getCloudFileName()).toList();
+                        .orElseThrow()
+                        .getCloudFileName())
+                .toList();
         try {
-            return cloudService.loadMultipleMp3FromCloudAndMerge(filePaths);
+            List<InputStream> audioInputStreams = cloudService.loadMultipleMp3FromCloud(filePaths);
+            return mergeAudioWithJaffree(audioInputStreams);
         } catch (Exception e) {
             throw new MultipleSubErrorException("An error occurred while creating your audio file");
         }
     }
+
+    private byte[] mergeAudioWithJaffree(List<InputStream> inputStreams) {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
+        ) {
+            for (InputStream inputStream : inputStreams) {
+                FFmpeg.atPath()
+                        .addInput(PipeInput.pumpFrom(inputStream))
+                        .addOutput(
+                                PipeOutput.pumpTo(byteArrayOutputStream)
+                                        .setFormat("mp3")
+                        )
+                        .execute();
+            }
+
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
