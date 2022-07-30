@@ -9,7 +9,7 @@ import com.github.mysterix5.vover.model.record.RecordDbEntity;
 import com.github.mysterix5.vover.model.record.RecordDbResponseDTO;
 import com.github.mysterix5.vover.model.record.RecordResponseDTO;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
-import com.github.mysterix5.vover.user_details.UserDetailsService;
+import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -36,8 +36,8 @@ class PrimaryServiceTest {
                         recordDbEntity2
                 ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
-        UserDetailsService mockedUserDetailsService = Mockito.mock(UserDetailsService.class);
-        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedUserDetailsService);
+        VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
 
         PrimaryResponseDTO response = primaryService.onSubmittedText(testString, "user");
 
@@ -61,8 +61,8 @@ class PrimaryServiceTest {
                         recordDbEntity1
                 ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
-        UserDetailsService mockedUserDetailsService = Mockito.mock(UserDetailsService.class);
-        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedUserDetailsService);
+        VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
 
         var response = primaryService.onSubmittedText(testString, "user");
 
@@ -96,8 +96,8 @@ class PrimaryServiceTest {
         when(mockedRecordRepo.findAllById(List.of("id1", "id2"))).thenReturn(List.of(recordDbEntity1, recordDbEntity2));
 
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
-        UserDetailsService mockedUserDetailsService = Mockito.mock(UserDetailsService.class);
-        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedUserDetailsService);
+        VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
 
         Assertions.assertThatExceptionOfType(MultipleSubErrorException.class)
                 .isThrownBy(() -> primaryService.getMergedAudio(List.of("id1", "id2"), "creator1"))
@@ -112,8 +112,8 @@ class PrimaryServiceTest {
         when(mockedRecordRepo.findAllById(List.of("id1", "id2"))).thenReturn(List.of(recordDbEntity1, recordDbEntity2));
 
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
-        UserDetailsService mockedUserDetailsService = Mockito.mock(UserDetailsService.class);
-        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedUserDetailsService);
+        VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
 
         File einsFile = new File("src/test/resources/cloud_storage/eins.mp3");
         File zweiFile = new File("src/test/resources/cloud_storage/zwei.mp3");
@@ -130,7 +130,7 @@ class PrimaryServiceTest {
 
             byte[] mergedAudio = primaryService.getMergedAudio(List.of("id1", "id2"), "creator1");
 
-            Mockito.verify(mockedUserDetailsService).addRequestToHistory("creator1", List.of("eins", "zwei"));
+            Mockito.verify(mockedVoverUserDetailsService).addRequestToHistory("creator1", List.of("eins", "zwei"));
             assertThat(mergedAudio.length).isEqualTo(einsZweiStream.readAllBytes().length);
         } catch (IOException e) {
             throw new RuntimeException(e);

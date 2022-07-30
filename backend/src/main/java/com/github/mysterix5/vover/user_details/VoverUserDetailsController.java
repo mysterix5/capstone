@@ -15,11 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/userdetails")
-public class UserDetailsController {
-    private final UserDetailsService userDetailsService;
+public class VoverUserDetailsController {
+    private final VoverUserDetailsService voverUserDetailsService;
 
     @GetMapping("/history")
     public ResponseEntity<List<HistoryEntry>> getHistory(Principal principal) {
-        return ResponseEntity.ok(userDetailsService.getHistory(principal.getName()));
+        return ResponseEntity.ok(voverUserDetailsService.getHistory(principal.getName()));
     }
 }

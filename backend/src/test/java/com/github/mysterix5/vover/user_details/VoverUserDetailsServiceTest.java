@@ -11,12 +11,12 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserDetailsServiceTest {
+class VoverUserDetailsServiceTest {
 
     @Test
     void addRequestToHistory() {
-        UserDetailsMongoRepository mockedUserDetailsRepository = Mockito.mock(UserDetailsMongoRepository.class);
-        UserDetailsService userDetailsService = new UserDetailsService(mockedUserDetailsRepository);
+        VoverUserDetailsMongoRepository mockedUserDetailsRepository = Mockito.mock(VoverUserDetailsMongoRepository.class);
+        VoverUserDetailsService voverUserDetailsService = new VoverUserDetailsService(mockedUserDetailsRepository);
 
         String username = "user";
         List<String> words = List.of("ein", "kleiner", "test");
@@ -25,7 +25,7 @@ class UserDetailsServiceTest {
 
         Mockito.when(mockedUserDetailsRepository.findById(username)).thenReturn(Optional.of(testUserDetails));
 
-        userDetailsService.addRequestToHistory(username, words);
+        voverUserDetailsService.addRequestToHistory(username, words);
 
         var expected = new VoverUserDetails(username);
         expected.getHistory().add(new HistoryEntry("ein kleiner test", testUserDetails.getHistory().get(0).getRequestTime()));
@@ -35,8 +35,8 @@ class UserDetailsServiceTest {
 
     @Test
     void getHistory() {
-        UserDetailsMongoRepository mockedUserDetailsRepository = Mockito.mock(UserDetailsMongoRepository.class);
-        UserDetailsService userDetailsService = new UserDetailsService(mockedUserDetailsRepository);
+        VoverUserDetailsMongoRepository mockedUserDetailsRepository = Mockito.mock(VoverUserDetailsMongoRepository.class);
+        VoverUserDetailsService voverUserDetailsService = new VoverUserDetailsService(mockedUserDetailsRepository);
 
         String username = "user";
         List<String> words = List.of("ein", "kleiner", "test");
@@ -47,7 +47,7 @@ class UserDetailsServiceTest {
 
         Mockito.when(mockedUserDetailsRepository.findById(username)).thenReturn(Optional.of(testUserDetails));
 
-        List<HistoryEntry> actual = userDetailsService.getHistory(username);
+        List<HistoryEntry> actual = voverUserDetailsService.getHistory(username);
 
         assertThat(actual).isEqualTo(history);
     }

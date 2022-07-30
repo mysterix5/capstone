@@ -9,7 +9,7 @@ import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
 import com.github.mysterix5.vover.model.record.*;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
 import com.github.mysterix5.vover.records.StringOperations;
-import com.github.mysterix5.vover.user_details.UserDetailsService;
+import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class PrimaryService {
     private final RecordMongoRepository recordRepository;
     private final CloudService cloudService;
-    private final UserDetailsService userDetailsService;
+    private final VoverUserDetailsService voverUserDetailsService;
 
     public PrimaryResponseDTO onSubmittedText(String text, String username) {
         List<String> wordList = StringOperations.splitText(text);
@@ -103,7 +103,7 @@ public class PrimaryService {
         try {
             List<InputStream> audioInputStreams = cloudService.loadMultipleMp3FromCloud(filePaths);
             byte[] merged = mergeAudioWithJaffree(audioInputStreams);
-            userDetailsService.addRequestToHistory(username,
+            voverUserDetailsService.addRequestToHistory(username,
                     ids.stream()
                             .map(id -> recordDbEntities.stream()
                                     .filter(wordDb -> Objects.equals(wordDb.getId(), id))

@@ -12,8 +12,8 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserDetailsService {
-    private final UserDetailsMongoRepository userDetailsRepository;
+public class VoverUserDetailsService {
+    private final VoverUserDetailsMongoRepository userDetailsRepository;
 
     public void addRequestToHistory(String username, List<String> wordList) {
         String text = String.join(" ", wordList);
