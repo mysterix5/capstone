@@ -15,6 +15,12 @@ export default function WordDropdown(props: WordDropdownProps) {
 
     const [id, setId] = useState(props.id);
 
+    const handleChange = (event: SelectChangeEvent) => {
+        if(id!==event.target.value){
+            setId(event.target.value);
+        }
+    };
+
     useEffect(() => {
         props.setId(id);
     }, [id, props, props.setId])
@@ -44,7 +50,7 @@ export default function WordDropdown(props: WordDropdownProps) {
                 value={isAvailable(props.wordAvail.availability) ? id : 'record'}
                 label={props.wordAvail.word.toUpperCase()}
                 IconComponent={() => null}
-                onChange={(e: SelectChangeEvent) => setId(e.target.value)}
+                onChange={handleChange}
                 sx={{textAlign: "center"}}
             >
                 {isAvailable(props.wordAvail.availability) ?
