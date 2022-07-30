@@ -1,5 +1,8 @@
 package com.github.mysterix5.vover.cloud_storage;
 
+import com.github.kokorin.jaffree.ffmpeg.FFmpeg;
+import com.github.kokorin.jaffree.ffmpeg.PipeInput;
+import com.github.kokorin.jaffree.ffmpeg.PipeOutput;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -7,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.sound.sampled.*;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -14,46 +18,38 @@ import java.util.*;
 public class CloudService {
     private final CloudRepository cloudRepository;
 
-    //TODO use service find method here
-    public AudioInputStream loadMultipleAudioFromCloudAndMerge(List<String> cloudFilePaths) throws IOException {
-        List<AudioInputStream> audioInputStreams = cloudFilePaths.parallelStream().map((path) -> {
-            try {
-                return cloudRepository.find(path);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).sequential().map(bytes -> {
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-            AudioFileFormat baseFormat;
-            try {
-                baseFormat = AudioSystem.getAudioFileFormat(byteArrayInputStream);
-            } catch (UnsupportedAudioFileException | IOException e) {
-                throw new RuntimeException(e);
-            }
-            return new AudioInputStream(byteArrayInputStream, baseFormat.getFormat(), baseFormat.getFrameLength());
-        }).toList();
+    public byte[] loadMultipleMp3FromCloudAndMerge(List<String> cloudFilePaths) {
+        List<InputStream> inputStreams = cloudFilePaths.parallelStream()
+                .map(path -> {
+                    try {
+                        return cloudRepository.find(path);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .map(ByteArrayInputStream::new)
+                .collect(Collectors.toList());
 
-        return mergeAudioStreams(audioInputStreams);
+        return mergeWithJaffree(inputStreams);
     }
 
-    private AudioInputStream mergeAudioStreams(List<AudioInputStream> audioInputStreams) throws IOException {
-        byte[] data = new byte[512];
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        for (AudioInputStream audioInputStream : audioInputStreams) {
-            int nBytesRead = 0;
-            while (nBytesRead != -1) {
-                nBytesRead = audioInputStream.read(data, 0, data.length);
-                if (nBytesRead != -1) {
-                    byteArrayOutputStream.write(data, 0, nBytesRead);
-                }
+    public byte[] mergeWithJaffree(List<InputStream> inputStreams) {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
+        ) {
+            for (InputStream inputStream : inputStreams) {
+                FFmpeg.atPath()
+                        .addInput(PipeInput.pumpFrom(inputStream))
+                        .addOutput(
+                                PipeOutput.pumpTo(byteArrayOutputStream)
+                                        .setFormat("mp3")
+                        )
+                        .execute();
             }
-            audioInputStream.close();
+
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        var format = audioInputStreams.get(0).getFormat();
-        return new AudioInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()),
-                format,
-                byteArrayOutputStream.size());
     }
 
     public void save(String filePath, byte[] byteArray) throws IOException {

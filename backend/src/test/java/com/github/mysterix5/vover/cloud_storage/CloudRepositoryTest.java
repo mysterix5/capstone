@@ -19,7 +19,7 @@ class CloudRepositoryTest {
         String url = "https://cloud.com/";
         CloudRepository cloudRepository = new CloudRepository(mockedSardine, url);
 
-        var obFile = new File("src/test/resources/cloud_storage/ob.mp3");
+        var obFile = new File("src/test/resources/cloud_storage/eins.mp3");
         var obStream = new FileInputStream(obFile);
 
         Mockito.when(mockedSardine.get(url + "ob.mp3")).thenReturn(obStream);

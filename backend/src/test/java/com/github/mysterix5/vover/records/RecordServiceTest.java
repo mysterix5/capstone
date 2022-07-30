@@ -104,7 +104,7 @@ class RecordServiceTest {
 
         Mockito.when(mockedWordRepo.findById(recordDbEntity1.getId())).thenReturn(Optional.of(recordDbEntity1));
 
-        var obFile = new File("src/test/resources/cloud_storage/ob.mp3");
+        var obFile = new File("src/test/resources/cloud_storage/eins.mp3");
         try (var obStream = new FileInputStream(obFile)) {
             byte[] bytes = obStream.readAllBytes();
 
