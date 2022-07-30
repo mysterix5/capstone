@@ -102,11 +102,16 @@ public class PrimaryService {
                 .toList();
         try {
             List<InputStream> audioInputStreams = cloudService.loadMultipleMp3FromCloud(filePaths);
-            byte[] merged =  mergeAudioWithJaffree(audioInputStreams);
+            byte[] merged = mergeAudioWithJaffree(audioInputStreams);
             userDetailsService.addRequestToHistory(username,
-                    recordDbEntities.stream()
-                            .map(RecordDbEntity::getWord).toList()
-                    );
+                    ids.stream()
+                            .map(id -> recordDbEntities.stream()
+                                    .filter(wordDb -> Objects.equals(wordDb.getId(), id))
+                                    .findFirst()
+                                    .orElseThrow()
+                                    .getWord())
+                            .toList()
+            );
             return merged;
         } catch (Exception e) {
             throw new MultipleSubErrorException("An error occurred while creating your audio file");

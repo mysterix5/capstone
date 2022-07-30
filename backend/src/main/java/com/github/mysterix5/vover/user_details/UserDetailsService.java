@@ -24,13 +24,17 @@ public class UserDetailsService {
     }
 
     private void addHistoryEntry(String username, HistoryEntry historyEntry){
-        VoverUserDetails voverUserDetails = userDetailsRepository.findByUsername(username).orElse(new VoverUserDetails(username));
+        VoverUserDetails voverUserDetails = getUserDetails(username);
         voverUserDetails.getHistory().add(historyEntry);
         userDetailsRepository.save(voverUserDetails);
     }
 
     public List<HistoryEntry> getHistory(String username) {
-        return userDetailsRepository.findByUsername(username).orElseThrow().getHistory();
+        return getUserDetails(username).getHistory();
+    }
+
+    private VoverUserDetails getUserDetails(String username) {
+        return userDetailsRepository.findByUsername(username).orElse(new VoverUserDetails(username));
     }
 
 }
