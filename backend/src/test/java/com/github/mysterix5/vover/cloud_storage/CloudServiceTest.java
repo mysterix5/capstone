@@ -4,10 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.util.List;
 
@@ -17,24 +13,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CloudServiceTest {
 
     @Test
-    void loadMultipleMp3FromCloudAndMerge() {
+    void loadMultipleMp3FromCloud() {
         CloudRepository cloudRepository = Mockito.mock(CloudRepository.class);
         CloudService cloudService = new CloudService(cloudRepository);
 
-        var einsFile = new File("src/test/resources/cloud_storage/eins.mp3");
-        var zweiFile = new File("src/test/resources/cloud_storage/zwei.mp3");
-        var einszweiFile = new File("src/test/resources/cloud_storage/einszwei.mp3");
+        File einsFile = new File("src/test/resources/cloud_storage/eins.mp3");
+        File zweiFile = new File("src/test/resources/cloud_storage/zwei.mp3");
 
-        try (var einsStream = new FileInputStream(einsFile);
-             var zweiStream = new FileInputStream(zweiFile);
-             var einszweiStream = new FileInputStream(einszweiFile)
+        try (FileInputStream einsStream = new FileInputStream(einsFile);
+             FileInputStream zweiStream = new FileInputStream(zweiFile)
         ) {
-            Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(einsStream.readAllBytes());
-            Mockito.when(cloudRepository.find("zwei.mp3")).thenReturn(zweiStream.readAllBytes());
+            byte[] einsBytes = einsStream.readAllBytes();
+            byte[] zweiBytes = zweiStream.readAllBytes();
 
-            byte[] mergedAudio = cloudService.loadMultipleMp3FromCloudAndMerge(List.of("eins.mp3", "zwei.mp3"));
+            Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(einsBytes);
+            Mockito.when(cloudRepository.find("zwei.mp3")).thenReturn(zweiBytes);
 
-            assertThat(mergedAudio.length).isEqualTo(einszweiStream.readAllBytes().length);
+            List<InputStream> audioInputStreams = cloudService.loadMultipleMp3FromCloud(List.of("eins.mp3", "zwei.mp3"));
+
+            assertThat(audioInputStreams.get(0).readAllBytes()).containsExactly(einsBytes);
+            assertThat(audioInputStreams.get(1).readAllBytes()).containsExactly(zweiBytes);
         } catch (IOException e) {
             throw new RuntimeException();
         }
@@ -69,16 +67,10 @@ class CloudServiceTest {
             byte[] bytes = obStream.readAllBytes();
             Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(bytes);
 
-            AudioInputStream actual = cloudService.find("eins.mp3");
+            byte[] actual = cloudService.find("eins.mp3");
 
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-            AudioFileFormat baseFormat = AudioSystem.getAudioFileFormat(byteArrayInputStream);
-            AudioInputStream expected = new AudioInputStream(byteArrayInputStream, baseFormat.getFormat(), baseFormat.getFrameLength());
-
-            assertThat(actual.getFormat().getEncoding()).isEqualTo(expected.getFormat().getEncoding());
-            assertThat(actual.getFormat().getSampleRate()).isEqualTo(expected.getFormat().getSampleRate());
-            assertThat(actual.getFrameLength()).isEqualTo(expected.getFrameLength());
-        } catch (IOException | UnsupportedAudioFileException e) {
+            assertThat(actual).isEqualTo(bytes);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

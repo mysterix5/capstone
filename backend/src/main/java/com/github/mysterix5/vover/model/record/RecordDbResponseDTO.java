@@ -11,10 +11,10 @@ public class RecordDbResponseDTO {
     private String creator;
     private String tag;
 
-    public RecordDbResponseDTO(RecordDbEntity wordDb) {
-        id = wordDb.getId();
-        word = wordDb.getWord();
-        creator = wordDb.getCreator();
-        tag = wordDb.getTag();
+    public RecordDbResponseDTO(RecordDbEntity recordDb) {
+        id = recordDb.getId();
+        word = recordDb.getWord();
+        creator = recordDb.getCreator();
+        tag = recordDb.getTag();
     }
 }

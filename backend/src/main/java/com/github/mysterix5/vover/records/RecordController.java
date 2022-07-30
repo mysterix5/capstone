@@ -12,13 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.sound.sampled.AudioInputStream;
 import java.security.Principal;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/word")
+@RequestMapping("/api/record")
 public class RecordController {
     private final RecordService recordService;
 
@@ -31,7 +30,7 @@ public class RecordController {
     ) {
         try {
             byte[] audioBytes = audio.getBytes();
-            recordService.addWordToDb(word.toLowerCase(), principal.getName(), tag.toLowerCase(), accessibility, audioBytes);
+            recordService.addRecordToDb(word.toLowerCase(), principal.getName(), tag.toLowerCase(), accessibility, audioBytes);
         }catch(MultipleSubErrorException e){
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         }catch(Exception e){
@@ -44,9 +43,9 @@ public class RecordController {
     @GetMapping("/audio/{id}")
     public ResponseEntity<Object> getSingleAudio(@PathVariable String id, HttpServletResponse httpResponse, Principal principal){
         try {
-            AudioInputStream audio = recordService.getAudio(id, principal.getName());
+            byte[] audio = recordService.getAudio(id, principal.getName());
             httpResponse.setContentType("audio/mp3");
-            httpResponse.getOutputStream().write(audio.readAllBytes());
+            httpResponse.getOutputStream().write(audio);
             return ResponseEntity.ok().build();
         } catch(Exception e){
             return ResponseEntity.internalServerError().body(new VoverErrorDTO(e));
