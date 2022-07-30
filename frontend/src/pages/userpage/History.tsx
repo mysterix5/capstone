@@ -14,7 +14,7 @@ export default function History() {
     useEffect(() => {
         apiGetHistory(getToken())
             .then(setHistory);
-    }, [])
+    }, [getToken])
 
     function fancyStringFromDate(date: Date) {
         return formatDistance(date, new Date()) + " ago";
