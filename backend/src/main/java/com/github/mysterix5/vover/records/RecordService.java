@@ -49,7 +49,6 @@ public class RecordService {
                 .append(accessibility).append("-")
                 .append(cloudId)
                 .append(".mp3");
-        log.info(cloudFileName.toString());
         return cloudFileName.toString();
     }
 

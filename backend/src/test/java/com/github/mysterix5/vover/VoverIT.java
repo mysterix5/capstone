@@ -1,14 +1,13 @@
 package com.github.mysterix5.vover;
 
+import com.github.mysterix5.vover.model.record.RecordPage;
 import com.github.mysterix5.vover.model.security.LoginResponse;
 import com.github.mysterix5.vover.model.security.UserAuthenticationDTO;
 import com.github.mysterix5.vover.model.security.UserRegisterDTO;
 import com.github.sardine.Sardine;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,11 +18,9 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,24 +66,26 @@ public class VoverIT {
         multiValueMap.add("accessibility", "PUBLIC");
 
         HttpHeaders headers = createHeaders(token1);
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+//        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(multiValueMap, headers);
 
         String cloudName = "public-user1-normal-PUBLIC-" + "testuuid" + ".mp3";
         log.info("IT: {}", cloudName);
 
-        ResponseEntity<Void> recordAddResponse = restTemplate.postForEntity("/api/word", requestEntity, Void.class);
+        ResponseEntity<Void> recordAddResponse = restTemplate.postForEntity("/api/record", requestEntity, Void.class);
         log.info("record response: {}", recordAddResponse);
         assertThat(recordAddResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
+        // get records for user and then get audio with the id
         Mockito.when(sardine.get(Mockito.any(String.class))).thenReturn(new FileInputStream(publicFile));
 
+        ResponseEntity<RecordPage> recordPageResponse = restTemplate.exchange("/api/record/0/6?searchTerm=", HttpMethod.GET, new HttpEntity<>(headers), RecordPage.class);
+        assertThat(recordPageResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-
-//        ResponseEntity<byte[]> recordGetResponse = restTemplate.postForEntity("/api/word/", requestEntity, Void.class);
-//        log.info("record response: {}", recordGetResponse);
-//        assertThat(recordGetResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        ResponseEntity<byte[]> audioSingleGetResponse = restTemplate.exchange("/api/record/audio/" + recordPageResponse.getBody().getRecords().get(0).getId(), HttpMethod.GET, new HttpEntity<>(headers), byte[].class);
+        log.info("record response: {}", audioSingleGetResponse);
+        assertThat(audioSingleGetResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
 
