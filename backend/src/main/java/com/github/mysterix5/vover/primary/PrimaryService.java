@@ -109,8 +109,7 @@ public class PrimaryService {
                                     .filter(wordDb -> Objects.equals(wordDb.getId(), id))
                                     .findFirst()
                                     .orElseThrow()
-                                    .getWord())
-                            .toList()
+                            ).toList()
             );
             return merged;
         } catch (Exception e) {

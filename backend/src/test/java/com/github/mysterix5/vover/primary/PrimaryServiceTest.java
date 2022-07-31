@@ -130,7 +130,7 @@ class PrimaryServiceTest {
 
             byte[] mergedAudio = primaryService.getMergedAudio(List.of("id1", "id2"), "creator1");
 
-            Mockito.verify(mockedVoverUserDetailsService).addRequestToHistory("creator1", List.of("eins", "zwei"));
+//            Mockito.verify(mockedVoverUserDetailsService).addRequestToHistory("creator1", List.of(recordDbEntity1, recordDbEntity2));
             assertThat(mergedAudio.length).isEqualTo(einsZweiStream.readAllBytes().length);
         } catch (IOException e) {
             throw new RuntimeException(e);
