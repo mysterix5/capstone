@@ -3,10 +3,15 @@ package com.github.mysterix5.vover;
 import com.github.mysterix5.vover.model.security.LoginResponse;
 import com.github.mysterix5.vover.model.security.UserAuthenticationDTO;
 import com.github.mysterix5.vover.model.security.UserRegisterDTO;
+import com.github.sardine.Sardine;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -14,9 +19,11 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,8 +34,11 @@ public class VoverIT {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @MockBean
+    private Sardine sardine;
+
     @Test
-    public void integrationTest() {
+    public void integrationTest() throws IOException {
         // fail and succeed with registering
         ResponseEntity<Void> userCreationResponse = restTemplate.postForEntity("/api/auth/register", new UserRegisterDTO("", "asdfASDF3%", "asdfASDF3%"), Void.class);
         assertThat(userCreationResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -63,9 +73,21 @@ public class VoverIT {
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(multiValueMap, headers);
 
-        ResponseEntity<Void> recordResponse = restTemplate.postForEntity("/api/word", requestEntity, Void.class);
-        log.info("record response: {}", recordResponse);
-        assertThat(recordResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        String cloudName = "public-user1-normal-PUBLIC-" + "testuuid" + ".mp3";
+        log.info("IT: {}", cloudName);
+
+        ResponseEntity<Void> recordAddResponse = restTemplate.postForEntity("/api/word", requestEntity, Void.class);
+        log.info("record response: {}", recordAddResponse);
+        assertThat(recordAddResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        Mockito.when(sardine.get(Mockito.any(String.class))).thenReturn(new FileInputStream(publicFile));
+
+
+
+//        ResponseEntity<byte[]> recordGetResponse = restTemplate.postForEntity("/api/word/", requestEntity, Void.class);
+//        log.info("record response: {}", recordGetResponse);
+//        assertThat(recordGetResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
     }
 
     private HttpHeaders createHeaders(String jwt) {
