@@ -71,7 +71,12 @@ export interface RecordInfo {
     accessibility: string
 }
 
-export interface HistoryEntry {
+export interface HistoryEntryTextDate {
+    id: string,
     text: string,
     requestTime: Date
+}
+export interface HistoryEntryTextChoices {
+    text: string,
+    choices: string[]
 }

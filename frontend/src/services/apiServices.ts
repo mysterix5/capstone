@@ -1,5 +1,14 @@
 import axios, {AxiosResponse} from "axios";
-import {TextSend, TextMetadataResponse, LoginDTO, LoginResponse, RegisterDTO, RecordPage, RecordInfo} from "./model";
+import {
+    TextSend,
+    TextMetadataResponse,
+    LoginDTO,
+    LoginResponse,
+    RegisterDTO,
+    RecordPage,
+    RecordInfo,
+    HistoryEntryTextChoices
+} from "./model";
 
 function createHeaders(token: string) {
     return {
@@ -98,6 +107,14 @@ export function apiGetHistory(token: string){
         })
         ;
 }
+
+export function apiGetHistoryEntryById(token: string, id: string){
+    console.log(`get: /api/history/${id}`);
+    return axios.get(`/api/history/${id}`,
+        createHeaders(token)
+    ).then((response: AxiosResponse<HistoryEntryTextChoices>) => response.data);
+}
+
 
 // LocalDateTime from java has been converted to String for the request, this creates a js Date from it
 function parseISOString(s: string) {

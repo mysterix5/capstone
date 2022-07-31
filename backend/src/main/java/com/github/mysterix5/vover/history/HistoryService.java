@@ -14,6 +14,9 @@ public class HistoryService {
         return historyRepository.save(historyEntry);
     }
 
+    public HistoryEntry getById(String id){
+        return historyRepository.findById(id).orElseThrow();
+    }
     public List<HistoryEntry> getAllByIds(List<String> historyIds) {
         return historyRepository.findAllByIdIn(historyIds);
     }

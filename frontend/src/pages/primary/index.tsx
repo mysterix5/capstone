@@ -4,10 +4,10 @@ import {useEffect, useState} from "react";
 import {TextMetadataResponse} from "../../services/model";
 import TextCheck from "./TextCheck";
 import Audio from "./Audio";
-import {apiGetMergedAudio} from "../../services/apiServices";
+import {apiGetHistoryEntryById, apiGetMergedAudio, apiSendTextToBackend} from "../../services/apiServices";
 import {isAvailable} from "../../globalTools/helpers";
 import {useAuth} from "../../usermanagement/AuthProvider";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 
 export default function Primary() {
@@ -17,9 +17,30 @@ export default function Primary() {
         wordRecordMap: {}
     });
     const [audioFile, setAudioFile] = useState<any>();
+    const [text, setText] = useState("")
 
     const {getToken, setError} = useAuth();
     const nav = useNavigate();
+
+    const {id} = useParams();
+
+    useEffect(()=>{
+        if(id){
+            console.log("have id in primary: "+ id);
+            apiGetHistoryEntryById(getToken(), id)
+                .then(h=>{
+                    console.log(h);
+                    setText(h.text);
+                    apiSendTextToBackend(getToken(), {text: h.text})
+                        .then(textMetadataResponse=>{
+                            setAudioFile(null);
+                            textMetadataResponse.defaultIds = h.choices;
+                            setTextMetadataResponse(textMetadataResponse);
+                        })
+                })
+            ;
+        }
+    }, []);
 
     useEffect(() => {
         if (!getToken()) {
@@ -27,9 +48,14 @@ export default function Primary() {
         }
     }, [getToken, nav])
 
-    function handleTextMetadataResponse(textMetadataResponseLocal: TextMetadataResponse) {
-        setTextMetadataResponse(textMetadataResponseLocal);
-        setAudioFile(null);
+    function submitText(){
+        apiSendTextToBackend(getToken(), {text: text})
+            .then(r=>{
+                console.log(r);
+                setTextMetadataResponse(r);
+                setAudioFile(null);
+                return r;
+            });
     }
 
     function checkTextResponseAvailability() {
@@ -64,7 +90,7 @@ export default function Primary() {
     return (
         <Grid container alignItems={"center"} flexDirection={"column"}>
             <Grid item>
-                <TextSubmit setTextMetadataResponse={handleTextMetadataResponse}/>
+                <TextSubmit text={text} setText={setText} submitText={submitText}/>
             </Grid>
             <Grid item ml={2} mr={2}>
                 {
