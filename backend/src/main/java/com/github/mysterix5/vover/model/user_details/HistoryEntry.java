@@ -1,7 +1,6 @@
 package com.github.mysterix5.vover.model.user_details;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
