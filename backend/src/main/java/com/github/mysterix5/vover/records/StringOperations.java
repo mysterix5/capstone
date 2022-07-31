@@ -7,7 +7,7 @@ import java.util.List;
 public class StringOperations {
 
     public static boolean isWord(String word){
-        String wordRegex = "^[a-zA-Z]{1,30}$";
+        String wordRegex = "^[\\p{L}\\p{M}]{1,30}$";
         return word.matches(wordRegex);
     }
 

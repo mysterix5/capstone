@@ -84,3 +84,24 @@ export function apiChangeRecord(token: string, recordInfo: RecordInfo) {
         createHeaders(token)
     );
 }
+export function apiGetHistory(token: string){
+    return axios.get(`/api/userdetails/history`,
+        createHeaders(token)
+    ).then(r=>r.data)
+        .then(h=>{
+            let locHist = [...h];
+            locHist.map(h=>{
+                h.requestTime = parseISOString(h.requestTime);
+                return h;
+            })
+            return locHist;
+        })
+        ;
+}
+
+// LocalDateTime from java has been converted to String for the request, this creates a js Date from it
+function parseISOString(s: string) {
+    const b = s.split(/\D+/);
+    let month = Number(b[1]);
+    return new Date(Date.UTC(Number(b[0]), --month, Number(b[2]), Number(b[3]), Number(b[4]), Number(b[5]), Number(b[6])));
+}

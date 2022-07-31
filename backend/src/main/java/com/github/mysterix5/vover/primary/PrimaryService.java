@@ -9,6 +9,7 @@ import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
 import com.github.mysterix5.vover.model.record.*;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
 import com.github.mysterix5.vover.records.StringOperations;
+import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class PrimaryService {
     private final RecordMongoRepository recordRepository;
     private final CloudService cloudService;
+    private final VoverUserDetailsService voverUserDetailsService;
 
     public PrimaryResponseDTO onSubmittedText(String text, String username) {
         List<String> wordList = StringOperations.splitText(text);
@@ -100,7 +102,17 @@ public class PrimaryService {
                 .toList();
         try {
             List<InputStream> audioInputStreams = cloudService.loadMultipleMp3FromCloud(filePaths);
-            return mergeAudioWithJaffree(audioInputStreams);
+            byte[] merged = mergeAudioWithJaffree(audioInputStreams);
+            voverUserDetailsService.addRequestToHistory(username,
+                    ids.stream()
+                            .map(id -> recordDbEntities.stream()
+                                    .filter(wordDb -> Objects.equals(wordDb.getId(), id))
+                                    .findFirst()
+                                    .orElseThrow()
+                                    .getWord())
+                            .toList()
+            );
+            return merged;
         } catch (Exception e) {
             throw new MultipleSubErrorException("An error occurred while creating your audio file");
         }

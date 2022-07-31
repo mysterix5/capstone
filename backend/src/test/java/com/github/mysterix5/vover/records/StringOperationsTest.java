@@ -9,9 +9,12 @@ class StringOperationsTest {
     void isWord() {
         assertThat(StringOperations.isWord("I")).isTrue();
         assertThat(StringOperations.isWord("Test")).isTrue();
+        assertThat(StringOperations.isWord("Töst")).isTrue();
+        assertThat(StringOperations.isWord("André")).isTrue();
         assertThat(StringOperations.isWord("superdupereinfachfantastischer")).isTrue();
         assertThat(StringOperations.isWord("superdupereinfachfantastischert")).isFalse();
         assertThat(StringOperations.isWord(" Test")).isFalse();
+        assertThat(StringOperations.isWord("Test1")).isFalse();
         assertThat(StringOperations.isWord("\\Test")).isFalse();
         assertThat(StringOperations.isWord("ein Test")).isFalse();
         assertThat(StringOperations.isWord(" ")).isFalse();
