@@ -13,10 +13,10 @@ public class RecordManagementDTO {
     private String tag;
     private Accessibility accessibility;
 
-    public RecordManagementDTO(RecordDbEntity wordDb){
-        id = wordDb.getId();
-        word = wordDb.getWord();
-        tag = wordDb.getTag();
-        accessibility = wordDb.getAccessibility();
+    public RecordManagementDTO(RecordDbEntity recordDb){
+        id = recordDb.getId();
+        word = recordDb.getWord();
+        tag = recordDb.getTag();
+        accessibility = recordDb.getAccessibility();
     }
 }

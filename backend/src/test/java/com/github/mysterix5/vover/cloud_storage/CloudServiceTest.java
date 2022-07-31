@@ -13,24 +13,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CloudServiceTest {
 
     @Test
-    void loadMultipleMp3FromCloudAndMerge() {
+    void loadMultipleMp3FromCloud() {
         CloudRepository cloudRepository = Mockito.mock(CloudRepository.class);
         CloudService cloudService = new CloudService(cloudRepository);
 
-        var einsFile = new File("src/test/resources/cloud_storage/eins.mp3");
-        var zweiFile = new File("src/test/resources/cloud_storage/zwei.mp3");
-        var einszweiFile = new File("src/test/resources/cloud_storage/einszwei.mp3");
+        File einsFile = new File("src/test/resources/cloud_storage/eins.mp3");
+        File zweiFile = new File("src/test/resources/cloud_storage/zwei.mp3");
 
-        try (var einsStream = new FileInputStream(einsFile);
-             var zweiStream = new FileInputStream(zweiFile);
-             var einszweiStream = new FileInputStream(einszweiFile)
+        try (FileInputStream einsStream = new FileInputStream(einsFile);
+             FileInputStream zweiStream = new FileInputStream(zweiFile)
         ) {
-            Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(einsStream.readAllBytes());
-            Mockito.when(cloudRepository.find("zwei.mp3")).thenReturn(zweiStream.readAllBytes());
+            byte[] einsBytes = einsStream.readAllBytes();
+            byte[] zweiBytes = zweiStream.readAllBytes();
 
-            byte[] mergedAudio = cloudService.loadMultipleMp3FromCloudAndMerge(List.of("eins.mp3", "zwei.mp3"));
+            Mockito.when(cloudRepository.find("eins.mp3")).thenReturn(einsBytes);
+            Mockito.when(cloudRepository.find("zwei.mp3")).thenReturn(zweiBytes);
 
-            assertThat(mergedAudio.length).isEqualTo(einszweiStream.readAllBytes().length);
+            List<InputStream> audioInputStreams = cloudService.loadMultipleMp3FromCloud(List.of("eins.mp3", "zwei.mp3"));
+
+            assertThat(audioInputStreams.get(0).readAllBytes()).containsExactly(einsBytes);
+            assertThat(audioInputStreams.get(1).readAllBytes()).containsExactly(zweiBytes);
         } catch (IOException e) {
             throw new RuntimeException();
         }

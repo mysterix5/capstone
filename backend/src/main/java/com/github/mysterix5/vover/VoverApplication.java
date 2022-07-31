@@ -7,6 +7,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
+
 @SpringBootApplication
 public class VoverApplication {
 
@@ -14,6 +17,10 @@ public class VoverApplication {
 		SpringApplication.run(VoverApplication.class, args);
 	}
 
+	@PostConstruct
+	public void init(){
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+	}
 	@Bean
 	public Sardine sardine(@Value("${app.webdav.username}") String username,
 						   @Value("${app.webdav.password}") String password) {

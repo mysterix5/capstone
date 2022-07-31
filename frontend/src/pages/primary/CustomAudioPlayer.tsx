@@ -19,7 +19,7 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
     const onLoadedMetadata = () => {
         setDuration(audioRef.current!.duration);
         if (props.autoPlay) {
-            audioRef.current!.autoplay = true
+            audioRef.current!.play()
         }
     };
 

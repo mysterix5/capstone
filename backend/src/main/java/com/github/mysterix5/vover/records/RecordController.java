@@ -17,7 +17,7 @@ import java.security.Principal;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/word")
+@RequestMapping("/api/record")
 public class RecordController {
     private final RecordService recordService;
 
@@ -30,7 +30,7 @@ public class RecordController {
     ) {
         try {
             byte[] audioBytes = audio.getBytes();
-            recordService.addWordToDb(word.toLowerCase(), principal.getName(), tag.toLowerCase(), accessibility, audioBytes);
+            recordService.addRecordToDb(word.toLowerCase(), principal.getName(), tag.toLowerCase(), accessibility, audioBytes);
         }catch(MultipleSubErrorException e){
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         }catch(Exception e){

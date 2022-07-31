@@ -70,3 +70,8 @@ export interface RecordInfo {
     tag: string,
     accessibility: string
 }
+
+export interface HistoryEntry {
+    text: string,
+    requestTime: Date
+}

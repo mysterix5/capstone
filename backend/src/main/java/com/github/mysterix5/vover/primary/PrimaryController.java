@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/main")
+@RequestMapping("/api/primary")
 public class PrimaryController {
 
     private final PrimaryService primaryService;
