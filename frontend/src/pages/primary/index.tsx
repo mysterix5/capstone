@@ -1,6 +1,6 @@
 import {Grid} from "@mui/material";
 import TextSubmit from "./TextSubmit";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {TextMetadataResponse} from "../../services/model";
 import TextCheck from "./TextCheck";
 import Audio from "./Audio";
@@ -24,7 +24,7 @@ export default function Primary() {
 
     const {id} = useParams();
 
-    useEffect(()=>{
+    const fetchFromPathHistoryId = useCallback(()=>{
         if(id){
             console.log("have id in primary: "+ id);
             apiGetHistoryEntryById(getToken(), id)
@@ -40,7 +40,11 @@ export default function Primary() {
                 })
             ;
         }
-    }, []);
+    }, [getToken, id])
+
+    useEffect(()=>{
+        fetchFromPathHistoryId();
+    }, [fetchFromPathHistoryId]);
 
     useEffect(() => {
         if (!getToken()) {
