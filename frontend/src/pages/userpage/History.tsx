@@ -10,13 +10,17 @@ import {useNavigate} from "react-router-dom";
 export default function History() {
     const [history, setHistory] = useState<HistoryEntryTextDate[]>([]);
 
-    const {getToken} = useAuth();
     const nav = useNavigate();
 
+    const {defaultApiResponseChecks} = useAuth();
+
     useEffect(() => {
-        apiGetHistory(getToken())
-            .then(setHistory);
-    }, [getToken])
+        apiGetHistory()
+            .then(setHistory)
+            .catch(err=>{
+                defaultApiResponseChecks(err);
+            });
+    }, [defaultApiResponseChecks])
 
     function fancyStringFromDate(date: Date) {
         return formatDistance(date, new Date()) + " ago";
@@ -26,7 +30,7 @@ export default function History() {
         <Grid container direction={"column"}>
             {
                 history?.map((h, i) =>
-                    <Grid item key={i} mb={0.5} onClick={()=>nav(`/x/${h.id}`)}>
+                    <Grid item key={i} mb={0.5} onClick={()=>nav(`/h/${h.id}`)}>
                         <Grid container direction={"row"} wrap={"nowrap"}>
                             <Grid item ml={1} mr={1} xs={4}>
                                 <Typography color={"lightgray"}>

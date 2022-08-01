@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {apiGetRecordPage} from "../../services/apiServices";
 import {RecordPage} from "../../services/model";
@@ -19,26 +19,26 @@ export default function Recordings() {
             accessibilityChoices: []
         });
 
-    const {getToken} = useAuth();
+    const {defaultApiResponseChecks} = useAuth();
 
     const nav = useNavigate();
 
-    useEffect(() => {
-        if (!getToken()) {
-            nav("/login")
-        }
-        updateRecordPage();
+    const getSpecificRecordPage = useCallback((page: number, size: number, searchTerm: string) => {
+        apiGetRecordPage(page, size, searchTerm)
+            .then((r: RecordPage) => setRecordPage(r))
+            .catch(err => {
+                defaultApiResponseChecks(err);
+            });
+    }, [defaultApiResponseChecks]);
+
+    const updateRecordPage = useCallback(() => {
+        getSpecificRecordPage(recordPage.page, recordPage.size, recordPage.searchTerm);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [nav])
+    }, [getSpecificRecordPage])
 
-    function getSpecificRecordPage(page: number) {
-        apiGetRecordPage(getToken(), page, recordPage.size, recordPage.searchTerm)
-            .then((r: RecordPage) => setRecordPage(r));
-    }
-
-    function updateRecordPage() {
-        getSpecificRecordPage(recordPage.page);
-    }
+    useEffect(() => {
+        updateRecordPage();
+    }, [nav, updateRecordPage])
 
     return (
         <Box>
@@ -51,12 +51,14 @@ export default function Recordings() {
                 }
             </Grid>
             {recordPage && recordPage.page > 0 &&
-                <Button onClick={() => getSpecificRecordPage(recordPage.page-1)}>
+                <Button
+                    onClick={() => getSpecificRecordPage(recordPage.page - 1, recordPage.size, recordPage.searchTerm)}>
                     prev
                 </Button>
             }
             {recordPage && recordPage.page < recordPage.noPages - 1 &&
-                <Button onClick={() => getSpecificRecordPage(recordPage.page+1)}>
+                <Button
+                    onClick={() => getSpecificRecordPage(recordPage.page + 1, recordPage.size, recordPage.searchTerm)}>
                     next
                 </Button>
             }

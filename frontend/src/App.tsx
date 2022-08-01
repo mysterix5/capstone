@@ -31,7 +31,7 @@ export default function App() {
                     <Header/>
                     <Routes>
                         <Route path="/" element={<Primary/>}/>
-                        <Route path="/x/:id" element={<Primary/>}/>
+                        <Route path="/h/:historyId" element={<Primary/>}/>
                         <Route path="/record" element={<Record/>}/>
                         <Route path="/login" element={<LoginPage/>}/>
                         <Route path="/register" element={<RegisterPage/>}/>

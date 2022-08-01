@@ -1,15 +1,24 @@
 import {Box, Grid, Tab, Typography} from "@mui/material";
 import Recordings from "./Recordings";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
-import {SyntheticEvent, useState} from "react";
+import {SyntheticEvent, useEffect, useState} from "react";
 import History from "./History";
 import {useAuth} from "../../usermanagement/AuthProvider";
+import {useNavigate} from "react-router-dom";
 
 
 export default function UserPage() {
     const [tabValue, setTabValue] = useState("recordings");
 
     const {username} = useAuth();
+
+    const nav = useNavigate();
+
+    useEffect(() => {
+        if (!localStorage.getItem("jwt")) {
+            nav("/login")
+        }
+    }, [nav])
 
     const handleChange = (event: SyntheticEvent, newValue: string) => {
         setTabValue(newValue);

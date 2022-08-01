@@ -1,3 +1,4 @@
+import {AxiosError} from "axios";
 
 export interface TextSend{
     text: string
@@ -28,11 +29,11 @@ export interface TextMetadataResponse {
 export interface AuthInterface {
     username : string,
     roles : string[],
-    getToken: () => string,
     error: VoverError,
     setError: (error: VoverError)=>void,
-    logout: () => void
-    login: (token: string) => void
+    logout: () => void,
+    login: (token: string) => void,
+    defaultApiResponseChecks: (err: Error | AxiosError) => void
 }
 
 export interface LoginResponse {

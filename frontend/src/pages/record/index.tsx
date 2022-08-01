@@ -20,7 +20,7 @@ export default function Record() {
     const [tag, setTag] = useState("normal");
     const [accessibility, setAccessibility] = useState("PUBLIC");
 
-    const {getToken, setError} = useAuth();
+    const {setError, defaultApiResponseChecks} = useAuth();
 
     const record = async () => {
         setIsLoading(true);
@@ -49,14 +49,15 @@ export default function Record() {
         event.preventDefault();
         console.log("save audio");
 
-        apiSaveAudio(getToken(), word, tag, accessibility, audioBlob!)
+        apiSaveAudio(word, tag, accessibility, audioBlob!)
             .then(() => {
                 setAudioLink("");
                 setAudioBlob(undefined);
                 setWord("");
-            }).catch((error) => {
-                if (error.response) {
-                    setError(error.response.data);
+            }).catch((err) => {
+                defaultApiResponseChecks(err);
+                if (err.response) {
+                    setError(err.response.data);
                 }
             });
     }
