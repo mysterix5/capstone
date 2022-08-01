@@ -90,7 +90,7 @@ export default function Primary() {
                 }).catch(err => {
                 defaultApiResponseChecks(err);
             });
-        }else if(searchParams.get("text")){
+        } else if (searchParams.get("text")) {
             setText(searchParams.get("text")!);
             apiSendTextToBackend({text: searchParams.get("text")!})
                 .then(r => {
@@ -110,18 +110,25 @@ export default function Primary() {
     }, [nav])
 
     function submitText() {
+        setAudioFile(null);
+        setTextMetadataResponse(()=>initialMetadataResponse);
         apiSendTextToBackend({text: text})
             .then(r => {
                 console.log(r);
-                setTextMetadataResponse(r);
-                setAudioFile(null);
+                setTextMetadataResponse(()=>r);
             }).catch(err => {
                 defaultApiResponseChecks(err);
+                if (err.response) {
+                    setError(err.response.data);
+                }
             }
         );
     }
 
     function checkTextResponseAvailability() {
+        if (!textMetadataResponse || textMetadataResponse.textWords.length === 0) {
+            return false;
+        }
         for (const word of textMetadataResponse!.textWords) {
             if (!isAvailable(word.availability)) {
                 return false;
@@ -156,7 +163,7 @@ export default function Primary() {
     function recordMissingWords() {
         const wordsArray = textMetadataResponse.textWords
             .filter((wordAvail) => !isAvailable(wordAvail.availability))
-            .filter((wordAvail) => wordAvail.availability!=="INVALID")
+            .filter((wordAvail) => wordAvail.availability !== "INVALID")
             .map(wordAvail => wordAvail.word);
         const searchParamRecordWords = createSearchParamsFromArrayToArray("words", wordsArray);
         const searchParamText = createSearchParamsFromArrayToText("text",
@@ -166,7 +173,7 @@ export default function Primary() {
 
     function recordAllWords() {
         const wordsArray = textMetadataResponse.textWords
-            .filter((wordAvail) => wordAvail.availability!=="INVALID")
+            .filter((wordAvail) => wordAvail.availability !== "INVALID")
             .map(wordAvail => wordAvail.word);
         const searchParamRecordWords = createSearchParamsFromArrayToArray("words", wordsArray);
         const searchParamText = createSearchParamsFromArrayToText("text",
@@ -185,21 +192,25 @@ export default function Primary() {
                     <TextCheck key={"textcheck"} textMetadataResponse={textMetadataResponse} setId={setId}/>
                 }
             </Grid>
-            <Grid item>
-                <Button onClick={recordAllWords}>
-                    record all words
-                </Button>
-            </Grid>
-            <Grid item>
-                {
-                    (textMetadataResponse && checkTextResponseAvailability()) ?
-                        <Audio getAudio={getAudio} audioFile={audioFile}/>
-                        :
-                        <Button onClick={recordMissingWords}>
-                            record missing words
+            {textMetadataResponse && textMetadataResponse.textWords.length !== 0 &&
+                <>
+                    <Grid item>
+                        <Button onClick={recordAllWords}>
+                            record all words
                         </Button>
-                }
-            </Grid>
+                    </Grid>
+                    <Grid item>
+                        {
+                            checkTextResponseAvailability() ?
+                                <Audio getAudio={getAudio} audioFile={audioFile}/>
+                                :
+                                <Button onClick={recordMissingWords}>
+                                    record missing words
+                                </Button>
+                        }
+                    </Grid>
+                </>
+            }
         </Grid>
     )
 }

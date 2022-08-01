@@ -26,7 +26,7 @@ public class PrimaryController {
         try {
             return ResponseEntity.ok().body(primaryService.onSubmittedText(primarySubmitDTO.getText(), principal.getName()));
         } catch (MultipleSubErrorException e) {
-            return ResponseEntity.internalServerError().body(new VoverErrorDTO(e));
+            return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new VoverErrorDTO("Unknown error while handling your request :("));
         }

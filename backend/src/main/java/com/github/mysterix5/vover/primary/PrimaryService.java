@@ -37,6 +37,9 @@ public class PrimaryService {
     private PrimaryResponseDTO createResponses(List<String> wordList, String username) {
         wordList = wordList.stream().map(String::toLowerCase).toList();
         Set<String> appearingWordsSet = wordList.stream().filter(StringOperations::isWord).collect(Collectors.toSet());
+        if(appearingWordsSet.isEmpty()){
+            throw new MultipleSubErrorException("You didn't submit a single valid word...");
+        }
         Map<String, List<RecordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet, username);
         List<String> defaultIds = new ArrayList<>();
 
