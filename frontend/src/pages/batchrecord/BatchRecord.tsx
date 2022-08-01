@@ -1,53 +1,75 @@
-import {Box, Button} from "@mui/material";
-import {useEffect} from "react";
+import {Box, Grid, Typography} from "@mui/material";
+import {FormEvent, useEffect, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
+import Record from "./Record";
+import {apiSaveAudio} from "../../services/apiServices";
+import {useAuth} from "../../usermanagement/AuthProvider";
 
 
 export default function BatchRecord() {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
+    const [wordArray, setWordArray] = useState<Array<string>>([]);
+    const [recordIndex, setRecordIndex] = useState<number>(0);
+
+    const [audioBlob, setAudioBlob] = useState<Blob>();
+
+    const [word, setWord] = useState("");
+    const [tag, setTag] = useState("normal");
+    const [accessibility, setAccessibility] = useState("PUBLIC");
+
+
+    const {setError, defaultApiResponseChecks} = useAuth();
 
     const nav = useNavigate();
 
-    function createSearchParamsFromArrayToArray(name: string, array: string[]) {
-        let returnString: string = "";
-        for(const arg of array) {
-            if(returnString){
-                returnString += `&${name}=${arg}`;
-            }else{
-                returnString += `${name}=${arg}`;
-            }
-        }
-        return returnString;
-    }
-
-    function createSearchParamsFromArrayToText(name: string, array: string[]){
-        return `${name}=${array.join("+")}`;
-    }
-
-    const wordArray = [
-        "eins",
-        "zwei",
-        "drei"
-    ]
-
     useEffect(() => {
-        console.log(searchParams.getAll("words"));
-        searchParams.getAll("words")
-    }, [])
+        const wordArrayTmp = Array.from(new Set<string>(searchParams.getAll("words")));
+        if (wordArrayTmp.length === 0) {
+            setError({message: "the array of words to record was empty", subMessages: []});
+            nav("/?text=" + searchParams.get("text"));
+        }
+        setWordArray(wordArrayTmp);
+        setWord(wordArrayTmp[0]);
+    }, [nav, searchParams, setError])
+
+
+    function saveAudio(event: FormEvent) {
+        event.preventDefault();
+        console.log("save audio");
+
+        apiSaveAudio(word, tag, accessibility, audioBlob!)
+            .then(() => {
+                setAudioBlob(undefined);
+                if (recordIndex < wordArray.length - 1) {
+                    setWord(wordArray[recordIndex + 1]);
+                    setRecordIndex((ri) => ri + 1);
+                } else {
+                    nav("/?text=" + searchParams.get("text"));
+                }
+            }).catch((err) => {
+            defaultApiResponseChecks(err);
+            if (err.response) {
+                setError(err.response.data);
+            }
+        });
+    }
 
     return (
         <Box>
-            Batch record
-            <div>
-                {searchParams.getAll("words").map((sp)=><div>{sp}</div>)}
-            </div>
-            <div>
-                {searchParams.get("text")}
-            </div>
-            <Button onClick={()=>nav(`/batch?${createSearchParamsFromArrayToArray("words", wordArray)}&${createSearchParamsFromArrayToText("text", wordArray)}`)}>
-                click
-            </Button>
-
+            <Grid container justifyContent={"center"}>
+                {wordArray &&
+                    wordArray.map((sp, i) =>
+                        <Grid item key={i} color={i === recordIndex ? "#d70000" : "black"} m={1}>
+                            <Typography variant={"h6"}>{sp}</Typography>
+                        </Grid>)
+                }
+            </Grid>
+            <Record word={word} setWord={setWord}
+                    tag={tag} setTag={setTag}
+                    accessibility={accessibility} setAccessibility={setAccessibility}
+                    audioBlob={audioBlob} setAudioBlob={setAudioBlob}
+                    saveAudio={saveAudio}
+            />
         </Box>
     )
 }

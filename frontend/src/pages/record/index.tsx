@@ -110,6 +110,7 @@ export default function Record() {
                             <Grid item m={0.5}>
                                 <ToggleButtonGroup
                                     value={accessibility}
+                                    size={"small"}
                                     exclusive
                                     onChange={handleAccessibility}
                                 >
