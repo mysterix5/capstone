@@ -1,8 +1,7 @@
-import {FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
+import {FormControl, Grid, InputLabel, MenuItem, Select, Typography} from "@mui/material";
 import {isAvailable} from "../../globalTools/helpers";
 import {WordAvail, RecordMetaData} from "../../services/model";
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
 
 interface WordDropdownProps {
     wordAvail: WordAvail,
@@ -12,18 +11,6 @@ interface WordDropdownProps {
 }
 
 export default function WordDropdown(props: WordDropdownProps) {
-
-    const [id, setId] = useState(props.id);
-
-    const handleChange = (event: SelectChangeEvent) => {
-        if(id!==event.target.value){
-            setId(event.target.value);
-        }
-    };
-
-    useEffect(() => {
-        props.setId(id);
-    }, [id, props, props.setId])
 
     const nav = useNavigate();
 
@@ -47,10 +34,10 @@ export default function WordDropdown(props: WordDropdownProps) {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 autoWidth
-                value={isAvailable(props.wordAvail.availability) ? id : 'record'}
+                value={isAvailable(props.wordAvail.availability) ? props.id : 'record'}
                 label={props.wordAvail.word.toUpperCase()}
                 IconComponent={() => null}
-                onChange={handleChange}
+                onChange={e=>props.setId(e.target.value)}
                 sx={{textAlign: "center"}}
             >
                 {isAvailable(props.wordAvail.availability) ?

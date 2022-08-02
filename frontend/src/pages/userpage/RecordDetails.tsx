@@ -12,7 +12,11 @@ import {
 import {RecordInfo} from "../../services/model";
 import {ChangeEvent, MouseEvent, useState} from "react";
 import {useAuth} from "../../usermanagement/AuthProvider";
-import {apiChangeRecord, apiDeleteRecord, apiGetSingleRecordedAudio} from "../../services/apiServices";
+import {
+    apiChangeRecord,
+    apiDeleteRecord,
+    apiGetSingleRecordedAudio
+} from "../../services/apiServices";
 import {AxiosError} from "axios";
 import CustomAudioPlayer from "../primary/CustomAudioPlayer";
 
@@ -31,7 +35,7 @@ export default function RecordDetails(props: RecordDetailsProps) {
 
     const [audioFile, setAudioFile] = useState<any>();
 
-    const {getToken, setError} = useAuth();
+    const {setError, defaultApiResponseChecks} = useAuth();
 
     const handleEditSwitch = (event: ChangeEvent<HTMLInputElement>) => {
         setEdit(event.target.checked);
@@ -45,20 +49,22 @@ export default function RecordDetails(props: RecordDetailsProps) {
     };
 
     function saveWord() {
-        apiChangeRecord(getToken(), {id: props.record.id, word: word, tag: tag, accessibility: accessibility})
+        apiChangeRecord({id: props.record.id, word: word, tag: tag, accessibility: accessibility})
             .then(props.getRecordPage)
             .then(() => setEdit(false))
-            .catch((error) => {
-                if (error.response) {
-                    setError(error.response.data);
+            .catch((err) => {
+                defaultApiResponseChecks(err);
+                if (err.response) {
+                    setError(err.response.data);
                 }
             });
     }
 
     function getAudio() {
-        apiGetSingleRecordedAudio(getToken(), props.record.id)
+        apiGetSingleRecordedAudio(props.record.id)
             .then(setAudioFile)
             .catch((err: AxiosError<ArrayBuffer>) => {
+                    defaultApiResponseChecks(err);
                     if (err.response) {
                         const enc = new TextDecoder('utf-8')
                         const res = JSON.parse(enc.decode(new Uint8Array(err.response.data)))
@@ -69,8 +75,11 @@ export default function RecordDetails(props: RecordDetailsProps) {
     }
 
     function deleteRecord() {
-        apiDeleteRecord(getToken(), props.record.id)
-            .then(props.getRecordPage);
+        apiDeleteRecord(props.record.id)
+            .then(props.getRecordPage)
+            .catch(err => {
+                defaultApiResponseChecks(err);
+            });
     }
 
     return (
