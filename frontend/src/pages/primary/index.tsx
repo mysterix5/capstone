@@ -1,4 +1,4 @@
-import {Grid} from "@mui/material";
+import {Button, Grid} from "@mui/material";
 import TextSubmit from "./TextSubmit";
 import {useEffect, useState} from "react";
 import {RecordMetaData, TextMetadataResponse} from "../../services/model";
@@ -7,7 +7,23 @@ import Audio from "./Audio";
 import {apiGetHistoryEntryById, apiGetMergedAudio, apiSendTextToBackend} from "../../services/apiServices";
 import {isAvailable} from "../../globalTools/helpers";
 import {useAuth} from "../../usermanagement/AuthProvider";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
+
+function createSearchParamsFromArrayToArray(name: string, array: string[]) {
+    let returnString: string = "";
+    for (const arg of array) {
+        if (returnString) {
+            returnString += `&${name}=${arg}`;
+        } else {
+            returnString += `${name}=${arg}`;
+        }
+    }
+    return returnString;
+}
+
+function createSearchParamsFromArrayToText(name: string, array: string[]) {
+    return `${name}=${array.join("+")}`;
+}
 
 
 const initialMetadataResponse = {
@@ -22,9 +38,10 @@ export default function Primary() {
     const [text, setText] = useState("")
 
     const {setError, defaultApiResponseChecks} = useAuth();
-    const nav = useNavigate();
-
     const {historyId} = useParams();
+
+    const nav = useNavigate();
+    const [searchParams] = useSearchParams();
 
     function isIdInChoices(theId: string, theChoices: RecordMetaData[]) {
         for (const recordMD of theChoices) {
@@ -73,8 +90,18 @@ export default function Primary() {
                 }).catch(err => {
                 defaultApiResponseChecks(err);
             });
+        } else if (searchParams.get("text")) {
+            setText(searchParams.get("text")!);
+            apiSendTextToBackend({text: searchParams.get("text")!})
+                .then(r => {
+                    console.log(r);
+                    setTextMetadataResponse(r);
+                }).catch(err => {
+                    defaultApiResponseChecks(err);
+                }
+            );
         }
-    }, [historyId, setError, defaultApiResponseChecks])
+    }, [historyId, setError, defaultApiResponseChecks, searchParams])
 
     useEffect(() => {
         if (!localStorage.getItem("jwt")) {
@@ -83,19 +110,25 @@ export default function Primary() {
     }, [nav])
 
     function submitText() {
+        setAudioFile(null);
+        setTextMetadataResponse(()=>initialMetadataResponse);
         apiSendTextToBackend({text: text})
             .then(r => {
                 console.log(r);
-                setTextMetadataResponse(r);
-                setAudioFile(null);
-                return r;
+                setTextMetadataResponse(()=>r);
             }).catch(err => {
                 defaultApiResponseChecks(err);
+                if (err.response) {
+                    setError(err.response.data);
+                }
             }
         );
     }
 
     function checkTextResponseAvailability() {
+        if (!textMetadataResponse || textMetadataResponse.textWords.length === 0) {
+            return false;
+        }
         for (const word of textMetadataResponse!.textWords) {
             if (!isAvailable(word.availability)) {
                 return false;
@@ -127,6 +160,27 @@ export default function Primary() {
         }
     }
 
+    function recordMissingWords() {
+        const wordsArray = textMetadataResponse.textWords
+            .filter((wordAvail) => !isAvailable(wordAvail.availability))
+            .filter((wordAvail) => wordAvail.availability !== "INVALID")
+            .map(wordAvail => wordAvail.word);
+        const searchParamRecordWords = createSearchParamsFromArrayToArray("words", wordsArray);
+        const searchParamText = createSearchParamsFromArrayToText("text",
+            textMetadataResponse.textWords.map(wordAvail => wordAvail.word));
+        nav("/batch?" + searchParamRecordWords + "&" + searchParamText);
+    }
+
+    function recordAllWords() {
+        const wordsArray = textMetadataResponse.textWords
+            .filter((wordAvail) => wordAvail.availability !== "INVALID")
+            .map(wordAvail => wordAvail.word);
+        const searchParamRecordWords = createSearchParamsFromArrayToArray("words", wordsArray);
+        const searchParamText = createSearchParamsFromArrayToText("text",
+            textMetadataResponse.textWords.map(wordAvail => wordAvail.word));
+        nav("/batch?" + searchParamRecordWords + "&" + searchParamText);
+    }
+
     return (
         <Grid container alignItems={"center"} flexDirection={"column"}>
             <Grid item>
@@ -138,12 +192,25 @@ export default function Primary() {
                     <TextCheck key={"textcheck"} textMetadataResponse={textMetadataResponse} setId={setId}/>
                 }
             </Grid>
-            <Grid item>
-                {
-                    textMetadataResponse && checkTextResponseAvailability() &&
-                    <Audio getAudio={getAudio} audioFile={audioFile}/>
-                }
-            </Grid>
+            {textMetadataResponse && textMetadataResponse.textWords.length !== 0 &&
+                <>
+                    <Grid item>
+                        <Button onClick={recordAllWords}>
+                            record all words
+                        </Button>
+                    </Grid>
+                    <Grid item>
+                        {
+                            checkTextResponseAvailability() ?
+                                <Audio getAudio={getAudio} audioFile={audioFile}/>
+                                :
+                                <Button onClick={recordMissingWords}>
+                                    record missing words
+                                </Button>
+                        }
+                    </Grid>
+                </>
+            }
         </Grid>
     )
 }
