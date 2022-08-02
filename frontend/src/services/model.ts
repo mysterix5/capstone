@@ -81,3 +81,11 @@ export interface HistoryEntryTextChoices {
     text: string,
     choices: string[]
 }
+export interface UserDTO {
+    username: string
+}
+export interface AllUsersForFriendPageResponse {
+    users: UserDTO[],
+    friendRequests: string[],
+    friendRequestsReceived: string[]
+}

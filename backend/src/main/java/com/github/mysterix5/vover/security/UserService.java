@@ -4,6 +4,7 @@ import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.security.UserRegisterDTO;
 import com.github.mysterix5.vover.model.security.VoverUserEntity;
 import com.github.mysterix5.vover.static_tools.StringOperations;
+import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.PasswordData;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @Slf4j
 public class UserService implements UserDetailsService {
     private final UserMongoRepository userRepository;
+    private final VoverUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final PasswordValidator passwordValidator;
 
@@ -51,6 +53,7 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(userCreationDTO.getPassword()));
         user.setRoles(List.of("user"));
         userRepository.save(user);
+        userDetailsService.ensureUserDetails(user.getUsername());
     }
 
     @Override

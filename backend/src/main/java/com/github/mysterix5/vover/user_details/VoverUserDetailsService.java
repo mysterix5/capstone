@@ -1,8 +1,11 @@
 package com.github.mysterix5.vover.user_details;
 
 import com.github.mysterix5.vover.history.HistoryService;
+import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.record.RecordDbEntity;
+import com.github.mysterix5.vover.model.user_details.AllUsersForFriendsDTO;
 import com.github.mysterix5.vover.model.user_details.HistoryEntry;
+import com.github.mysterix5.vover.model.user_details.VoverFriendDTO;
 import com.github.mysterix5.vover.model.user_details.VoverUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,4 +52,36 @@ public class VoverUserDetailsService {
         return userDetailsRepository.findById(username).orElse(new VoverUserDetails(username));
     }
 
+    public void sendFriendRequest(String username, String friendName) {
+        VoverUserDetails userDetails = getUserDetails(username);
+        VoverUserDetails friendDetails = getUserDetails(friendName);
+        if(userDetails.getFriendRequests().contains(friendName)){
+            throw new MultipleSubErrorException("You already requested this friendship");
+        }
+        userDetails.getFriendRequests().add(friendName);
+        friendDetails.getReceivedFriendRequests().add(username);
+        userDetailsRepository.save(userDetails);
+        userDetailsRepository.save(friendDetails);
+    }
+
+    public AllUsersForFriendsDTO getAllUsersWithFriendInfo(String username) {
+        List<VoverFriendDTO> users = userDetailsRepository.findAll().stream()
+                .map(VoverFriendDTO::new)
+                .filter(u -> !u.getUsername().equalsIgnoreCase(username))
+                .toList();
+        VoverUserDetails userDetails = getUserDetails(username);
+
+        AllUsersForFriendsDTO allUsersForFriendsDTO = new AllUsersForFriendsDTO();
+        allUsersForFriendsDTO.setUsers(users);
+        allUsersForFriendsDTO.setFriendRequests(userDetails.getFriendRequests());
+        allUsersForFriendsDTO.setFriendRequestsReceived(userDetails.getReceivedFriendRequests());
+
+        return allUsersForFriendsDTO;
+    }
+
+    public void ensureUserDetails(String username) {
+        if(!userDetailsRepository.existsById(username)){
+            userDetailsRepository.save(new VoverUserDetails(username));
+        }
+    }
 }
