@@ -8,7 +8,7 @@ import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
 import com.github.mysterix5.vover.model.record.*;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
-import com.github.mysterix5.vover.records.StringOperations;
+import com.github.mysterix5.vover.static_tools.StringOperations;
 import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -3,7 +3,7 @@ package com.github.mysterix5.vover.security;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.security.UserRegisterDTO;
 import com.github.mysterix5.vover.model.security.VoverUserEntity;
-import com.github.mysterix5.vover.records.StringOperations;
+import com.github.mysterix5.vover.static_tools.StringOperations;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.PasswordData;

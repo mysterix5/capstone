@@ -6,6 +6,7 @@ import com.github.mysterix5.vover.model.record.Accessibility;
 import com.github.mysterix5.vover.model.record.RecordManagementDTO;
 import com.github.mysterix5.vover.model.record.RecordPage;
 import com.github.mysterix5.vover.model.record.RecordDbEntity;
+import com.github.mysterix5.vover.static_tools.StringOperations;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

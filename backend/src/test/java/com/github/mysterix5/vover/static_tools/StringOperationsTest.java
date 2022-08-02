@@ -1,4 +1,4 @@
-package com.github.mysterix5.vover.records;
+package com.github.mysterix5.vover.static_tools;
 
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;

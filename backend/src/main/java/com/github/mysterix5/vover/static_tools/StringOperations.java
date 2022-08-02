@@ -1,4 +1,4 @@
-package com.github.mysterix5.vover.records;
+package com.github.mysterix5.vover.static_tools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
