@@ -23,6 +23,37 @@ class StringOperationsTest {
         assertThat(StringOperations.isWord("Te st")).isFalse();
         assertThat(StringOperations.isWord("Te/st")).isFalse();
     }
+    @Test
+    void isUsername() {
+        assertThat(StringOperations.isUsername("Test")).isTrue();
+        assertThat(StringOperations.isUsername("Test1")).isTrue();
+        assertThat(StringOperations.isUsername("1Test")).isTrue();
+        assertThat(StringOperations.isUsername("1_Test")).isTrue();
+        assertThat(StringOperations.isUsername("Test_4")).isTrue();
+        assertThat(StringOperations.isUsername("1-Test")).isTrue();
+        assertThat(StringOperations.isUsername("superduperkrasserTyp")).isTrue();
+        assertThat(StringOperations.isUsername("superduperkrasserTyp5")).isFalse();
+        assertThat(StringOperations.isUsername("-Test")).isFalse();
+        assertThat(StringOperations.isUsername("_Test")).isFalse();
+        assertThat(StringOperations.isUsername("Test_")).isFalse();
+        assertThat(StringOperations.isUsername("Test-")).isFalse();
+        assertThat(StringOperations.isUsername("Test_-4")).isFalse();
+        assertThat(StringOperations.isUsername("Test__4")).isFalse();
+        assertThat(StringOperations.isUsername("Test--4")).isFalse();
+        assertThat(StringOperations.isUsername("Test-_4")).isFalse();
+        assertThat(StringOperations.isUsername("Test_-test")).isFalse();
+        assertThat(StringOperations.isUsername("Töst")).isFalse();
+        assertThat(StringOperations.isUsername("André")).isFalse();
+        assertThat(StringOperations.isUsername("I")).isFalse();
+        assertThat(StringOperations.isUsername(" Test")).isFalse();
+        assertThat(StringOperations.isUsername("\\Test")).isFalse();
+        assertThat(StringOperations.isUsername("ein Test")).isFalse();
+        assertThat(StringOperations.isUsername(" ")).isFalse();
+        assertThat(StringOperations.isUsername("")).isFalse();
+        assertThat(StringOperations.isUsername("Test ")).isFalse();
+        assertThat(StringOperations.isUsername("Te st")).isFalse();
+        assertThat(StringOperations.isUsername("Te/st")).isFalse();
+    }
 
     @Test
     void splitText() {

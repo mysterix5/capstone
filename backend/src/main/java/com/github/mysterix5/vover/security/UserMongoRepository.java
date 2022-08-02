@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface UserMongoRepository extends MongoRepository<VoverUserEntity, String> {
     Optional<VoverUserEntity> findByUsername(String username);
     boolean existsByUsername(String username);
+
+    boolean existsByUsernameIgnoreCase(String username);
 }
