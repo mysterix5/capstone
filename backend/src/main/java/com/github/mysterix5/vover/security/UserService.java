@@ -34,9 +34,9 @@ public class UserService implements UserDetailsService {
         if(!StringOperations.isUsername(userCreationDTO.getUsername())){
             throw new MultipleSubErrorException("Your username is not valid");
         }
-//        if (userRepository.existsByUsernameIgnoreCase(userCreationDTO.getUsername())) {
-//            throw new MultipleSubErrorException("a user with this name already exists");
-//        }
+        if (userRepository.existsByUsernameIgnoreCase(userCreationDTO.getUsername())) {
+            throw new MultipleSubErrorException("a user with this name already exists");
+        }
         var tmp = new PasswordData(userCreationDTO.getUsername(), userCreationDTO.getPassword());
         RuleResult passwordValidationResult = passwordValidator.validate(tmp);
         if (!passwordValidationResult.isValid()) {
@@ -64,7 +64,4 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public boolean userExists(String username) {
-        return userRepository.existsByUsernameIgnoreCase(username);
-    }
 }

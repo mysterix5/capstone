@@ -5,7 +5,6 @@ import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import com.github.mysterix5.vover.model.security.UserAuthenticationDTO;
 import com.github.mysterix5.vover.model.security.UserRegisterDTO;
 import com.github.mysterix5.vover.model.security.VoverUserEntity;
-import com.mongodb.MongoWriteException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -54,11 +53,6 @@ public class AuthenticationController {
             log.warn("login user {} failed, authentication failed", loginData.getUsername());
             return ResponseEntity.badRequest().body(new VoverErrorDTO("Login failed", "It was not possible to authenticate this 'user', 'password' combination", "Are you sure your credentials are correct?"));
         }
-    }
-
-    @PostMapping("/test/{username}")
-    public boolean testUsername(@PathVariable String username) {
-        return userService.userExists(username);
     }
 
 }
