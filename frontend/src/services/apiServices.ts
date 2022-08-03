@@ -42,9 +42,7 @@ export function apiGetMergedAudio(ids: string[]) {
             headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`},
             responseType: 'arraybuffer'
         })
-        .then((response) => response.data)
-        // .then((data) => new Blob([data]))
-        // .then(data => window.URL.createObjectURL(new Blob([data])));
+        .then((response) => response.data);
 }
 
 export function apiGetSingleRecordedAudio(id: string) {

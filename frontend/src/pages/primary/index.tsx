@@ -141,9 +141,7 @@ export default function Primary() {
 
     function getAudio() {
         apiGetMergedAudio(textMetadataResponse?.defaultIds!)
-            .then(a => {
-                setAudioBlobPart(a);
-            })
+            .then(setAudioBlobPart)
             .catch((err) => {
                 defaultApiResponseChecks(err);
                 if (err.response) {

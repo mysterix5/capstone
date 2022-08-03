@@ -7,7 +7,6 @@ interface ShareProps {
 export default function Share(props: ShareProps) {
 
     const handleSharing = async () => {
-        console.log(navigator)
         if (navigator.share) {
             try {
                 await navigator
@@ -20,9 +19,6 @@ export default function Share(props: ShareProps) {
             }
         } else {
             // fallback code
-            console.log(
-                "Web share is currently not supported on this browser. Please provide a fallback"
-            );
         }
     };
 
