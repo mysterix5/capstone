@@ -67,4 +67,8 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
+    public List<VoverUserEntity> findAll() {
+        return userRepository.findAll();
+    }
+
 }

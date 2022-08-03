@@ -46,4 +46,10 @@ public class VoverUserDetailsController {
             return ResponseEntity.internalServerError().body(new VoverErrorDTO("Something went wrong collecting all users"));
         }
     }
+
+    @PutMapping("/acceptfriend")
+    public void acceptFriendRequest(@RequestBody String userRequestingFriendship, Principal principal) {
+        log.info("user '{}' accepts friendship from user '{}'", principal.getName(), userRequestingFriendship);
+        voverUserDetailsService.acceptFriendship(principal.getName(), userRequestingFriendship);
+    }
 }

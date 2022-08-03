@@ -73,6 +73,7 @@ public class VoverUserDetailsService {
 
         AllUsersForFriendsDTO allUsersForFriendsDTO = new AllUsersForFriendsDTO();
         allUsersForFriendsDTO.setUsers(users);
+        allUsersForFriendsDTO.setFriends(userDetails.getFriends());
         allUsersForFriendsDTO.setFriendRequests(userDetails.getFriendRequests());
         allUsersForFriendsDTO.setFriendRequestsReceived(userDetails.getReceivedFriendRequests());
 
@@ -83,5 +84,18 @@ public class VoverUserDetailsService {
         if(!userDetailsRepository.existsById(username)){
             userDetailsRepository.save(new VoverUserDetails(username));
         }
+    }
+
+    public void acceptFriendship(String username, String userRequestingFriendship) {
+        VoverUserDetails userDetails = getUserDetails(username);
+        VoverUserDetails friendDetails = getUserDetails(userRequestingFriendship);
+
+        userDetails.getReceivedFriendRequests().remove(userRequestingFriendship);
+        userDetails.getFriends().add(userRequestingFriendship);
+        friendDetails.getFriendRequests().remove(username);
+        friendDetails.getFriends().add(username);
+
+        userDetailsRepository.save(userDetails);
+        userDetailsRepository.save(friendDetails);
     }
 }

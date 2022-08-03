@@ -139,6 +139,20 @@ export function apiSendFriendRequest(username: string) {
     ).then((response: AxiosResponse<UserDTO[]>) => response.data);
 }
 
+export function apiAcceptFriendship(username: string) {
+    console.log(`post: /api/user: username=${username}`);
+    console.log(username);
+    return axios.put(`/api/userdetails/acceptfriend`,
+        username,
+        {
+            headers: {
+                "Content-Type": "text/plain",
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        }
+    );
+}
+
 // LocalDateTime from java has been converted to String for the request, this creates a js Date from it
 function parseISOString(s: string) {
     const b = s.split(/\D+/);

@@ -3,13 +3,15 @@ import {UserDTO} from "../../services/model";
 import {apiSendFriendRequest} from "../../services/apiServices";
 
 interface UserCardProps {
-    user: UserDTO
+    user: UserDTO,
+    refresh: () => void
 }
 
-export default function UserCard(props: UserCardProps) {
+export default function UnrelatedUserCard(props: UserCardProps) {
 
     function sendFriendRequest() {
-        apiSendFriendRequest(props.user.username);
+        apiSendFriendRequest(props.user.username)
+            .then(() => props.refresh());
     }
 
     return (

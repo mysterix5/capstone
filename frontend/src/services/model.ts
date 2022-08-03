@@ -86,6 +86,7 @@ export interface UserDTO {
 }
 export interface AllUsersForFriendPageResponse {
     users: UserDTO[],
+    friends: string[],
     friendRequests: string[],
     friendRequestsReceived: string[]
 }
