@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {apiGetUsers} from "../../services/apiServices";
 import {AllUsersForFriendPageResponse, UserDTO} from "../../services/model";
 import {Box, Divider, TextField, Typography} from "@mui/material";
@@ -20,11 +20,7 @@ export default function Friends() {
 
     const {setError, defaultApiResponseChecks} = useAuth();
 
-    useEffect(() => {
-        refreshData();
-    }, [])
-
-    function refreshData() {
+    const refreshData = useCallback(() => {
         apiGetUsers()
             .then(u => {
                 usersFilter(u);
@@ -34,7 +30,11 @@ export default function Friends() {
                 setError(err.response.data);
             }
         });
-    }
+    }, [defaultApiResponseChecks, setError]);
+
+    useEffect(() => {
+        refreshData();
+    }, [refreshData])
 
     function usersFilter(allUsersInfo: AllUsersForFriendPageResponse) {
         setFriendUsers(allUsersInfo.users.filter(u => allUsersInfo.friends.indexOf(u.username) !== -1));
