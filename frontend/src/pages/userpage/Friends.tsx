@@ -53,7 +53,7 @@ export default function Friends() {
                 Friends
             </Typography>
             <Box m={1} display={"flex"} flexDirection={"column"} alignContent={"center"}>
-                { friendUsers &&
+                {friendUsers &&
                     friendUsers.map((u, i) =>
                         <FriendUserCard key={i}
                                         user={u}
