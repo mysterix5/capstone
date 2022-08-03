@@ -35,8 +35,9 @@ const initialMetadataResponse = {
 
 export default function Primary() {
     const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>(initialMetadataResponse);
-    const [audioFile, setAudioFile] = useState<any>();
     const [text, setText] = useState("")
+
+    const [audioBlobPart, setAudioBlobPart] = useState<BlobPart>();
 
     const {setError, defaultApiResponseChecks} = useAuth();
     const {historyId} = useParams();
@@ -62,7 +63,7 @@ export default function Primary() {
                     setText(h.text);
                     apiSendTextToBackend({text: h.text})
                         .then(textMetadataResponseFromBackend => {
-                            setAudioFile(null);
+                            setAudioBlobPart(undefined);
                             console.log(textMetadataResponseFromBackend);
                             for (let i = 0; i < textMetadataResponseFromBackend.textWords.length; i++) {
                                 const choice = h.choices[i];
@@ -111,7 +112,7 @@ export default function Primary() {
     }, [nav])
 
     function submitText() {
-        setAudioFile(null);
+        setAudioBlobPart(undefined);
         setTextMetadataResponse(()=>initialMetadataResponse);
         apiSendTextToBackend({text: text})
             .then(r => {
@@ -138,12 +139,9 @@ export default function Primary() {
         return true;
     }
 
-    const [audioBlobPart, setAudioBlobPart] = useState<BlobPart>();
-
     function getAudio() {
         apiGetMergedAudio(textMetadataResponse?.defaultIds!)
             .then(a => {
-                setAudioFile(window.URL.createObjectURL(new Blob([a])));
                 setAudioBlobPart(a);
             })
             .catch((err) => {
@@ -208,7 +206,10 @@ export default function Primary() {
                     <Grid item>
                         {
                             checkTextResponseAvailability() ?
-                                <Audio getAudio={getAudio} audioFile={audioFile}/>
+                                <Audio
+                                    getAudio={getAudio}
+                                    audioBlobPart={audioBlobPart!}
+                                />
                                 :
                                 <Button onClick={recordMissingWords}>
                                     record missing words
@@ -218,24 +219,14 @@ export default function Primary() {
                 </>
             }
             <Grid item>
-                <Share
-                    audioFile={new File(
-                        [audioFile],
-                        'vover.mp3',
-                        { type: 'audio/mp3' })}
-                />
-                <Share
-                    audioFile={new File(
-                        [audioBlobPart!],
-                        'vover.mp3',
-                        { type: 'audio/mp3' })}
-                />
-                <Share
-                    audioFile={audioFile}
-                />
-                <Share
-                    audioFile={audioBlobPart}
-                />
+                { audioBlobPart &&
+                    <Share
+                        audioBlobPart={new File(
+                            [audioBlobPart!],
+                            'vover.mp3',
+                            { type: 'audio/mp3' })}
+                    />
+                }
             </Grid>
         </Grid>
     )

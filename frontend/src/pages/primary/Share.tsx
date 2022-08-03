@@ -1,7 +1,7 @@
 import {Box, Button} from "@mui/material";
 
 interface ShareProps {
-    audioFile: any
+    audioBlobPart: any
 }
 
 export default function Share(props: ShareProps) {
@@ -11,10 +11,9 @@ export default function Share(props: ShareProps) {
         if (navigator.share) {
             try {
                 await navigator
-                    .share({title: "Vover voice message", files: [props.audioFile]})
-                    // .share({title: "Vover voice message", text: "share share share"})
+                    .share({title: "Vover voice message", files: [props.audioBlobPart]})
                     .then(() =>
-                        console.log("Hooray! Your content was shared to tha world")
+                        console.log("sharing worked")
                     );
             } catch (error) {
                 console.log(`Oops! I couldn't share to the world because: ${error}`);
@@ -27,22 +26,13 @@ export default function Share(props: ShareProps) {
         }
     };
 
-    // const shareData = {
-    //     title: 'MDN',
-    //     text: 'Learn web development on MDN!',
-    //     url: 'https://developer.mozilla.org'
-    // }
-    // async function handleSharing() {
-    //     console.log(navigator)
-    //     console.log(navigator.share)
-    //     await window.navigator.share(shareData)
-    //
-    // }
     return (
         <Box>
-            <Button variant={"contained"} onClick={handleSharing}>
-                share
-            </Button>
+            { props.audioBlobPart && navigator.canShare && navigator.canShare({ files: [props.audioBlobPart] }) &&
+                <Button variant={"contained"} onClick={handleSharing}>
+                    share
+                </Button>
+            }
         </Box>
     )
 }
