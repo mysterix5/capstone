@@ -213,7 +213,7 @@ export default function Primary() {
                 </>
             }
             <Grid item>
-                <Share audioData={audioFile}/>
+                <Share audioFile={new File([audioFile], 'vover.mp3')}/>
             </Grid>
         </Grid>
     )
