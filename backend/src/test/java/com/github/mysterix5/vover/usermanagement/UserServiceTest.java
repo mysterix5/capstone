@@ -39,7 +39,7 @@ class UserServiceTest {
 
         Mockito.when(mockedPasswordValidator.validate(Mockito.any(PasswordData.class))).thenReturn(new RuleResult(true));
         Mockito.when(mockedPasswordEncoder.encode(password)).thenReturn("hashedPassword");
-        Mockito.when(mockedUserRepository.existsByUsername(username)).thenReturn(false);
+        Mockito.when(mockedUserRepository.existsByUsernameIgnoreCase(username)).thenReturn(false);
 
         // when
         userService.createUser(userCreationDTO);
@@ -60,7 +60,7 @@ class UserServiceTest {
         UserRegisterDTO userCreationDTO = new UserRegisterDTO(username, password, password);
 
         Mockito.when(mockedPasswordValidator.validate(Mockito.any(PasswordData.class))).thenReturn(new RuleResult(false));
-        Mockito.when(mockedUserRepository.existsByUsername(username)).thenReturn(false);
+        Mockito.when(mockedUserRepository.existsByUsernameIgnoreCase(username)).thenReturn(false);
 
         // when
         Assertions.assertThatExceptionOfType(MultipleSubErrorException.class)
@@ -87,7 +87,7 @@ class UserServiceTest {
         // given
         UserRegisterDTO userCreationDTO = new UserRegisterDTO("testUser", "password", "password");
 
-        Mockito.when(mockedUserRepository.existsByUsername("testUser")).thenReturn(true);
+        Mockito.when(mockedUserRepository.existsByUsernameIgnoreCase("testUser")).thenReturn(true);
 
         Assertions.assertThatExceptionOfType(MultipleSubErrorException.class)
                 .isThrownBy(() -> userService.createUser(userCreationDTO))

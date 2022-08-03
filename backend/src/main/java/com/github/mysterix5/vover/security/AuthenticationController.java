@@ -7,6 +7,7 @@ import com.github.mysterix5.vover.model.security.UserRegisterDTO;
 import com.github.mysterix5.vover.model.security.VoverUserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,6 +32,12 @@ public class AuthenticationController {
         } catch (MultipleSubErrorException e){
             log.warn("registering user {} failed", registerData.getUsername());
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
+        } catch (DuplicateKeyException e) {
+            log.warn("registering user {} failed", registerData.getUsername());
+            return ResponseEntity.badRequest().body(new VoverErrorDTO("registering user " + registerData.getUsername() + " failed", "database rejected because this user already exists"));
+        }catch (Exception e) {
+            log.warn("registering user {} failed", registerData.getUsername(), e);
+            return ResponseEntity.internalServerError().body(new VoverErrorDTO("registering user " + registerData.getUsername() + " failed due to some server problem"));
         }
     }
 
