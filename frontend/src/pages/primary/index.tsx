@@ -138,9 +138,14 @@ export default function Primary() {
         return true;
     }
 
+    const [audioBlobPart, setAudioBlobPart] = useState<BlobPart>();
+
     function getAudio() {
         apiGetMergedAudio(textMetadataResponse?.defaultIds!)
-            .then(setAudioFile)
+            .then(a => {
+                setAudioFile(window.URL.createObjectURL(new Blob([a])));
+                setAudioBlobPart(a);
+            })
             .catch((err) => {
                 defaultApiResponseChecks(err);
                 if (err.response) {
@@ -218,6 +223,18 @@ export default function Primary() {
                         [audioFile],
                         'vover.mp3',
                         { type: 'audio/mp3' })}
+                />
+                <Share
+                    audioFile={new File(
+                        [audioBlobPart!],
+                        'vover.mp3',
+                        { type: 'audio/mp3' })}
+                />
+                <Share
+                    audioFile={audioFile}
+                />
+                <Share
+                    audioFile={audioBlobPart}
                 />
             </Grid>
         </Grid>

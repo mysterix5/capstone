@@ -43,7 +43,8 @@ export function apiGetMergedAudio(ids: string[]) {
             responseType: 'arraybuffer'
         })
         .then((response) => response.data)
-        .then(data => window.URL.createObjectURL(new Blob([data])));
+        // .then((data) => new Blob([data]))
+        // .then(data => window.URL.createObjectURL(new Blob([data])));
 }
 
 export function apiGetSingleRecordedAudio(id: string) {
