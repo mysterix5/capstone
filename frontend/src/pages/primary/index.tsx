@@ -8,6 +8,7 @@ import {apiGetHistoryEntryById, apiGetMergedAudio, apiSendTextToBackend} from ".
 import {isAvailable} from "../../globalTools/helpers";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
+import Share from "./Share";
 
 function createSearchParamsFromArrayToArray(name: string, array: string[]) {
     let returnString: string = "";
@@ -211,6 +212,9 @@ export default function Primary() {
                     </Grid>
                 </>
             }
+            <Grid item>
+                <Share audioData={audioFile}/>
+            </Grid>
         </Grid>
     )
 }
