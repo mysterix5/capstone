@@ -1,4 +1,4 @@
-import {Button, Card, CardActions, CardContent, Grid} from "@mui/material";
+import {Button, Card, Grid, Typography} from "@mui/material";
 import {UserDTO} from "../../services/model";
 
 interface UserCardProps {
@@ -10,18 +10,16 @@ export default function FriendUserCard(props: UserCardProps) {
 
     return (
         <Card sx={{m: 1}}>
-            <Grid container>
-                <Grid item flexGrow={1}>
-                    <CardContent>
+            <Grid container wrap={"nowrap"}>
+                <Grid item flexGrow={1} m={0.5}>
+                    <Typography>
                         {props.user.username}
-                    </CardContent>
+                    </Typography>
                 </Grid>
-                <Grid item>
-                    <CardActions>
-                        <Button>
-                            end friendship
-                        </Button>
-                    </CardActions>
+                <Grid item m={0.5}>
+                    <Button size={"small"}>
+                        end friendship
+                    </Button>
                 </Grid>
             </Grid>
         </Card>

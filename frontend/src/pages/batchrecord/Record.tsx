@@ -1,6 +1,6 @@
 import {Recorder} from "vmsg";
 import {Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
-import {FormEvent, MouseEvent, useState} from "react";
+import {FormEvent, MouseEvent, useEffect, useState} from "react";
 import CustomAudioPlayer from "../primary/CustomAudioPlayer";
 
 const recorder = new Recorder({
@@ -24,6 +24,11 @@ export default function Record(props: RecordProps) {
     const [isRecording, setIsRecording] = useState(false);
 
     const [audioLink, setAudioLink] = useState("");
+
+    useEffect(() => {
+        recorder.initAudio();
+        recorder.initWorker();
+    }, [])
 
     const record = async () => {
         setIsLoading(true);
@@ -74,13 +79,13 @@ export default function Record(props: RecordProps) {
                                 />
                             </Grid>
                             <Grid item m={0.5} display={"flex"} justifyContent={"center"}>
-                                    <TextField
-                                        label="Tag"
-                                        variant="outlined"
-                                        value={props.tag}
-                                        placeholder={props.tag}
-                                        onChange={event => props.setTag(event.target.value)}
-                                    />
+                                <TextField
+                                    label="Tag"
+                                    variant="outlined"
+                                    value={props.tag}
+                                    placeholder={props.tag}
+                                    onChange={event => props.setTag(event.target.value)}
+                                />
                             </Grid>
                             <Grid item m={0.5} display={"flex"} justifyContent={"center"}>
                                 <ToggleButtonGroup
@@ -109,8 +114,12 @@ export default function Record(props: RecordProps) {
 
                             {props.audioBlob &&
                                 <Grid item mt={1} display={"flex"} justifyContent={"center"}>
-                                    <CustomAudioPlayer
-                                        audiofile={audioLink} slider={true} download={false} autoPlay={false}/>
+                                    {isLoading ?
+                                        <Typography>loading</Typography>
+                                        :
+                                        <CustomAudioPlayer
+                                            audiofile={audioLink} slider={true} download={false} autoPlay={false}/>
+                                    }
                                 </Grid>
                             }
                             {props.audioBlob &&

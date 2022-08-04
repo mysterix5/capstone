@@ -1,4 +1,4 @@
-import {Card, CardActions, CardContent, Grid, Typography} from "@mui/material";
+import {Card, Grid, Typography} from "@mui/material";
 import {UserDTO} from "../../services/model";
 
 interface UserCardProps {
@@ -10,18 +10,16 @@ export default function PendingSentUserCard(props: UserCardProps) {
 
     return (
         <Card sx={{m: 1}}>
-            <Grid container>
-                <Grid item flexGrow={1}>
-                    <CardContent>
+            <Grid container wrap={"nowrap"}>
+                <Grid item flexGrow={1} m={0.5}>
+                    <Typography>
                         {props.user.username}
-                    </CardContent>
+                    </Typography>
                 </Grid>
-                <Grid item xs={6} xl={4}>
-                    <CardActions>
-                        <Typography>your friend request was not yet accepted</Typography>
-                    </CardActions>
+                <Grid item m={0.5}>
+                    <Typography>your friend request was not yet accepted</Typography>
                 </Grid>
             </Grid>
         </Card>
-    )
+)
 }
