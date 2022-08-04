@@ -28,7 +28,7 @@ public class SecurityConfig {
         http.csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
-                .antMatchers("/api/admin/**").hasAnyRole("admin")
+                .antMatchers("/api/admin/**").hasRole("admin")
                 .antMatchers("/api/**").authenticated()
                 .antMatchers("/**").permitAll()
                 .and()
