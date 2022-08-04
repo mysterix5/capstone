@@ -3,7 +3,7 @@ import CustomAudioPlayer from "./CustomAudioPlayer";
 
 interface AudioProps {
     getAudio: () => any,
-    audioFile: any
+    audioBlobPart: BlobPart
 }
 
 export default function Audio(props: AudioProps) {
@@ -14,8 +14,8 @@ export default function Audio(props: AudioProps) {
                 <Button variant={"contained"} onClick={props.getAudio}>get audio file</Button>
             </Grid>
             <Grid item margin={2}>
-                {props.audioFile &&
-                    <CustomAudioPlayer audiofile={props.audioFile} slider={true} download={true} autoPlay={true}/>
+                {props.audioBlobPart &&
+                    <CustomAudioPlayer audiofile={window.URL.createObjectURL(new Blob([props.audioBlobPart!]))} slider={true} download={true} autoPlay={true}/>
                 }
             </Grid>
         </Grid>

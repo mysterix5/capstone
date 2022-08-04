@@ -8,6 +8,7 @@ import {apiGetHistoryEntryById, apiGetMergedAudio, apiSendTextToBackend} from ".
 import {isAvailable} from "../../globalTools/helpers";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
+import Share from "./Share";
 
 function createSearchParamsFromArrayToArray(name: string, array: string[]) {
     let returnString: string = "";
@@ -34,8 +35,9 @@ const initialMetadataResponse = {
 
 export default function Primary() {
     const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>(initialMetadataResponse);
-    const [audioFile, setAudioFile] = useState<any>();
     const [text, setText] = useState("")
+
+    const [audioBlobPart, setAudioBlobPart] = useState<BlobPart>();
 
     const {setError, defaultApiResponseChecks} = useAuth();
     const {historyId} = useParams();
@@ -61,7 +63,7 @@ export default function Primary() {
                     setText(h.text);
                     apiSendTextToBackend({text: h.text})
                         .then(textMetadataResponseFromBackend => {
-                            setAudioFile(null);
+                            setAudioBlobPart(undefined);
                             console.log(textMetadataResponseFromBackend);
                             for (let i = 0; i < textMetadataResponseFromBackend.textWords.length; i++) {
                                 const choice = h.choices[i];
@@ -110,7 +112,7 @@ export default function Primary() {
     }, [nav])
 
     function submitText() {
-        setAudioFile(null);
+        setAudioBlobPart(undefined);
         setTextMetadataResponse(()=>initialMetadataResponse);
         apiSendTextToBackend({text: text})
             .then(r => {
@@ -139,7 +141,7 @@ export default function Primary() {
 
     function getAudio() {
         apiGetMergedAudio(textMetadataResponse?.defaultIds!)
-            .then(setAudioFile)
+            .then(setAudioBlobPart)
             .catch((err) => {
                 defaultApiResponseChecks(err);
                 if (err.response) {
@@ -202,7 +204,10 @@ export default function Primary() {
                     <Grid item>
                         {
                             checkTextResponseAvailability() ?
-                                <Audio getAudio={getAudio} audioFile={audioFile}/>
+                                <Audio
+                                    getAudio={getAudio}
+                                    audioBlobPart={audioBlobPart!}
+                                />
                                 :
                                 <Button onClick={recordMissingWords}>
                                     record missing words
@@ -211,6 +216,16 @@ export default function Primary() {
                     </Grid>
                 </>
             }
+            <Grid item>
+                { audioBlobPart &&
+                    <Share
+                        audioBlobPart={new File(
+                            [audioBlobPart!],
+                            'vover.mp3',
+                            { type: 'audio/mp3' })}
+                    />
+                }
+            </Grid>
         </Grid>
     )
 }
