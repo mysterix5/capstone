@@ -111,6 +111,10 @@ export default function Primary() {
         }
     }, [nav])
 
+    useEffect(() => {
+        setAudioBlobPart(undefined);
+    }, [text])
+
     function submitText() {
         setAudioBlobPart(undefined);
         setTextMetadataResponse(()=>initialMetadataResponse);
