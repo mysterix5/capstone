@@ -5,6 +5,7 @@ import com.github.mysterix5.vover.model.security.UserRegisterDTO;
 import com.github.mysterix5.vover.model.security.VoverUserEntity;
 import com.github.mysterix5.vover.security.UserMongoRepository;
 import com.github.mysterix5.vover.security.UserService;
+import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 class UserServiceTest {
 
     UserMongoRepository mockedUserRepository;
+    VoverUserDetailsService mockedUserDetailsService;
     PasswordEncoder mockedPasswordEncoder;
     PasswordValidator mockedPasswordValidator;
     UserService userService;
@@ -25,9 +27,10 @@ class UserServiceTest {
     @BeforeEach
     void setupUserService() {
         mockedUserRepository = Mockito.mock(UserMongoRepository.class);
+        mockedUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
         mockedPasswordEncoder = Mockito.mock(PasswordEncoder.class);
         mockedPasswordValidator = Mockito.mock(PasswordValidator.class);
-        userService = new UserService(mockedUserRepository, mockedPasswordEncoder, mockedPasswordValidator);
+        userService = new UserService(mockedUserRepository, mockedUserDetailsService, mockedPasswordEncoder, mockedPasswordValidator);
     }
 
     @Test

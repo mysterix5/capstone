@@ -7,7 +7,7 @@ import {
     RegisterDTO,
     RecordPage,
     RecordInfo,
-    HistoryEntryTextChoices
+    HistoryEntryTextChoices, UserDTO, AllUsersForFriendPageResponse
 } from "./model";
 
 function createHeaders() {
@@ -118,6 +118,40 @@ export function apiGetHistoryEntryById(id: string) {
     ).then((response: AxiosResponse<HistoryEntryTextChoices>) => response.data);
 }
 
+export function apiGetUsers() {
+    console.log(`get: /api/userdetails/friend`);
+    return axios.get(`/api/userdetails/friend`,
+        createHeaders()
+    ).then((response: AxiosResponse<AllUsersForFriendPageResponse>) => response.data);
+}
+
+export function apiSendFriendRequest(username: string) {
+    console.log(`post: /api/user: username=${username}`);
+    console.log(username);
+    return axios.post(`/api/userdetails/friendrequest`,
+        username,
+        {
+            headers: {
+                "Content-Type": "text/plain",
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        }
+    ).then((response: AxiosResponse<UserDTO[]>) => response.data);
+}
+
+export function apiAcceptFriendship(username: string) {
+    console.log(`post: /api/user: username=${username}`);
+    console.log(username);
+    return axios.put(`/api/userdetails/acceptfriend`,
+        username,
+        {
+            headers: {
+                "Content-Type": "text/plain",
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        }
+    );
+}
 
 // LocalDateTime from java has been converted to String for the request, this creates a js Date from it
 function parseISOString(s: string) {

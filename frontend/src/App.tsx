@@ -37,6 +37,7 @@ export default function App() {
                         <Route path="/login" element={<LoginPage/>}/>
                         <Route path="/register" element={<RegisterPage/>}/>
                         <Route path="/userpage" element={<UserPage/>}/>
+                        <Route path="/userpage/:category" element={<UserPage/>}/>
                         <Route path="/batch" element={<BatchRecord/>}/>
                     </Routes>
                     <GlobalVoverErrorDisplay/>
