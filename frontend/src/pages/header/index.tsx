@@ -10,7 +10,7 @@ export default function Header() {
     const nav = useNavigate();
 
     return (
-        <Box display={'flex'} justifyContent={'center'}>
+        <Box display={'flex'} justifyContent={'center'} m={1} mt={1.5}>
             <Grid container
                   border={0.1} borderColor={"lightgrey"} borderRadius={2}
                   mt={1} ml={1} mr={1} mb={2}
