@@ -1,6 +1,6 @@
 import {Recorder} from "vmsg";
 import {Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
-import {FormEvent, MouseEvent, useState} from "react";
+import {FormEvent, MouseEvent, useEffect, useState} from "react";
 import {apiSaveAudio} from "../../services/apiServices";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import CustomAudioPlayer from "../primary/CustomAudioPlayer";
@@ -21,6 +21,11 @@ export default function Record() {
     const [accessibility, setAccessibility] = useState("PUBLIC");
 
     const {setError, defaultApiResponseChecks} = useAuth();
+
+    useEffect(() => {
+        recorder.initAudio();
+        recorder.initWorker();
+    }, [])
 
     const record = async () => {
         setIsLoading(true);

@@ -1,4 +1,4 @@
-import {Button, Card, CardActions, CardContent, Grid} from "@mui/material";
+import {Button, Card, Grid, Typography} from "@mui/material";
 import {UserDTO} from "../../services/model";
 import {apiAcceptFriendship} from "../../services/apiServices";
 
@@ -16,18 +16,16 @@ export default function PendingReceivedUserCard(props: UserCardProps) {
 
     return (
         <Card sx={{m: 1}}>
-            <Grid container>
-                <Grid item flexGrow={1}>
-                    <CardContent>
+            <Grid container wrap={"nowrap"}>
+                <Grid item flexGrow={1} m={0.5}>
+                    <Typography>
                         {props.user.username}
-                    </CardContent>
+                    </Typography>
                 </Grid>
-                <Grid item>
-                    <CardActions>
-                        <Button onClick={acceptFriendRequest}>
+                <Grid item m={0.5}>
+                        <Button onClick={acceptFriendRequest} size={"small"}>
                             accept friend request
                         </Button>
-                    </CardActions>
                 </Grid>
             </Grid>
         </Card>
