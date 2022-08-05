@@ -3,10 +3,7 @@ package com.github.mysterix5.vover.user_details;
 import com.github.mysterix5.vover.history.HistoryService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.record.RecordDbEntity;
-import com.github.mysterix5.vover.model.user_details.AllUsersForFriendsDTO;
-import com.github.mysterix5.vover.model.user_details.HistoryEntry;
-import com.github.mysterix5.vover.model.user_details.VoverFriendDTO;
-import com.github.mysterix5.vover.model.user_details.VoverUserDetails;
+import com.github.mysterix5.vover.model.user_details.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -108,5 +105,10 @@ public class VoverUserDetailsService {
 
         userDetailsRepository.save(userDetails);
         userDetailsRepository.save(friendDetails);
+    }
+
+    public ScopeResponseDTO getFriendsAndScope(String username) {
+        VoverUserDetails userDetails = getUserDetails(username);
+        return new ScopeResponseDTO(userDetails.getFriends(), userDetails.getScope());
     }
 }

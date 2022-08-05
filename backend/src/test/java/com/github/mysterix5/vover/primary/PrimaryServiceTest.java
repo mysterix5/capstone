@@ -2,12 +2,9 @@ package com.github.mysterix5.vover.primary;
 
 import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
-import com.github.mysterix5.vover.model.record.Accessibility;
-import com.github.mysterix5.vover.model.record.Availability;
+import com.github.mysterix5.vover.model.record.*;
+import com.github.mysterix5.vover.model.record.RecordAvailability;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
-import com.github.mysterix5.vover.model.record.RecordDbEntity;
-import com.github.mysterix5.vover.model.record.RecordDbResponseDTO;
-import com.github.mysterix5.vover.model.record.RecordResponseDTO;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
 import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import org.assertj.core.api.Assertions;
@@ -42,7 +39,7 @@ class PrimaryServiceTest {
         PrimaryResponseDTO response = primaryService.onSubmittedText(testString, "user");
 
         PrimaryResponseDTO expected = new PrimaryResponseDTO(
-                List.of(new RecordResponseDTO("bester", Availability.PUBLIC), new RecordResponseDTO("test", Availability.PUBLIC)),
+                List.of(new WordResponseDTO("bester", RecordAvailability.PUBLIC), new WordResponseDTO("test", RecordAvailability.PUBLIC)),
                 Map.of("bester", List.of(new RecordDbResponseDTO(recordDbEntity1)),
                         "test", List.of(new RecordDbResponseDTO(recordDbEntity2))),
                 List.of("id1","id2"));
@@ -74,10 +71,10 @@ class PrimaryServiceTest {
 
         var expected = new PrimaryResponseDTO(
                 List.of(
-                        new RecordResponseDTO("beste/r", Availability.INVALID),
-                        new RecordResponseDTO("test", Availability.PUBLIC),
-                        new RecordResponseDTO("ever%", Availability.INVALID),
-                        new RecordResponseDTO("wirklich", Availability.NOT_AVAILABLE)
+                        new WordResponseDTO("beste/r", RecordAvailability.INVALID),
+                        new WordResponseDTO("test", RecordAvailability.PUBLIC),
+                        new WordResponseDTO("ever%", RecordAvailability.INVALID),
+                        new WordResponseDTO("wirklich", RecordAvailability.NOT_AVAILABLE)
                 ),
                 Map.of(
                         "test", List.of(new RecordDbResponseDTO(recordDbEntity1))

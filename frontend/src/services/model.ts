@@ -1,7 +1,8 @@
 import {AxiosError} from "axios";
 
-export interface TextSend{
-    text: string
+export interface TextSubmit {
+    text: string,
+    scope: string[]
 }
 
 export interface WordRecordMap {
@@ -12,7 +13,8 @@ export interface RecordMetaData {
     id: string,
     word: string,
     creator: string,
-    tag: string
+    tag: string,
+    availability: string
 }
 
 export interface WordAvail {
@@ -89,4 +91,9 @@ export interface AllUsersForFriendPageResponse {
     friends: string[],
     friendRequests: string[],
     friendRequestsReceived: string[]
+}
+
+export interface FriendsAndScope {
+    friends: string[],
+    scope: string[]
 }

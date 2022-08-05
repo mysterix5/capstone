@@ -1,13 +1,13 @@
 import axios, {AxiosResponse} from "axios";
 import {
-    TextSend,
+    TextSubmit,
     TextMetadataResponse,
     LoginDTO,
     LoginResponse,
     RegisterDTO,
     RecordPage,
     RecordInfo,
-    HistoryEntryTextChoices, UserDTO, AllUsersForFriendPageResponse
+    HistoryEntryTextChoices, UserDTO, AllUsersForFriendPageResponse, FriendsAndScope
 } from "./model";
 
 function createHeaders() {
@@ -31,11 +31,11 @@ export function sendLogin(user: LoginDTO) {
 }
 
 
-export function apiSendTextToBackend(text: TextSend) {
+export function apiSubmitTextToBackend(textSubmit: TextSubmit) {
     const url = `/api/primary/textsubmit`;
-    console.log(`post: ${url}: text=${text}`);
+    console.log(`post: ${url}: text=${textSubmit}`);
     return axios.post(url,
-        text,
+        textSubmit,
         createHeaders()
     )
         .then((response: AxiosResponse<TextMetadataResponse>) => response.data);
@@ -145,6 +145,14 @@ export function apiGetUsers() {
     return axios.get(url,
         createHeaders()
     ).then((response: AxiosResponse<AllUsersForFriendPageResponse>) => response.data);
+}
+
+export function apiGetFriendsAndScope() {
+    const url = `/api/userdetails/friendsandscope`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
+        createHeaders()
+    ).then((response: AxiosResponse<FriendsAndScope>) => response.data);
 }
 
 export function apiSendFriendRequest(username: string) {

@@ -4,7 +4,12 @@ import {useEffect, useState} from "react";
 import {RecordMetaData, TextMetadataResponse} from "../../services/model";
 import TextCheck from "./TextCheck";
 import Audio from "./Audio";
-import {apiGetHistoryEntryById, apiGetMergedAudio, apiSendTextToBackend} from "../../services/apiServices";
+import {
+    apiGetFriendsAndScope,
+    apiGetHistoryEntryById,
+    apiGetMergedAudio,
+    apiSubmitTextToBackend
+} from "../../services/apiServices";
 import {isAvailable} from "../../globalTools/helpers";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
@@ -34,6 +39,9 @@ const initialMetadataResponse = {
 };
 
 export default function Primary() {
+    const [friends, setFriends] = useState<string[]>([]);
+    const [scope, setScope] = useState<string[]>([]);
+
     const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>(initialMetadataResponse);
     const [text, setText] = useState("")
 
@@ -61,7 +69,7 @@ export default function Primary() {
                 .then(h => {
                     console.log(h);
                     setText(h.text);
-                    apiSendTextToBackend({text: h.text})
+                    apiSubmitTextToBackend({text: h.text, scope: scope})
                         .then(textMetadataResponseFromBackend => {
                             setAudioBlobPart(undefined);
                             console.log(textMetadataResponseFromBackend);
@@ -94,7 +102,7 @@ export default function Primary() {
             });
         } else if (searchParams.get("text")) {
             setText(searchParams.get("text")!);
-            apiSendTextToBackend({text: searchParams.get("text")!})
+            apiSubmitTextToBackend({text: searchParams.get("text")!, scope: scope})
                 .then(r => {
                     console.log(r);
                     setTextMetadataResponse(r);
@@ -112,16 +120,27 @@ export default function Primary() {
     }, [nav])
 
     useEffect(() => {
+        apiGetFriendsAndScope()
+            .then(fs => {
+                setFriends(fs.friends);
+                setScope(fs.scope);
+            })
+            .catch(err => {
+                defaultApiResponseChecks(err);
+            });
+    }, [])
+
+    useEffect(() => {
         setAudioBlobPart(undefined);
     }, [text])
 
     function submitText() {
         setAudioBlobPart(undefined);
-        setTextMetadataResponse(()=>initialMetadataResponse);
-        apiSendTextToBackend({text: text})
+        setTextMetadataResponse(() => initialMetadataResponse);
+        apiSubmitTextToBackend({text: text, scope: scope})
             .then(r => {
                 console.log(r);
-                setTextMetadataResponse(()=>r);
+                setTextMetadataResponse(() => r);
             }).catch(err => {
                 defaultApiResponseChecks(err);
                 if (err.response) {
@@ -222,12 +241,12 @@ export default function Primary() {
                 </>
             }
             <Grid item>
-                { audioBlobPart &&
+                {audioBlobPart &&
                     <Share
                         audioBlobPart={new File(
                             [audioBlobPart!],
                             'vover.mp3',
-                            { type: 'audio/mp3' })}
+                            {type: 'audio/mp3'})}
                     />
                 }
             </Grid>

@@ -4,6 +4,7 @@ import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import com.github.mysterix5.vover.model.user_details.AllUsersForFriendsDTO;
 import com.github.mysterix5.vover.model.user_details.HistoryEntry;
+import com.github.mysterix5.vover.model.user_details.ScopeResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,16 @@ public class VoverUserDetailsController {
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         }catch(Exception e) {
             return ResponseEntity.internalServerError().body(new VoverErrorDTO("something went wrong sending your friend request, sorry"));
+        }
+    }
+
+    @GetMapping("/friendsandscope")
+    public ResponseEntity<Object> getFriendsAndScope(Principal principal) {
+        try {
+            ScopeResponseDTO scopeResponseDTO = voverUserDetailsService.getFriendsAndScope(principal.getName());
+            return ResponseEntity.ok(scopeResponseDTO);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new VoverErrorDTO("something went wrong fetching your friends"));
         }
     }
 

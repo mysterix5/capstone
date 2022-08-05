@@ -6,6 +6,8 @@ import com.github.kokorin.jaffree.ffmpeg.PipeOutput;
 import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
+import com.github.mysterix5.vover.model.primary.PrimarySubmitDTO;
+import com.github.mysterix5.vover.model.primary.WordAvailability;
 import com.github.mysterix5.vover.model.record.*;
 import com.github.mysterix5.vover.model.user_details.VoverUserDetails;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
@@ -29,35 +31,50 @@ public class PrimaryService {
     private final CloudService cloudService;
     private final VoverUserDetailsService voverUserDetailsService;
 
-    public PrimaryResponseDTO onSubmittedText(String text, String username) {
-        List<String> wordList = StringOperations.splitText(text);
+    public PrimaryResponseDTO onSubmittedText(PrimarySubmitDTO primarySubmitDTO, String username) {
+        List<String> wordList = StringOperations.splitText(primarySubmitDTO.getText());
 
-        return createResponses(wordList, username);
+        return createResponses(wordList, primarySubmitDTO.getScope(), username);
     }
 
-    private PrimaryResponseDTO createResponses(List<String> wordList, String username) {
+    private PrimaryResponseDTO createResponses(List<String> wordList, List<String> scope, String username) {
+        // list with all words in lowercase
         wordList = wordList.stream().map(String::toLowerCase).toList();
+        // set (no doubles) of legal words appearing in request
         Set<String> appearingWordsSet = wordList.stream().filter(StringOperations::isWord).collect(Collectors.toSet());
-        if(appearingWordsSet.isEmpty()){
+        if (appearingWordsSet.isEmpty()) {
             throw new MultipleSubErrorException("You didn't submit a single valid word...");
         }
         VoverUserDetails userDetails = voverUserDetailsService.getUserDetails(username);
+        userDetails.setScope(scope);
+        // create a map with record choices to every word in appearingWordsSet
+        // each choice has an RecordAvailability
         Map<String, List<RecordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet, userDetails);
-        List<String> defaultIds = new ArrayList<>();
 
-        List<RecordResponseDTO> textWordsResponse = wordList.stream()
-                .map(RecordResponseDTO::new)
+        // sort dbWordsMap by RecordAvailability
+        for (List<RecordDbResponseDTO> recordDbResponseDTOList : dbWordsMap.values()) {
+            recordDbResponseDTOList.sort(
+                    Comparator.comparing(RecordDbResponseDTO::getAvailability).reversed()
+            );
+        }
+
+        List<String> defaultIds = new ArrayList<>();
+        List<WordResponseDTO> textWordsResponse = wordList.stream()
+                .map(WordResponseDTO::new)
                 .peek(w -> {
                     if (appearingWordsSet.contains(w.getWord())) {
                         if (dbWordsMap.containsKey(w.getWord())) {
-                            w.setAvailability(Availability.PUBLIC);
+                            // word is legal and records available
+                            w.setAvailability(WordAvailability.AVAILABLE);
                             defaultIds.add(dbWordsMap.get(w.getWord()).get(0).getId());
                         } else {
-                            w.setAvailability(Availability.NOT_AVAILABLE);
+                            // word is legal but no records available
+                            w.setAvailability(WordAvailability.NOT_AVAILABLE);
                             defaultIds.add(null);
                         }
                     } else {
-                        w.setAvailability(Availability.INVALID);
+                        // word is illegal
+                        w.setAvailability(WordAvailability.INVALID);
                         defaultIds.add(null);
                     }
                 }).toList();
@@ -68,14 +85,32 @@ public class PrimaryService {
     private Map<String, List<RecordDbResponseDTO>> createDbWordsMap(Set<String> textWords, VoverUserDetails userDetails) {
         List<RecordDbEntity> allDbEntriesForWords = recordRepository.findByWordIn(textWords);
 
-        allDbEntriesForWords = allDbEntriesForWords.stream().filter(wordDb -> recordIsAllowedForUser(wordDb, userDetails)).toList();
-
         Map<String, List<RecordDbResponseDTO>> dbWordsMap = new HashMap<>();
         for (RecordDbEntity w : allDbEntriesForWords) {
+            RecordAvailability recordAvailability;
+            if (w.getCreator().equals(userDetails.getUsername())) {
+                // record from requesting user
+                recordAvailability = RecordAvailability.MYSELF;
+            } else if (w.getAccessibility().equals(Accessibility.PRIVATE)) {
+                // record is 'PRIVATE'
+                continue;
+            } else if (userDetails.getScope().contains(w.getCreator())) {
+                // record from user in scope
+                recordAvailability = RecordAvailability.SCOPE;
+            } else if (userDetails.getFriends().contains(w.getCreator())) {
+                // record from user in friends
+                recordAvailability = RecordAvailability.FRIENDS;
+            } else if (w.getAccessibility().equals(Accessibility.PUBLIC)) {
+                // record accessibility is 'PUBLIC'
+                recordAvailability = RecordAvailability.PUBLIC;
+            } else {
+                // record is from user not in friends and accessibility is 'FRIENDS'
+                continue;
+            }
             if (!dbWordsMap.containsKey(w.getWord())) {
                 dbWordsMap.put(w.getWord(), new ArrayList<>());
             }
-            dbWordsMap.get(w.getWord()).add(new RecordDbResponseDTO(w));
+            dbWordsMap.get(w.getWord()).add(new RecordDbResponseDTO(w, recordAvailability));
         }
         return dbWordsMap;
     }
@@ -87,10 +122,9 @@ public class PrimaryService {
         if (recordDbEntity.getCreator().equals(userDetails.getUsername())) {
             return true;
         }
-        if(userDetails.getFriends().contains(recordDbEntity.getCreator()) && recordDbEntity.getAccessibility().equals(Accessibility.FRIENDS)){
+        if (userDetails.getFriends().contains(recordDbEntity.getCreator()) && recordDbEntity.getAccessibility().equals(Accessibility.FRIENDS)) {
             return true;
         }
-        // TODO if user->friends().contains(recordDbEntity.getCreator() && recordDbEntity.getAccessibility().equals(Accessibility.Friends)) return true;
         return false;
     }
 

@@ -1,8 +1,7 @@
 import {
-    Box,
     Grid
 } from "@mui/material";
-import {TextMetadataResponse, WordAvail} from "../../services/model";
+import {TextMetadataResponse} from "../../services/model";
 import WordDropdown from "./WordDropdown";
 
 interface TextCheckProps {
@@ -18,34 +17,14 @@ export default function TextCheck(props: TextCheckProps) {
         }
     }
 
-    function getWordButton(word: WordAvail, index: number) {
-        let myColor: string = "#fff";
-        // let myTextDecoration: string = "none";
-
-        if (word.availability === "PUBLIC") {
-            myColor = "#12670c";
-        } else if (word.availability === "INVALID") {
-            myColor = "#881111";
-            // myTextDecoration = "line-through";
-        } else if (word.availability === "NOT_AVAILABLE") {
-            myColor = "#b43535";
-        }
-
-        return (
-            <Box sx={{backgroundColor: myColor}}>
-                <WordDropdown wordAvail={word} setId={generateIdSetter(index)} choicesList={props.textMetadataResponse.wordRecordMap[word.word]} id={props.textMetadataResponse.defaultIds[index]}/>
-            </Box>
-        )
-    }
-
     return (
         <>
             <Grid container justifyContent={"center"}>
                 {
                     props.textMetadataResponse &&
-                    props.textMetadataResponse!.textWords.map((r, i) =>
+                    props.textMetadataResponse!.textWords.map((wordAvail, i) =>
                         <Grid item key={i} margin={0.5}>
-                            {getWordButton(r, i)}
+                            <WordDropdown wordAvail={wordAvail} setId={generateIdSetter(i)} choicesList={props.textMetadataResponse.wordRecordMap[wordAvail.word]} id={props.textMetadataResponse.defaultIds[i]}/>
                         </Grid>
                     )}
             </Grid>

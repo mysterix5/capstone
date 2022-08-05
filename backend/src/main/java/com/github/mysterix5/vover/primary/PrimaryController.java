@@ -24,7 +24,7 @@ public class PrimaryController {
     public ResponseEntity<Object> onSubmittedText(@RequestBody PrimarySubmitDTO primarySubmitDTO, Principal principal) {
         log.info("Text submitted by user '{}': {}", principal.getName(), primarySubmitDTO.getText());
         try {
-            return ResponseEntity.ok().body(primaryService.onSubmittedText(primarySubmitDTO.getText(), principal.getName()));
+            return ResponseEntity.ok().body(primaryService.onSubmittedText(primarySubmitDTO, principal.getName()));
         } catch (MultipleSubErrorException e) {
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         } catch (Exception e) {
