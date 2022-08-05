@@ -2,9 +2,12 @@ package com.github.mysterix5.vover.primary;
 
 import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
+import com.github.mysterix5.vover.model.primary.PrimarySubmitDTO;
+import com.github.mysterix5.vover.model.primary.WordAvailability;
 import com.github.mysterix5.vover.model.record.*;
 import com.github.mysterix5.vover.model.record.RecordAvailability;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
+import com.github.mysterix5.vover.model.user_details.VoverUserDetails;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
 import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import org.assertj.core.api.Assertions;
@@ -36,12 +39,16 @@ class PrimaryServiceTest {
         VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
         PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
 
-        PrimaryResponseDTO response = primaryService.onSubmittedText(testString, "user");
+        VoverUserDetails userDetails = new VoverUserDetails();
+        userDetails.setUsername("user");
+        Mockito.when(mockedVoverUserDetailsService.getUserDetails("user")).thenReturn(userDetails);
+
+        PrimaryResponseDTO response = primaryService.onSubmittedText(PrimarySubmitDTO.builder().text(testString).scope(new ArrayList<>()).build(), "user");
 
         PrimaryResponseDTO expected = new PrimaryResponseDTO(
-                List.of(new WordResponseDTO("bester", RecordAvailability.PUBLIC), new WordResponseDTO("test", RecordAvailability.PUBLIC)),
-                Map.of("bester", List.of(new RecordDbResponseDTO(recordDbEntity1)),
-                        "test", List.of(new RecordDbResponseDTO(recordDbEntity2))),
+                List.of(new WordResponseDTO("bester", WordAvailability.AVAILABLE), new WordResponseDTO("test", WordAvailability.AVAILABLE)),
+                Map.of("bester", List.of(new RecordDbResponseDTO(recordDbEntity1, RecordAvailability.PUBLIC)),
+                        "test", List.of(new RecordDbResponseDTO(recordDbEntity2, RecordAvailability.PUBLIC))),
                 List.of("id1","id2"));
 
         assertThat(response).isEqualTo(expected);
@@ -61,7 +68,11 @@ class PrimaryServiceTest {
         VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
         PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
 
-        var response = primaryService.onSubmittedText(testString, "user");
+        VoverUserDetails userDetails = new VoverUserDetails();
+        userDetails.setUsername("user");
+        Mockito.when(mockedVoverUserDetailsService.getUserDetails("user")).thenReturn(userDetails);
+
+        var response = primaryService.onSubmittedText(PrimarySubmitDTO.builder().text(testString).scope(new ArrayList<>()).build(), "user");
 
         List<String> defaultIds = new ArrayList<>();
         defaultIds.add(null);
@@ -71,13 +82,13 @@ class PrimaryServiceTest {
 
         var expected = new PrimaryResponseDTO(
                 List.of(
-                        new WordResponseDTO("beste/r", RecordAvailability.INVALID),
-                        new WordResponseDTO("test", RecordAvailability.PUBLIC),
-                        new WordResponseDTO("ever%", RecordAvailability.INVALID),
-                        new WordResponseDTO("wirklich", RecordAvailability.NOT_AVAILABLE)
+                        new WordResponseDTO("beste/r", WordAvailability.INVALID),
+                        new WordResponseDTO("test", WordAvailability.AVAILABLE),
+                        new WordResponseDTO("ever%", WordAvailability.INVALID),
+                        new WordResponseDTO("wirklich", WordAvailability.NOT_AVAILABLE)
                 ),
                 Map.of(
-                        "test", List.of(new RecordDbResponseDTO(recordDbEntity1))
+                        "test", List.of(new RecordDbResponseDTO(recordDbEntity1, RecordAvailability.PUBLIC))
                 ),
                 defaultIds);
 
@@ -94,6 +105,9 @@ class PrimaryServiceTest {
 
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
+        VoverUserDetails userDetails = new VoverUserDetails();
+        userDetails.setUsername("creator1");
+        Mockito.when(mockedVoverUserDetailsService.getUserDetails("creator1")).thenReturn(userDetails);
         PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
 
         Assertions.assertThatExceptionOfType(MultipleSubErrorException.class)

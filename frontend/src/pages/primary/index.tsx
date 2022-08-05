@@ -10,7 +10,6 @@ import {
     apiGetMergedAudio,
     apiSubmitTextToBackend
 } from "../../services/apiServices";
-import {isAvailable} from "../../globalTools/helpers";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Share from "./Share";
@@ -76,7 +75,7 @@ export default function Primary() {
                             for (let i = 0; i < textMetadataResponseFromBackend.textWords.length; i++) {
                                 const choice = h.choices[i];
                                 const word = textMetadataResponseFromBackend.textWords[i];
-                                if (isAvailable(word.availability)) {
+                                if (word.availability==="AVAILABLE") {
                                     const actualWordChoices = textMetadataResponseFromBackend.wordRecordMap[word.word];
                                     if (!isIdInChoices(choice, actualWordChoices)) {
                                         textMetadataResponseFromBackend.defaultIds[i] = actualWordChoices[0].id;
@@ -104,14 +103,13 @@ export default function Primary() {
             setText(searchParams.get("text")!);
             apiSubmitTextToBackend({text: searchParams.get("text")!, scope: scope})
                 .then(r => {
-                    console.log(r);
                     setTextMetadataResponse(r);
                 }).catch(err => {
                     defaultApiResponseChecks(err);
                 }
             );
         }
-    }, [historyId, setError, defaultApiResponseChecks, searchParams])
+    }, [historyId, setError, defaultApiResponseChecks, searchParams, scope])
 
     useEffect(() => {
         if (!localStorage.getItem("jwt")) {
@@ -123,12 +121,12 @@ export default function Primary() {
         apiGetFriendsAndScope()
             .then(fs => {
                 setFriends(fs.friends);
-                setScope(fs.scope);
+                setScope(fs.friends);
             })
             .catch(err => {
                 defaultApiResponseChecks(err);
             });
-    }, [])
+    }, [defaultApiResponseChecks])
 
     useEffect(() => {
         setAudioBlobPart(undefined);
@@ -155,7 +153,7 @@ export default function Primary() {
             return false;
         }
         for (const word of textMetadataResponse!.textWords) {
-            if (!isAvailable(word.availability)) {
+            if (!(word.availability==="AVAILABLE")) {
                 return false;
             }
         }
@@ -188,7 +186,7 @@ export default function Primary() {
 
     function recordMissingWords() {
         const wordsArray = textMetadataResponse.textWords
-            .filter((wordAvail) => !isAvailable(wordAvail.availability))
+            .filter((wordAvail) => !(wordAvail.availability==="AVAILABLE"))
             .filter((wordAvail) => wordAvail.availability !== "INVALID")
             .map(wordAvail => wordAvail.word);
         const searchParamRecordWords = createSearchParamsFromArrayToArray("words", wordsArray);
