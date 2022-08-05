@@ -38,6 +38,8 @@ const initialMetadataResponse = {
 };
 
 export default function Primary() {
+    // TODO friends and scope will be working with the next commit
+    // eslint-disable-next-line
     const [friends, setFriends] = useState<string[]>([]);
     const [scope, setScope] = useState<string[]>([]);
 
@@ -120,6 +122,7 @@ export default function Primary() {
     useEffect(() => {
         apiGetFriendsAndScope()
             .then(fs => {
+                // TODO change this after implementing scopes in frontend
                 setFriends(fs.friends);
                 setScope(fs.friends);
             })
