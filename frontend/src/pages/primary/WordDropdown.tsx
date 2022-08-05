@@ -43,12 +43,14 @@ export default function WordDropdown(props: WordDropdownProps) {
                 {isAvailable(props.wordAvail.availability) ?
                     props.choicesList.map(wmd =>
                         <MenuItem key={wmd.id} value={wmd.id}>
-                            <div>
-                                <Typography>{wmd.creator}</Typography>
-                            </div>
-                            <div>
-                                <Typography>{wmd.tag}</Typography>
-                            </div>
+                            <Grid container direction={"column"}>
+                                <Grid item>
+                                    <Typography>{wmd.creator}</Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Typography>{wmd.tag}</Typography>
+                                </Grid>
+                            </Grid>
                         </MenuItem>
                     )
                     :

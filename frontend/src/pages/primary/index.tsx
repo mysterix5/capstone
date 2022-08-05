@@ -158,6 +158,7 @@ export default function Primary() {
 
     function setId(choiceId: string, index: number) {
         if (textMetadataResponse.defaultIds[index] !== choiceId) {
+            setAudioBlobPart(undefined);
             setTextMetadataResponse(current => {
                 let tmp = {...current};
                 tmp.defaultIds[index] = choiceId;

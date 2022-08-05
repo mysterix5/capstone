@@ -7,6 +7,7 @@ import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
 import com.github.mysterix5.vover.model.record.*;
+import com.github.mysterix5.vover.model.user_details.VoverUserDetails;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
 import com.github.mysterix5.vover.static_tools.StringOperations;
 import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
@@ -40,7 +41,8 @@ public class PrimaryService {
         if(appearingWordsSet.isEmpty()){
             throw new MultipleSubErrorException("You didn't submit a single valid word...");
         }
-        Map<String, List<RecordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet, username);
+        VoverUserDetails userDetails = voverUserDetailsService.getUserDetails(username);
+        Map<String, List<RecordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet, userDetails);
         List<String> defaultIds = new ArrayList<>();
 
         List<RecordResponseDTO> textWordsResponse = wordList.stream()
@@ -63,10 +65,10 @@ public class PrimaryService {
         return new PrimaryResponseDTO(textWordsResponse, dbWordsMap, defaultIds);
     }
 
-    private Map<String, List<RecordDbResponseDTO>> createDbWordsMap(Set<String> textWords, String username) {
+    private Map<String, List<RecordDbResponseDTO>> createDbWordsMap(Set<String> textWords, VoverUserDetails userDetails) {
         List<RecordDbEntity> allDbEntriesForWords = recordRepository.findByWordIn(textWords);
 
-        allDbEntriesForWords = allDbEntriesForWords.stream().filter(wordDb -> recordIsAllowedForUser(wordDb, username)).toList();
+        allDbEntriesForWords = allDbEntriesForWords.stream().filter(wordDb -> recordIsAllowedForUser(wordDb, userDetails)).toList();
 
         Map<String, List<RecordDbResponseDTO>> dbWordsMap = new HashMap<>();
         for (RecordDbEntity w : allDbEntriesForWords) {
@@ -78,11 +80,14 @@ public class PrimaryService {
         return dbWordsMap;
     }
 
-    private boolean recordIsAllowedForUser(RecordDbEntity recordDbEntity, String username) {
+    private boolean recordIsAllowedForUser(RecordDbEntity recordDbEntity, VoverUserDetails userDetails) {
         if (recordDbEntity.getAccessibility().equals(Accessibility.PUBLIC)) {
             return true;
         }
-        if (recordDbEntity.getCreator().equals(username)) {
+        if (recordDbEntity.getCreator().equals(userDetails.getUsername())) {
+            return true;
+        }
+        if(userDetails.getFriends().contains(recordDbEntity.getCreator()) && recordDbEntity.getAccessibility().equals(Accessibility.FRIENDS)){
             return true;
         }
         // TODO if user->friends().contains(recordDbEntity.getCreator() && recordDbEntity.getAccessibility().equals(Accessibility.Friends)) return true;
@@ -91,8 +96,9 @@ public class PrimaryService {
 
     public byte[] getMergedAudio(List<String> ids, String username) {
         List<RecordDbEntity> recordDbEntities = (List<RecordDbEntity>) recordRepository.findAllById(ids);
+        VoverUserDetails userDetails = voverUserDetailsService.getUserDetails(username);
         for (var r : recordDbEntities) {
-            if (!recordIsAllowedForUser(r, username)) {
+            if (!recordIsAllowedForUser(r, userDetails)) {
                 throw new MultipleSubErrorException("You are not allowed to get one of the records! Don't try to hack me! :(");
             }
         }

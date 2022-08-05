@@ -48,7 +48,7 @@ public class VoverUserDetailsService {
         return historyService.getAllByIds(historyIds);
     }
 
-    private VoverUserDetails getUserDetails(String username) {
+    public VoverUserDetails getUserDetails(String username) {
         return userDetailsRepository.findById(username).orElse(new VoverUserDetails(username));
     }
 
