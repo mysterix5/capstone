@@ -37,7 +37,7 @@ public class VoverUserDetailsController {
         }
     }
 
-    @GetMapping("/friend")
+    @GetMapping("/friendsinfo")
     public ResponseEntity<Object> getAllUsersWithFriendInfo(Principal principal){
         try {
             AllUsersForFriendsDTO users = voverUserDetailsService.getAllUsersWithFriendInfo(principal.getName());
@@ -51,5 +51,10 @@ public class VoverUserDetailsController {
     public void acceptFriendRequest(@RequestBody String userRequestingFriendship, Principal principal) {
         log.info("user '{}' accepts friendship from user '{}'", principal.getName(), userRequestingFriendship);
         voverUserDetailsService.acceptFriendship(principal.getName(), userRequestingFriendship);
+    }
+    @PutMapping("/endfriendship")
+    public void endFriendship(@RequestBody String friend, Principal principal) {
+        log.info("user '{}' ends friendship with user '{}'", principal.getName(), friend);
+        voverUserDetailsService.endFriendship(principal.getName(), friend);
     }
 }

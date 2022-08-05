@@ -1,5 +1,6 @@
 import {Button, Card, Grid, Typography} from "@mui/material";
 import {UserDTO} from "../../services/model";
+import {apiEndFriendship} from "../../services/apiServices";
 
 interface UserCardProps {
     user: UserDTO,
@@ -7,6 +8,11 @@ interface UserCardProps {
 }
 
 export default function FriendUserCard(props: UserCardProps) {
+
+    function endFriendship() {
+        apiEndFriendship(props.user.username)
+            .then(() => props.refresh());
+    }
 
     return (
         <Card sx={{m: 1}}>
@@ -17,7 +23,7 @@ export default function FriendUserCard(props: UserCardProps) {
                     </Typography>
                 </Grid>
                 <Grid item m={0.5}>
-                    <Button size={"small"}>
+                    <Button size={"small"} onClick={endFriendship}>
                         end friendship
                     </Button>
                 </Grid>

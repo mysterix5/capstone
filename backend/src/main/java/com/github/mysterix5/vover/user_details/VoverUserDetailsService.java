@@ -98,4 +98,15 @@ public class VoverUserDetailsService {
         userDetailsRepository.save(userDetails);
         userDetailsRepository.save(friendDetails);
     }
+
+    public void endFriendship(String username, String friendName) {
+        VoverUserDetails userDetails = getUserDetails(username);
+        VoverUserDetails friendDetails = getUserDetails(friendName);
+
+        userDetails.getFriends().remove(friendName);
+        friendDetails.getFriends().remove(username);
+
+        userDetailsRepository.save(userDetails);
+        userDetailsRepository.save(friendDetails);
+    }
 }
