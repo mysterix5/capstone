@@ -111,4 +111,8 @@ public class VoverUserDetailsService {
         VoverUserDetails userDetails = getUserDetails(username);
         return new ScopeResponseDTO(userDetails.getFriends(), userDetails.getScope());
     }
+
+    public void save(VoverUserDetails userDetails) {
+        userDetailsRepository.save(userDetails);
+    }
 }
