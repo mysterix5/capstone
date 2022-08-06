@@ -46,7 +46,11 @@ public class PrimaryService {
             throw new MultipleSubErrorException("You didn't submit a single valid word...");
         }
         VoverUserDetails userDetails = voverUserDetailsService.getUserDetails(username);
-        userDetails.setScope(scope);
+        Collections.sort(scope);
+        if(!scope.equals(userDetails.getScope())){
+            userDetails.setScope(scope);
+            voverUserDetailsService.save(userDetails);
+        }
         // create a map with record choices to every word in appearingWordsSet
         // each choice has an RecordAvailability
         Map<String, List<RecordDbResponseDTO>> dbWordsMap = createDbWordsMap(appearingWordsSet, userDetails);
