@@ -6,7 +6,8 @@ import WordDropdown from "./WordDropdown";
 
 interface TextCheckProps {
     textMetadataResponse: TextMetadataResponse,
-    setId: (id: string, index: number) => void
+    setId: (id: string, index: number) => void,
+    singleWordRecord: (word: string) => void
 }
 
 export default function TextCheck(props: TextCheckProps) {
@@ -24,7 +25,13 @@ export default function TextCheck(props: TextCheckProps) {
                     props.textMetadataResponse &&
                     props.textMetadataResponse!.textWords.map((wordAvail, i) =>
                         <Grid item key={i} margin={0.5}>
-                            <WordDropdown wordAvail={wordAvail} setId={generateIdSetter(i)} choicesList={props.textMetadataResponse.wordRecordMap[wordAvail.word]} id={props.textMetadataResponse.defaultIds[i]}/>
+                            <WordDropdown
+                                wordAvail={wordAvail}
+                                setId={generateIdSetter(i)}
+                                choicesList={props.textMetadataResponse.wordRecordMap[wordAvail.word]}
+                                id={props.textMetadataResponse.defaultIds[i]}
+                                singleWordRecord={props.singleWordRecord}
+                            />
                         </Grid>
                     )}
             </Grid>

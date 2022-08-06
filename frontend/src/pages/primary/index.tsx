@@ -13,6 +13,7 @@ import {
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Share from "./Share";
+import Scope from "./Scope";
 
 function createSearchParamsFromArrayToArray(name: string, array: string[]) {
     let returnString: string = "";
@@ -38,14 +39,11 @@ const initialMetadataResponse = {
 };
 
 export default function Primary() {
-    // TODO friends and scope will be working with the next commit
-    // eslint-disable-next-line
     const [friends, setFriends] = useState<string[]>([]);
     const [scope, setScope] = useState<string[]>([]);
 
-    const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>(initialMetadataResponse);
     const [text, setText] = useState("")
-
+    const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>(initialMetadataResponse);
     const [audioBlobPart, setAudioBlobPart] = useState<BlobPart>();
 
     const {setError, defaultApiResponseChecks} = useAuth();
@@ -72,7 +70,7 @@ export default function Primary() {
                     setText(h.text);
                     apiSubmitTextToBackend({text: h.text, scope: scope})
                         .then(textMetadataResponseFromBackend => {
-                            setAudioBlobPart(undefined);
+                            removeDeprecatedContent(2);
                             console.log(textMetadataResponseFromBackend);
                             for (let i = 0; i < textMetadataResponseFromBackend.textWords.length; i++) {
                                 const choice = h.choices[i];
@@ -124,7 +122,7 @@ export default function Primary() {
             .then(fs => {
                 // TODO change this after implementing scopes in frontend
                 setFriends(fs.friends);
-                setScope(fs.friends);
+                setScope(fs.scope);
             })
             .catch(err => {
                 defaultApiResponseChecks(err);
@@ -132,12 +130,30 @@ export default function Primary() {
     }, [defaultApiResponseChecks])
 
     useEffect(() => {
-        setAudioBlobPart(undefined);
+        removeDeprecatedContent(1);
     }, [text])
 
+    /**
+     * removes content that is deprecated
+     * <p>level == 0 -> removes text and following (everything)
+     * <p>level == 1 -> removes text check and following
+     * <p>level == 2 -> removes audio
+     * @param level
+     */
+    function removeDeprecatedContent(level: number) {
+        if(level<1) {
+            setText("");
+        }
+        if(level<2) {
+            setTextMetadataResponse(initialMetadataResponse);
+        }
+        if(level<3) {
+            setAudioBlobPart(undefined);
+        }
+    }
+
     function submitText() {
-        setAudioBlobPart(undefined);
-        setTextMetadataResponse(() => initialMetadataResponse);
+        removeDeprecatedContent(1)
         apiSubmitTextToBackend({text: text, scope: scope})
             .then(r => {
                 console.log(r);
@@ -178,7 +194,7 @@ export default function Primary() {
 
     function setId(choiceId: string, index: number) {
         if (textMetadataResponse.defaultIds[index] !== choiceId) {
-            setAudioBlobPart(undefined);
+            removeDeprecatedContent(2);
             setTextMetadataResponse(current => {
                 let tmp = {...current};
                 tmp.defaultIds[index] = choiceId;
@@ -208,15 +224,30 @@ export default function Primary() {
         nav("/batch?" + searchParamRecordWords + "&" + searchParamText);
     }
 
+    function recordSingleWord(dropdownWord: string) {
+        const searchParamRecordWords = createSearchParamsFromArrayToArray("words", [dropdownWord]);
+        const searchParamText = createSearchParamsFromArrayToText("text",
+            textMetadataResponse.textWords.map(wordAvail => wordAvail.word));
+        nav("/batch?" + searchParamRecordWords + "&" + searchParamText);
+    }
+
     return (
         <Grid container alignItems={"center"} flexDirection={"column"}>
+            <Grid item>
+                <Scope friends={friends} scope={scope} setScope={setScope}/>
+            </Grid>
             <Grid item>
                 <TextSubmit text={text} setText={setText} submitText={submitText}/>
             </Grid>
             <Grid item ml={2} mr={2}>
                 {
                     textMetadataResponse &&
-                    <TextCheck key={"textcheck"} textMetadataResponse={textMetadataResponse} setId={setId}/>
+                    <TextCheck
+                        key={"textcheck"}
+                        textMetadataResponse={textMetadataResponse}
+                        setId={setId}
+                        singleWordRecord={recordSingleWord}
+                    />
                 }
             </Grid>
             {textMetadataResponse && textMetadataResponse.textWords.length !== 0 &&

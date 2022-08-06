@@ -1,18 +1,16 @@
 import {FormControl, Grid, InputLabel, MenuItem, Select, Typography} from "@mui/material";
 import {WordAvail, RecordMetaData} from "../../services/model";
-import {useNavigate} from "react-router-dom";
 
 
 interface WordDropdownProps {
     wordAvail: WordAvail,
     setId: (id: string) => void
     choicesList: RecordMetaData[],
-    id: string
+    id: string,
+    singleWordRecord: (word: string) => void
 }
 
 export default function WordDropdown(props: WordDropdownProps) {
-
-    const nav = useNavigate();
 
     function getDropdownColor(availability: string) {
         console.log(`word=${props.wordAvail.word}, props.wordAvail.availability=${props.wordAvail.availability}, record.availability=${availability}`)
@@ -70,8 +68,7 @@ export default function WordDropdown(props: WordDropdownProps) {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     autoWidth
-                    value={props.wordAvail.availability === "INVALID" ? "invalid" :
-                        props.wordAvail.availability === "AVAILABLE" ? props.id : 'record'}
+                    value={props.wordAvail.availability === "AVAILABLE" ? props.id : 'record'}
                     label={props.wordAvail.word.toUpperCase()}
                     IconComponent={() => null}
                     onChange={e => props.setId(e.target.value)}
@@ -91,7 +88,7 @@ export default function WordDropdown(props: WordDropdownProps) {
                             </MenuItem>
                         )
                     }
-                    <MenuItem key={'record'} value={'record'} onClick={() => nav("/record")}>
+                    <MenuItem key={'record'} value={'record'} onClick={() => props.singleWordRecord(props.wordAvail.word)}>
                         <Grid container bgcolor={"#b43535"}>
                             <Grid item>
                                 <Typography>record</Typography>
