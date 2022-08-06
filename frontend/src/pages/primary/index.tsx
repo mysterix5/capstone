@@ -4,8 +4,12 @@ import {useEffect, useState} from "react";
 import {RecordMetaData, TextMetadataResponse} from "../../services/model";
 import TextCheck from "./TextCheck";
 import Audio from "./Audio";
-import {apiGetHistoryEntryById, apiGetMergedAudio, apiSendTextToBackend} from "../../services/apiServices";
-import {isAvailable} from "../../globalTools/helpers";
+import {
+    apiGetFriendsAndScope,
+    apiGetHistoryEntryById,
+    apiGetMergedAudio,
+    apiSubmitTextToBackend
+} from "../../services/apiServices";
 import {useAuth} from "../../usermanagement/AuthProvider";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Share from "./Share";
@@ -34,6 +38,11 @@ const initialMetadataResponse = {
 };
 
 export default function Primary() {
+    // TODO friends and scope will be working with the next commit
+    // eslint-disable-next-line
+    const [friends, setFriends] = useState<string[]>([]);
+    const [scope, setScope] = useState<string[]>([]);
+
     const [textMetadataResponse, setTextMetadataResponse] = useState<TextMetadataResponse>(initialMetadataResponse);
     const [text, setText] = useState("")
 
@@ -61,14 +70,14 @@ export default function Primary() {
                 .then(h => {
                     console.log(h);
                     setText(h.text);
-                    apiSendTextToBackend({text: h.text})
+                    apiSubmitTextToBackend({text: h.text, scope: scope})
                         .then(textMetadataResponseFromBackend => {
                             setAudioBlobPart(undefined);
                             console.log(textMetadataResponseFromBackend);
                             for (let i = 0; i < textMetadataResponseFromBackend.textWords.length; i++) {
                                 const choice = h.choices[i];
                                 const word = textMetadataResponseFromBackend.textWords[i];
-                                if (isAvailable(word.availability)) {
+                                if (word.availability==="AVAILABLE") {
                                     const actualWordChoices = textMetadataResponseFromBackend.wordRecordMap[word.word];
                                     if (!isIdInChoices(choice, actualWordChoices)) {
                                         textMetadataResponseFromBackend.defaultIds[i] = actualWordChoices[0].id;
@@ -94,16 +103,15 @@ export default function Primary() {
             });
         } else if (searchParams.get("text")) {
             setText(searchParams.get("text")!);
-            apiSendTextToBackend({text: searchParams.get("text")!})
+            apiSubmitTextToBackend({text: searchParams.get("text")!, scope: scope})
                 .then(r => {
-                    console.log(r);
                     setTextMetadataResponse(r);
                 }).catch(err => {
                     defaultApiResponseChecks(err);
                 }
             );
         }
-    }, [historyId, setError, defaultApiResponseChecks, searchParams])
+    }, [historyId, setError, defaultApiResponseChecks, searchParams, scope])
 
     useEffect(() => {
         if (!localStorage.getItem("jwt")) {
@@ -112,16 +120,28 @@ export default function Primary() {
     }, [nav])
 
     useEffect(() => {
+        apiGetFriendsAndScope()
+            .then(fs => {
+                // TODO change this after implementing scopes in frontend
+                setFriends(fs.friends);
+                setScope(fs.friends);
+            })
+            .catch(err => {
+                defaultApiResponseChecks(err);
+            });
+    }, [defaultApiResponseChecks])
+
+    useEffect(() => {
         setAudioBlobPart(undefined);
     }, [text])
 
     function submitText() {
         setAudioBlobPart(undefined);
-        setTextMetadataResponse(()=>initialMetadataResponse);
-        apiSendTextToBackend({text: text})
+        setTextMetadataResponse(() => initialMetadataResponse);
+        apiSubmitTextToBackend({text: text, scope: scope})
             .then(r => {
                 console.log(r);
-                setTextMetadataResponse(()=>r);
+                setTextMetadataResponse(() => r);
             }).catch(err => {
                 defaultApiResponseChecks(err);
                 if (err.response) {
@@ -136,7 +156,7 @@ export default function Primary() {
             return false;
         }
         for (const word of textMetadataResponse!.textWords) {
-            if (!isAvailable(word.availability)) {
+            if (!(word.availability==="AVAILABLE")) {
                 return false;
             }
         }
@@ -158,6 +178,7 @@ export default function Primary() {
 
     function setId(choiceId: string, index: number) {
         if (textMetadataResponse.defaultIds[index] !== choiceId) {
+            setAudioBlobPart(undefined);
             setTextMetadataResponse(current => {
                 let tmp = {...current};
                 tmp.defaultIds[index] = choiceId;
@@ -168,7 +189,7 @@ export default function Primary() {
 
     function recordMissingWords() {
         const wordsArray = textMetadataResponse.textWords
-            .filter((wordAvail) => !isAvailable(wordAvail.availability))
+            .filter((wordAvail) => !(wordAvail.availability==="AVAILABLE"))
             .filter((wordAvail) => wordAvail.availability !== "INVALID")
             .map(wordAvail => wordAvail.word);
         const searchParamRecordWords = createSearchParamsFromArrayToArray("words", wordsArray);
@@ -221,12 +242,12 @@ export default function Primary() {
                 </>
             }
             <Grid item>
-                { audioBlobPart &&
+                {audioBlobPart &&
                     <Share
                         audioBlobPart={new File(
                             [audioBlobPart!],
                             'vover.mp3',
-                            { type: 'audio/mp3' })}
+                            {type: 'audio/mp3'})}
                     />
                 }
             </Grid>

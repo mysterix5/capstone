@@ -1,13 +1,13 @@
 import axios, {AxiosResponse} from "axios";
 import {
-    TextSend,
+    TextSubmit,
     TextMetadataResponse,
     LoginDTO,
     LoginResponse,
     RegisterDTO,
     RecordPage,
     RecordInfo,
-    HistoryEntryTextChoices, UserDTO, AllUsersForFriendPageResponse
+    HistoryEntryTextChoices, UserDTO, AllUsersForFriendPageResponse, FriendsAndScope
 } from "./model";
 
 function createHeaders() {
@@ -17,26 +17,34 @@ function createHeaders() {
 }
 
 export function sendRegister(user: RegisterDTO) {
-    return axios.post("/api/auth/register", user)
+    const url = `/api/auth/register`;
+    console.log(`post: ${url}: user=${user}`);
+    return axios.post(url, user)
         .then(r => r.data);
 }
 
 export function sendLogin(user: LoginDTO) {
-    return axios.post("/api/auth/login", user)
+    const url = `/api/auth/login`;
+    console.log(`post: ${url}: user=${user}`);
+    return axios.post(url, user)
         .then((response: AxiosResponse<LoginResponse>) => response.data)
 }
 
 
-export function apiSendTextToBackend(text: TextSend) {
-    return axios.post("/api/primary",
-        text,
+export function apiSubmitTextToBackend(textSubmit: TextSubmit) {
+    const url = `/api/primary/textsubmit`;
+    console.log(`post: ${url}: text=${textSubmit}`);
+    return axios.post(url,
+        textSubmit,
         createHeaders()
     )
         .then((response: AxiosResponse<TextMetadataResponse>) => response.data);
 }
 
 export function apiGetMergedAudio(ids: string[]) {
-    return axios.post("/api/primary/audio",
+    const url = `/api/primary/getaudio`;
+    console.log(`post: ${url}: ids=${ids}`);
+    return axios.post(url,
         ids,
         {
             headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`},
@@ -46,7 +54,9 @@ export function apiGetMergedAudio(ids: string[]) {
 }
 
 export function apiGetSingleRecordedAudio(id: string) {
-    return axios.get(`/api/record/audio/${id}`,
+    const url = `/api/record/audio/${id}`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
         {
             headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`},
             responseType: 'arraybuffer'
@@ -64,7 +74,10 @@ export function apiSaveAudio(word: string, tag: string, accessibility: string, a
     formData.append("accessibility", accessibility);
     formData.append("audio", audioBlob);
 
-    return axios.post("/api/record",
+    const url = `/api/record`;
+    console.log(`post: ${url}: formdata: word=${word}, tag=${tag}, accessibility=${accessibility}, audiodata`);
+
+    return axios.post(url,
         formData,
         {
             headers: {
@@ -76,27 +89,35 @@ export function apiSaveAudio(word: string, tag: string, accessibility: string, a
 }
 
 export function apiGetRecordPage(page: number, size: number, searchTerm: string) {
-    return axios.get(`/api/record/${page}/${size}?searchTerm=${searchTerm}`,
+    const url = `/api/record/${page}/${size}?searchTerm=${searchTerm}`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
         createHeaders()
     )
         .then((response: AxiosResponse<RecordPage>) => response.data);
 }
 
 export function apiDeleteRecord(id: string) {
-    return axios.delete(`/api/record/${id}`,
+    const url = `/api/record/${id}`;
+    console.log(`delete: ${url}`);
+    return axios.delete(url,
         createHeaders()
     );
 }
 
 export function apiChangeRecord(recordInfo: RecordInfo) {
-    return axios.put(`/api/record`,
+    const url = `/api/record`;
+    console.log(`put: ${url}: recordInfo=${recordInfo}`);
+    return axios.put(url,
         recordInfo,
         createHeaders()
     );
 }
 
 export function apiGetHistory() {
-    return axios.get(`/api/userdetails/history`,
+    const url = `/api/userdetails/history`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
         createHeaders()
     ).then(r => r.data)
         .then(h => {
@@ -111,23 +132,33 @@ export function apiGetHistory() {
 }
 
 export function apiGetHistoryEntryById(id: string) {
-    console.log(`get: /api/history/${id}`);
-    return axios.get(`/api/history/${id}`,
+    const url = `/api/history/${id}`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
         createHeaders()
     ).then((response: AxiosResponse<HistoryEntryTextChoices>) => response.data);
 }
 
 export function apiGetUsers() {
-    console.log(`get: /api/userdetails/friend`);
-    return axios.get(`/api/userdetails/friend`,
+    const url = `/api/userdetails/friendsinfo`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
         createHeaders()
     ).then((response: AxiosResponse<AllUsersForFriendPageResponse>) => response.data);
 }
 
+export function apiGetFriendsAndScope() {
+    const url = `/api/userdetails/friendsandscope`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
+        createHeaders()
+    ).then((response: AxiosResponse<FriendsAndScope>) => response.data);
+}
+
 export function apiSendFriendRequest(username: string) {
-    console.log(`post: /api/user: username=${username}`);
-    console.log(username);
-    return axios.post(`/api/userdetails/friendrequest`,
+    const url = `/api/userdetails/friendrequest`;
+    console.log(`post: ${url}: username=${username}`);
+    return axios.post(url,
         username,
         {
             headers: {
@@ -139,9 +170,23 @@ export function apiSendFriendRequest(username: string) {
 }
 
 export function apiAcceptFriendship(username: string) {
-    console.log(`post: /api/user: username=${username}`);
-    console.log(username);
-    return axios.put(`/api/userdetails/acceptfriend`,
+    const url = `/api/userdetails/acceptfriend`;
+    console.log(`put: ${url}: username=${username}`);
+    return axios.put(url,
+        username,
+        {
+            headers: {
+                "Content-Type": "text/plain",
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        }
+    );
+}
+
+export function apiEndFriendship(username: string) {
+    const url = `/api/userdetails/endfriendship`;
+    console.log(`put: ${url}: username=${username}`);
+    return axios.put(url,
         username,
         {
             headers: {

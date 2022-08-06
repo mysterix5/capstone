@@ -4,6 +4,7 @@ import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import com.github.mysterix5.vover.model.user_details.AllUsersForFriendsDTO;
 import com.github.mysterix5.vover.model.user_details.HistoryEntry;
+import com.github.mysterix5.vover.model.user_details.ScopeResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,17 @@ public class VoverUserDetailsController {
         }
     }
 
-    @GetMapping("/friend")
+    @GetMapping("/friendsandscope")
+    public ResponseEntity<Object> getFriendsAndScope(Principal principal) {
+        try {
+            ScopeResponseDTO scopeResponseDTO = voverUserDetailsService.getFriendsAndScope(principal.getName());
+            return ResponseEntity.ok(scopeResponseDTO);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new VoverErrorDTO("something went wrong fetching your friends"));
+        }
+    }
+
+    @GetMapping("/friendsinfo")
     public ResponseEntity<Object> getAllUsersWithFriendInfo(Principal principal){
         try {
             AllUsersForFriendsDTO users = voverUserDetailsService.getAllUsersWithFriendInfo(principal.getName());
@@ -51,5 +62,10 @@ public class VoverUserDetailsController {
     public void acceptFriendRequest(@RequestBody String userRequestingFriendship, Principal principal) {
         log.info("user '{}' accepts friendship from user '{}'", principal.getName(), userRequestingFriendship);
         voverUserDetailsService.acceptFriendship(principal.getName(), userRequestingFriendship);
+    }
+    @PutMapping("/endfriendship")
+    public void endFriendship(@RequestBody String friend, Principal principal) {
+        log.info("user '{}' ends friendship with user '{}'", principal.getName(), friend);
+        voverUserDetailsService.endFriendship(principal.getName(), friend);
     }
 }

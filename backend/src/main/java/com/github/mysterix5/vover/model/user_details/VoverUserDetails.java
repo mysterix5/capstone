@@ -12,6 +12,7 @@ import java.util.List;
 public class VoverUserDetails {
     @Id
     private String username;
+    private List<String> scope = new ArrayList<>();
     private List<String> friends = new ArrayList<>();
     private List<String> friendRequests = new ArrayList<>();
     private List<String> receivedFriendRequests = new ArrayList<>();

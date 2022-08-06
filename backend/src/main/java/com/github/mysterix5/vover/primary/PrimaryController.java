@@ -20,11 +20,11 @@ public class PrimaryController {
 
     private final PrimaryService primaryService;
 
-    @PostMapping
+    @PostMapping("/textsubmit")
     public ResponseEntity<Object> onSubmittedText(@RequestBody PrimarySubmitDTO primarySubmitDTO, Principal principal) {
         log.info("Text submitted by user '{}': {}", principal.getName(), primarySubmitDTO.getText());
         try {
-            return ResponseEntity.ok().body(primaryService.onSubmittedText(primarySubmitDTO.getText(), principal.getName()));
+            return ResponseEntity.ok().body(primaryService.onSubmittedText(primarySubmitDTO, principal.getName()));
         } catch (MultipleSubErrorException e) {
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         } catch (Exception e) {
@@ -32,7 +32,7 @@ public class PrimaryController {
         }
     }
 
-    @PostMapping("/audio")
+    @PostMapping("/getaudio")
     public ResponseEntity<Object> loadListFromCloudAndMerge(HttpServletResponse httpResponse, @RequestBody List<String> ids, Principal principal) {
         log.info("user '{}' requests an audio with '{}' words. ids: {}", principal.getName(), ids.size(), ids);
         try {
