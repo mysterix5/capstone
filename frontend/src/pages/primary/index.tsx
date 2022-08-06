@@ -208,6 +208,13 @@ export default function Primary() {
         nav("/batch?" + searchParamRecordWords + "&" + searchParamText);
     }
 
+    function recordSingleWord(dropdownWord: string) {
+        const searchParamRecordWords = createSearchParamsFromArrayToArray("words", [dropdownWord]);
+        const searchParamText = createSearchParamsFromArrayToText("text",
+            textMetadataResponse.textWords.map(wordAvail => wordAvail.word));
+        nav("/batch?" + searchParamRecordWords + "&" + searchParamText);
+    }
+
     return (
         <Grid container alignItems={"center"} flexDirection={"column"}>
             <Grid item>
@@ -216,7 +223,12 @@ export default function Primary() {
             <Grid item ml={2} mr={2}>
                 {
                     textMetadataResponse &&
-                    <TextCheck key={"textcheck"} textMetadataResponse={textMetadataResponse} setId={setId}/>
+                    <TextCheck
+                        key={"textcheck"}
+                        textMetadataResponse={textMetadataResponse}
+                        setId={setId}
+                        singleWordRecord={recordSingleWord}
+                    />
                 }
             </Grid>
             {textMetadataResponse && textMetadataResponse.textWords.length !== 0 &&
