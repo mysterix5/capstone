@@ -83,8 +83,8 @@ export default function RecordDetails(props: RecordDetailsProps) {
     }
 
     return (
-        <Grid item>
-            <Card sx={{m: 1, boxShadow: 4}}>
+        <Grid item xs={6} sm={4} md={3} lg={2}>
+            <Card sx={{m: 0.4, boxShadow: 4}}>
                 <CardContent>
                     {edit ?
                         <Grid container direction={"column"}>

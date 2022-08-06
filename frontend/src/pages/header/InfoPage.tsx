@@ -105,6 +105,8 @@ export default function InfoPage() {
 
                     <SubHeader>Hints</SubHeader>
                     {TextListItem("navigation", "You can always click on the Vover title to get to the main page. ")}
+                    {TextListItem("history", "The url of an history item can be shared")}
+                    {TextListItem("recording", "If you are not satisfied with your recording just press the record button again. The last recording is overwritten. ")}
                 </Box>
             </Popper>
         </Box>
