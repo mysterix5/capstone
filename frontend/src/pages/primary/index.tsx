@@ -39,8 +39,6 @@ const initialMetadataResponse = {
 };
 
 export default function Primary() {
-    // TODO friends and scope will be working with the next commit
-    // eslint-disable-next-line
     const [friends, setFriends] = useState<string[]>([]);
     const [scope, setScope] = useState<string[]>([]);
 
@@ -196,7 +194,7 @@ export default function Primary() {
 
     function setId(choiceId: string, index: number) {
         if (textMetadataResponse.defaultIds[index] !== choiceId) {
-            removeDeprecatedContent(1);
+            removeDeprecatedContent(2);
             setTextMetadataResponse(current => {
                 let tmp = {...current};
                 tmp.defaultIds[index] = choiceId;
@@ -226,6 +224,13 @@ export default function Primary() {
         nav("/batch?" + searchParamRecordWords + "&" + searchParamText);
     }
 
+    function recordSingleWord(dropdownWord: string) {
+        const searchParamRecordWords = createSearchParamsFromArrayToArray("words", [dropdownWord]);
+        const searchParamText = createSearchParamsFromArrayToText("text",
+            textMetadataResponse.textWords.map(wordAvail => wordAvail.word));
+        nav("/batch?" + searchParamRecordWords + "&" + searchParamText);
+    }
+
     return (
         <Grid container alignItems={"center"} flexDirection={"column"}>
             <Grid item>
@@ -237,7 +242,12 @@ export default function Primary() {
             <Grid item ml={2} mr={2}>
                 {
                     textMetadataResponse &&
-                    <TextCheck key={"textcheck"} textMetadataResponse={textMetadataResponse} setId={setId}/>
+                    <TextCheck
+                        key={"textcheck"}
+                        textMetadataResponse={textMetadataResponse}
+                        setId={setId}
+                        singleWordRecord={recordSingleWord}
+                    />
                 }
             </Grid>
             {textMetadataResponse && textMetadataResponse.textWords.length !== 0 &&
