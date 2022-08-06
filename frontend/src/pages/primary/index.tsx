@@ -39,8 +39,6 @@ const initialMetadataResponse = {
 };
 
 export default function Primary() {
-    // TODO friends and scope will be working with the next commit
-    // eslint-disable-next-line
     const [friends, setFriends] = useState<string[]>([]);
     const [scope, setScope] = useState<string[]>([]);
 
@@ -196,7 +194,7 @@ export default function Primary() {
 
     function setId(choiceId: string, index: number) {
         if (textMetadataResponse.defaultIds[index] !== choiceId) {
-            removeDeprecatedContent(1);
+            removeDeprecatedContent(2);
             setTextMetadataResponse(current => {
                 let tmp = {...current};
                 tmp.defaultIds[index] = choiceId;
