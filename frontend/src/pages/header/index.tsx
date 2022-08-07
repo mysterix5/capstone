@@ -21,10 +21,8 @@ export default function Header() {
                     <Grid container direction={"row"} wrap={"nowrap"}>
                         <Grid item mr={2} ml={1}>
                             {
-                                username ?
-                                        <MicIcon color={'primary'}/>
-                                    :
-                                    <Box></Box>
+                                username &&
+                                <MicIcon color={'primary'}/>
                             }
                         </Grid>
                         <Grid item>
