@@ -22,7 +22,7 @@ export default function Header() {
                         <Grid item mr={2} ml={1}>
                             {
                                 username &&
-                                <MicIcon color={'primary'}/>
+                                <MicIcon color={'primary'} onClick={() => nav("/record")}/>
                             }
                         </Grid>
                         <Grid item>
