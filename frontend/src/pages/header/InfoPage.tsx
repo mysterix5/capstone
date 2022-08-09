@@ -99,13 +99,13 @@ export default function InfoPage() {
                     <Text>You can hear again, edit and delete your recordings on the user page. </Text>
 
                     <SubHeader>History</SubHeader>
-                    <Text>Also on you user page there is a 'History' page. Here you can see your last requested audios
+                    <Text>Also on your user page there is a 'History' page. Here you can see your last requested audios
                         and by clicking on a history element you are navigated to the main page with the exact same text
                         and recordings selected like the last time you requested this. </Text>
 
                     <SubHeader>Hints</SubHeader>
                     {TextListItem("navigation", "You can always click on the Vover title to get to the main page. ")}
-                    {TextListItem("history", "The url of an history item can be shared")}
+                    {TextListItem("history", "The url of a history item can be shared")}
                     {TextListItem("recording", "If you are not satisfied with your recording just press the record button again. The last recording is overwritten. ")}
                 </Box>
             </Popper>
