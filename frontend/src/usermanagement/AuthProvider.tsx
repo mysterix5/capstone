@@ -23,7 +23,6 @@ export default function AuthProvider({children}: { children: ReactNode }) {
     }, [token]);
 
     const logout = useCallback(() => {
-        // const logout = () => {
         console.log("logout")
         localStorage.removeItem('jwt');
         setToken('');
@@ -61,21 +60,15 @@ export default function AuthProvider({children}: { children: ReactNode }) {
     }, [])
 
     const defaultApiResponseChecks = useCallback((err: Error | AxiosError) => {
-        // const defaultApiResponseChecks = (err: Error | AxiosError) => {
-        console.log("default api response check: ");
-        console.log(err);
         if (axios.isAxiosError(err)) {
-            console.log("is axios err");
             // Access to config, request, and response
             if (err.response?.status === 403) {
                 logout();
             }
         } else {
-            console.log("is stock err");
             // Just a stock error
         }
     }, [logout])
-    // }
 
 
     return <AuthContext.Provider

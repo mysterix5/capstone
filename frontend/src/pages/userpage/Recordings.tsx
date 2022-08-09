@@ -3,7 +3,6 @@ import {useAuth} from "../../usermanagement/AuthProvider";
 import {apiGetRecordPage} from "../../services/apiServices";
 import {RecordPage} from "../../services/model";
 import {Box, Button, Grid} from "@mui/material";
-import {useNavigate} from "react-router-dom";
 import RecordDetails from "./RecordDetails";
 
 
@@ -20,25 +19,32 @@ export default function Recordings() {
         });
 
     const {defaultApiResponseChecks} = useAuth();
-
-    const nav = useNavigate();
+    console.log("body recordpage");
+    console.log(recordPage)
 
     const getSpecificRecordPage = useCallback((page: number, size: number, searchTerm: string) => {
         apiGetRecordPage(page, size, searchTerm)
-            .then((r: RecordPage) => setRecordPage(r))
+            .then((r: RecordPage) => {
+                setRecordPage(r);
+                console.log("get specific r");
+                console.log(r);
+                console.log(recordPage);
+            })
             .catch(err => {
                 defaultApiResponseChecks(err);
             });
     }, [defaultApiResponseChecks]);
 
     const updateRecordPage = useCallback(() => {
+        console.log("update recordPage");
+        console.log(recordPage);
         getSpecificRecordPage(recordPage.page, recordPage.size, recordPage.searchTerm);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [getSpecificRecordPage])
 
     useEffect(() => {
         updateRecordPage();
-    }, [nav, updateRecordPage])
+    }, [updateRecordPage])
 
     return (
         <Box>
