@@ -1,8 +1,11 @@
+
+<!--- <img align="left" src="vover_screenshot.png" height="500">  --->
+<img align="right" src="https://user-images.githubusercontent.com/28150646/183955134-5bbbb27d-5948-4676-8ac7-a451d48aa7cf.mov" height="500">
+
 # Vover
 With Vover you can create an amazing roboter-like voice messages with the voices of your
 friends. 
 
-![image](vover_screenshot.png)
 ## Usage guide
 ### Vover messages
 Enter a text you want to send as audio to your friends and click send.
