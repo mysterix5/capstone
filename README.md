@@ -2,6 +2,7 @@
 With Vover you can create an amazing roboter-like voice messages with the voices of your
 friends. 
 
+![image](vover_screenshot.png)
 ## Usage guide
 ### Vover messages
 Enter a text you want to send as audio to your friends and click send.
@@ -107,5 +108,27 @@ From this the availability of the word can be computed looping over all words:
 - the word has no db information -> unavailable
 - the word has db information -> available
 
-For each record also an availability is computed. It is one of scope, friends, public, myself. 
+For each record also an availability is computed. It is one of scope, friends, public, myself. To compute this the recordings creator simply has to be compared with the requesting users friends, scope, ... . This list is also easily sorted based on this values. 
 
+In frontend the user sees the select menus for each word. The select choices are colored based on the record availability. 
+
+After selecting the desired recordings the second big request is submitted by clicking on the "get audio" button. 
+A list of recording ids is send to the backend. 
+In backend the recording metadata is fetched from MongoDB. 
+It is checked if the user is allowed to access all of these recordings. 
+Then the audio data are loaded from the nextcloud storage. 
+These requests are performed in parallel to avoid a sequentiell addition of the cloud loading time. 
+
+The audio data is then merged with the Jaffree java library which is a wrapper for FFmpeg. 
+FFmpeg is a system tool for audio processing and called as external tool from java. 
+
+### Userpage
+#### Recordings
+Here the user can manage the own recordings. Fetching the recordings is realized with pagination. 
+Here is a very straight forward implementation of editing the record data. 
+
+#### History
+When requesting a merged audio, additionally a history entity is saved in the db in his own collection. 
+A history entry consists of the text as string, and the recording choices as List of ids. 
+When requesting a history element again it is requested by id and this id is part of the url. 
+This way a history url can even be shared and called with another Vover account. 
