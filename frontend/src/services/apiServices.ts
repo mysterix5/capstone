@@ -1,45 +1,64 @@
 import axios, {AxiosResponse} from "axios";
-import {TextSend, TextMetadataResponse, LoginDTO, LoginResponse, RegisterDTO, RecordPage, RecordInfo} from "./model";
+import {
+    TextSubmit,
+    TextMetadataResponse,
+    LoginDTO,
+    LoginResponse,
+    RegisterDTO,
+    RecordPage,
+    RecordInfo,
+    HistoryEntryTextChoices, UserDTO, AllUsersForFriendPageResponse, FriendsAndScope
+} from "./model";
 
-function createHeaders(token: string) {
+function createHeaders() {
     return {
-        headers: {Authorization: `Bearer ${token}`}
+        headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`}
     }
 }
 
 export function sendRegister(user: RegisterDTO) {
-    return axios.post("/api/auth/register", user)
+    const url = `/api/auth/register`;
+    console.log(`post: ${url}: user=${user}`);
+    return axios.post(url, user)
         .then(r => r.data);
 }
 
 export function sendLogin(user: LoginDTO) {
-    return axios.post("/api/auth/login", user)
+    const url = `/api/auth/login`;
+    console.log(`post: ${url}: user=${user}`);
+    return axios.post(url, user)
         .then((response: AxiosResponse<LoginResponse>) => response.data)
 }
 
-export function apiSendTextToBackend(token: string, text: TextSend) {
-    return axios.post("/api/primary",
-        text,
-        createHeaders(token)
+
+export function apiSubmitTextToBackend(textSubmit: TextSubmit) {
+    const url = `/api/primary/textsubmit`;
+    console.log(`post: ${url}: text=${textSubmit}`);
+    return axios.post(url,
+        textSubmit,
+        createHeaders()
     )
         .then((response: AxiosResponse<TextMetadataResponse>) => response.data);
 }
 
-export function apiGetMergedAudio(token: string, ids: string[]) {
-    return axios.post("/api/primary/audio",
+export function apiGetMergedAudio(ids: string[]) {
+    const url = `/api/primary/getaudio`;
+    console.log(`post: ${url}: ids=${ids}`);
+    return axios.post(url,
         ids,
         {
-            headers: {Authorization: `Bearer ${token}`},
+            headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`},
             responseType: 'arraybuffer'
         })
-        .then((response) => response.data)
-        .then(data => window.URL.createObjectURL(new Blob([data])));
+        .then((response) => response.data);
 }
 
-export function apiGetSingleRecordedAudio(token: string, id: string) {
-    return axios.get(`/api/record/audio/${id}`,
+export function apiGetSingleRecordedAudio(id: string) {
+    const url = `/api/record/audio/${id}`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
         {
-            headers: {Authorization: `Bearer ${token}`},
+            headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`},
             responseType: 'arraybuffer'
         })
         .then((response) => response.data)
@@ -47,7 +66,7 @@ export function apiGetSingleRecordedAudio(token: string, id: string) {
 }
 
 
-export function apiSaveAudio(token: string, word: string, tag: string, accessibility: string, audioBlob: Blob) {
+export function apiSaveAudio(word: string, tag: string, accessibility: string, audioBlob: Blob) {
     const formData = new FormData();
 
     formData.append("word", word);
@@ -55,48 +74,127 @@ export function apiSaveAudio(token: string, word: string, tag: string, accessibi
     formData.append("accessibility", accessibility);
     formData.append("audio", audioBlob);
 
-    return axios.post("/api/record",
+    const url = `/api/record`;
+    console.log(`post: ${url}: formdata: word=${word}, tag=${tag}, accessibility=${accessibility}, audiodata`);
+
+    return axios.post(url,
         formData,
         {
             headers: {
                 "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
             }
         }
     )
 }
 
-export function apiGetRecordPage(token: string, page: number, size: number, searchTerm: string) {
-    return axios.get(`/api/record/${page}/${size}?searchTerm=${searchTerm}`,
-        createHeaders(token)
+export function apiGetRecordPage(page: number, size: number, searchTerm: string) {
+    const url = `/api/record/${page}/${size}?searchTerm=${searchTerm}`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
+        createHeaders()
     )
         .then((response: AxiosResponse<RecordPage>) => response.data);
 }
 
-export function apiDeleteRecord(token: string, id: string) {
-    return axios.delete(`/api/record/${id}`,
-        createHeaders(token)
+export function apiDeleteRecord(id: string) {
+    const url = `/api/record/${id}`;
+    console.log(`delete: ${url}`);
+    return axios.delete(url,
+        createHeaders()
     );
 }
-export function apiChangeRecord(token: string, recordInfo: RecordInfo) {
-    return axios.put(`/api/record`,
+
+export function apiChangeRecord(recordInfo: RecordInfo) {
+    const url = `/api/record`;
+    console.log(`put: ${url}: recordInfo=${recordInfo}`);
+    return axios.put(url,
         recordInfo,
-        createHeaders(token)
+        createHeaders()
     );
 }
-export function apiGetHistory(token: string){
-    return axios.get(`/api/userdetails/history`,
-        createHeaders(token)
-    ).then(r=>r.data)
-        .then(h=>{
+
+export function apiGetHistory() {
+    const url = `/api/userdetails/history`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
+        createHeaders()
+    ).then(r => r.data)
+        .then(h => {
             let locHist = [...h];
-            locHist.map(h=>{
+            locHist.map(h => {
                 h.requestTime = parseISOString(h.requestTime);
                 return h;
             })
             return locHist;
         })
         ;
+}
+
+export function apiGetHistoryEntryById(id: string) {
+    const url = `/api/history/${id}`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
+        createHeaders()
+    ).then((response: AxiosResponse<HistoryEntryTextChoices>) => response.data);
+}
+
+export function apiGetUsers() {
+    const url = `/api/userdetails/friendsinfo`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
+        createHeaders()
+    ).then((response: AxiosResponse<AllUsersForFriendPageResponse>) => response.data);
+}
+
+export function apiGetFriendsAndScope() {
+    const url = `/api/userdetails/friendsandscope`;
+    console.log(`get: ${url}`);
+    return axios.get(url,
+        createHeaders()
+    ).then((response: AxiosResponse<FriendsAndScope>) => response.data);
+}
+
+export function apiSendFriendRequest(username: string) {
+    const url = `/api/userdetails/friendrequest`;
+    console.log(`post: ${url}: username=${username}`);
+    return axios.post(url,
+        username,
+        {
+            headers: {
+                "Content-Type": "text/plain",
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        }
+    ).then((response: AxiosResponse<UserDTO[]>) => response.data);
+}
+
+export function apiAcceptFriendship(username: string) {
+    const url = `/api/userdetails/acceptfriend`;
+    console.log(`put: ${url}: username=${username}`);
+    return axios.put(url,
+        username,
+        {
+            headers: {
+                "Content-Type": "text/plain",
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        }
+    );
+}
+
+export function apiEndFriendship(username: string) {
+    const url = `/api/userdetails/endfriendship`;
+    console.log(`put: ${url}: username=${username}`);
+    return axios.put(url,
+        username,
+        {
+            headers: {
+                "Content-Type": "text/plain",
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        }
+    );
 }
 
 // LocalDateTime from java has been converted to String for the request, this creates a js Date from it

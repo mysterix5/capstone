@@ -1,6 +1,8 @@
+import {AxiosError} from "axios";
 
-export interface TextSend{
-    text: string
+export interface TextSubmit {
+    text: string,
+    scope: string[]
 }
 
 export interface WordRecordMap {
@@ -11,7 +13,8 @@ export interface RecordMetaData {
     id: string,
     word: string,
     creator: string,
-    tag: string
+    tag: string,
+    availability: string
 }
 
 export interface WordAvail {
@@ -28,11 +31,11 @@ export interface TextMetadataResponse {
 export interface AuthInterface {
     username : string,
     roles : string[],
-    getToken: () => string,
     error: VoverError,
     setError: (error: VoverError)=>void,
-    logout: () => void
-    login: (token: string) => void
+    logout: () => void,
+    login: (token: string) => void,
+    defaultApiResponseChecks: (err: Error | AxiosError) => void
 }
 
 export interface LoginResponse {
@@ -71,7 +74,26 @@ export interface RecordInfo {
     accessibility: string
 }
 
-export interface HistoryEntry {
+export interface HistoryEntryTextDate {
+    id: string,
     text: string,
     requestTime: Date
+}
+export interface HistoryEntryTextChoices {
+    text: string,
+    choices: string[]
+}
+export interface UserDTO {
+    username: string
+}
+export interface AllUsersForFriendPageResponse {
+    users: UserDTO[],
+    friends: string[],
+    friendRequests: string[],
+    friendRequestsReceived: string[]
+}
+
+export interface FriendsAndScope {
+    friends: string[],
+    scope: string[]
 }

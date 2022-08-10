@@ -1,38 +1,36 @@
-import {FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
-import {isAvailable} from "../../globalTools/helpers";
+import {FormControl, Grid, InputLabel, MenuItem, Select, Typography} from "@mui/material";
 import {WordAvail, RecordMetaData} from "../../services/model";
-import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+
 
 interface WordDropdownProps {
     wordAvail: WordAvail,
     setId: (id: string) => void
     choicesList: RecordMetaData[],
-    id: string
+    id: string,
+    singleWordRecord: (word: string) => void
 }
 
 export default function WordDropdown(props: WordDropdownProps) {
 
-    const [id, setId] = useState(props.id);
-
-    const handleChange = (event: SelectChangeEvent) => {
-        if(id!==event.target.value){
-            setId(event.target.value);
+    function getDropdownColor(availability: string) {
+        console.log(`word=${props.wordAvail.word}, props.wordAvail.availability=${props.wordAvail.availability}, record.availability=${availability}`)
+        if (availability === "MYSELF") {
+            return "#0930b0";
+        } else if (availability === "PUBLIC") {
+            return "#d39104";
+        } else if (availability === "FRIENDS") {
+            return "#a7e006";
+        } else if (availability === "SCOPE") {
+            return "#008609";
         }
-    };
-
-    useEffect(() => {
-        props.setId(id);
-    }, [id, props, props.setId])
-
-    const nav = useNavigate();
+    }
 
     return (
         <FormControl variant="filled" size="small">
             <InputLabel id="demo-simple-select-label">
                 <Grid container direction={"row"} wrap={"nowrap"}>
-                    { props.choicesList && props.choicesList.length > 1 &&
-                        <Grid item mr={1} border={1}  bgcolor={"darkgrey"} color={"#577ee0"}>
+                    {props.choicesList && props.choicesList.length > 1 &&
+                        <Grid item mr={1} border={1} bgcolor={"darkgrey"} color={"#577ee0"}>
                             {props.choicesList.length}
                         </Grid>
                     }
@@ -41,40 +39,64 @@ export default function WordDropdown(props: WordDropdownProps) {
                     </Grid>
                 </Grid>
             </InputLabel>
-            <Select
-                size={"medium"}
-                variant={"standard"}
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                autoWidth
-                value={isAvailable(props.wordAvail.availability) ? id : 'record'}
-                label={props.wordAvail.word.toUpperCase()}
-                IconComponent={() => null}
-                onChange={handleChange}
-                sx={{textAlign: "center"}}
-            >
-                {isAvailable(props.wordAvail.availability) ?
-                    props.choicesList.map(wmd =>
-                        <MenuItem key={wmd.id} value={wmd.id}>
-                            <div>
-                                <Typography>{wmd.creator}</Typography>
-                            </div>
-                            <div>
-                                <Typography>{wmd.tag}</Typography>
-                            </div>
-                        </MenuItem>
-                    )
-                    :
-                    <MenuItem key={'record'} value={'record'}
-                              sx={{justifyItems: "center", display: "f"}} onClick={() => nav("/record")}>
-                        <Grid container alignItems={"center"} justifyItems={"center"}>
+            {props.wordAvail.availability === "INVALID" ?
+                <Select
+                    size={"medium"}
+                    variant={"standard"}
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    autoWidth
+                    value={props.wordAvail.availability === "INVALID" ? "invalid" :
+                        props.wordAvail.availability === "AVAILABLE" ? props.id : 'record'}
+                    label={props.wordAvail.word.toUpperCase()}
+                    IconComponent={() => null}
+                    onChange={e => props.setId(e.target.value)}
+                    sx={{textAlign: "center"}}
+                >
+                    <MenuItem key={'invalid'} value={'invalid'}>
+                        <Grid container bgcolor={"#881111"}>
+                            <Grid item>
+                                <Typography sx={{textDecoration: "line-through"}}>INVALID</Typography>
+                            </Grid>
+                        </Grid>
+                    </MenuItem>
+                </Select>
+                :
+                <Select
+                    size={"medium"}
+                    variant={"standard"}
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    autoWidth
+                    value={props.wordAvail.availability === "AVAILABLE" ? props.id : 'record'}
+                    label={props.wordAvail.word.toUpperCase()}
+                    IconComponent={() => null}
+                    onChange={e => props.setId(e.target.value)}
+                    sx={{textAlign: "center"}}
+                >
+                    {props.wordAvail.availability === "AVAILABLE" &&
+                        props.choicesList.map(wmd =>
+                            <MenuItem key={wmd.id} value={wmd.id}>
+                                <Grid container direction={"column"} bgcolor={getDropdownColor(wmd.availability)}>
+                                    <Grid item>
+                                        <Typography>{wmd.creator}</Typography>
+                                    </Grid>
+                                    <Grid item>
+                                        <Typography>{wmd.tag}</Typography>
+                                    </Grid>
+                                </Grid>
+                            </MenuItem>
+                        )
+                    }
+                    <MenuItem key={'record'} value={'record'} onClick={() => props.singleWordRecord(props.wordAvail.word)}>
+                        <Grid container bgcolor={"#b43535"}>
                             <Grid item>
                                 <Typography>record</Typography>
                             </Grid>
                         </Grid>
                     </MenuItem>
-                }
-            </Select>
+                </Select>
+            }
         </FormControl>
     )
 }

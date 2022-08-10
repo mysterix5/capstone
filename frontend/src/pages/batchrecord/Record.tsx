@@ -1,26 +1,29 @@
 import {Recorder} from "vmsg";
 import {Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
 import {FormEvent, MouseEvent, useEffect, useState} from "react";
-import {apiSaveAudio} from "../../services/apiServices";
-import {useAuth} from "../../usermanagement/AuthProvider";
 import CustomAudioPlayer from "../primary/CustomAudioPlayer";
 
 const recorder = new Recorder({
     wasmURL: "https://unpkg.com/vmsg@0.4.0/vmsg.wasm"
 });
 
-export default function Record() {
+interface RecordProps {
+    word: string,
+    setWord: (w: string) => void,
+    tag: string,
+    setTag: (t: string) => void,
+    accessibility: string,
+    setAccessibility: (acc: string) => void,
+    audioBlob: Blob | undefined,
+    setAudioBlob: (blob: Blob | undefined) => void,
+    saveAudio: (event: FormEvent) => void
+}
+
+export default function Record(props: RecordProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
 
     const [audioLink, setAudioLink] = useState("");
-    const [audioBlob, setAudioBlob] = useState<Blob>();
-
-    const [word, setWord] = useState("");
-    const [tag, setTag] = useState("normal");
-    const [accessibility, setAccessibility] = useState("PUBLIC");
-
-    const {setError, defaultApiResponseChecks} = useAuth();
 
     useEffect(() => {
         recorder.initAudio();
@@ -34,7 +37,7 @@ export default function Record() {
             const blob = await recorder.stopRecording();
             setIsLoading(false);
             setIsRecording(false);
-            setAudioBlob(blob);
+            props.setAudioBlob(blob);
             setAudioLink(URL.createObjectURL(blob));
         } else {
             try {
@@ -50,72 +53,44 @@ export default function Record() {
         }
     };
 
-    function saveAudio(event: FormEvent) {
-        event.preventDefault();
-        console.log("save audio");
-
-        apiSaveAudio(word, tag, accessibility, audioBlob!)
-            .then(() => {
-                setAudioLink("");
-                setAudioBlob(undefined);
-                setWord("");
-            }).catch((err) => {
-                defaultApiResponseChecks(err);
-                if (err.response) {
-                    setError(err.response.data);
-                }
-            });
-    }
-
     const handleAccessibility = (
         event: MouseEvent<HTMLElement>,
         newAccessibility: string,
     ) => {
-        setAccessibility(newAccessibility);
+        props.setAccessibility(newAccessibility);
     };
 
     return (
         <>
-            <Typography variant={"h4"} align={"center"} mb={2}>
-                Record new words
+            <Typography variant={"h6"} align={"center"} mb={2}>
+                Record your missing words
             </Typography>
-            <Grid container alignItems={"center"} alignContent={"center"} flexDirection={"column"}>
-                <Grid item xs={4}>
-                    <Button variant="contained" disabled={isLoading} onClick={record}>
-                        {isRecording ? "Stop" : "Record"}
-                    </Button>
-                </Grid>
-                <Box mt={2}>
-                    {audioLink &&
-                        <CustomAudioPlayer audiofile={audioLink} slider={true} download={false} autoPlay={false}/>
-                    }
-                </Box>
+            <Grid container alignContent={"center"} flexDirection={"column"}>
                 <div>
                     {
-                        audioBlob &&
-                        <Box component={"form"} onSubmit={saveAudio} sx={{mt: 7}}>
-                            <Grid item m={0.5}>
+                        <Box component={"form"} onSubmit={props.saveAudio} sx={{mt: 1}}>
+                            <Grid item m={0.5} display={"flex"} justifyContent={"center"}>
                                 <TextField
                                     label="Word"
                                     variant="outlined"
-                                    value={word}
+                                    value={props.word}
                                     placeholder={"your word"}
-                                    onChange={event => setWord(event.target.value)}
+                                    onChange={event => props.setWord(event.target.value)}
                                 />
                             </Grid>
-                            <Grid item m={0.5}>
+                            <Grid item m={0.5} display={"flex"} justifyContent={"center"}>
                                 <TextField
                                     label="Tag"
                                     variant="outlined"
-                                    value={tag}
-                                    placeholder={tag}
-                                    onChange={event => setTag(event.target.value)}
+                                    value={props.tag}
+                                    placeholder={props.tag}
+                                    onChange={event => props.setTag(event.target.value)}
                                 />
                             </Grid>
-                            <Grid item m={0.5}>
+                            <Grid item m={0.5} display={"flex"} justifyContent={"center"}>
                                 <ToggleButtonGroup
-                                    value={accessibility}
                                     size={"small"}
+                                    value={props.accessibility}
                                     exclusive
                                     onChange={handleAccessibility}
                                 >
@@ -130,14 +105,33 @@ export default function Record() {
                                     </ToggleButton>
                                 </ToggleButtonGroup>
                             </Grid>
-                            <Grid item m={0.5}>
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                >
-                                    save audio to db
+
+                            <Grid item display={"flex"} justifyContent={"center"} mt={3}>
+                                <Button variant="contained" disabled={isLoading} onClick={record}>
+                                    {isRecording ? "Stop" : "Record"}
                                 </Button>
                             </Grid>
+
+                            {props.audioBlob &&
+                                <Grid item mt={1} display={"flex"} justifyContent={"center"}>
+                                    {isLoading ?
+                                        <Typography>loading</Typography>
+                                        :
+                                        <CustomAudioPlayer
+                                            audiofile={audioLink} slider={true} download={false} autoPlay={false}/>
+                                    }
+                                </Grid>
+                            }
+                            {props.audioBlob &&
+                                <Grid item m={1} display={"flex"} justifyContent={"center"}>
+                                    <Button
+                                        type="submit"
+                                        variant="contained"
+                                    >
+                                        save audio to db
+                                    </Button>
+                                </Grid>
+                            }
                         </Box>
                     }
                 </div>

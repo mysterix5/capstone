@@ -1,27 +1,18 @@
 import {Box, Button, Grid, TextField} from "@mui/material";
-import {FormEvent, useState} from "react";
-import {apiSendTextToBackend} from "../../services/apiServices";
-import {TextMetadataResponse} from "../../services/model";
-import {useAuth} from "../../usermanagement/AuthProvider";
+import {FormEvent} from "react";
 
 interface TextSubmitProps{
-    setTextMetadataResponse: (textResponse: TextMetadataResponse)=>void
+    text: string,
+    setText: (s: string) => void,
+    submitText: ()=>void
 }
 
 export default function TextSubmit(props: TextSubmitProps){
 
-    const [text, setText] = useState("");
-    const {getToken} = useAuth();
-
     const sendTextToBackend = (event: FormEvent) => {
         event.preventDefault();
         console.log("send text to backend");
-        apiSendTextToBackend(getToken(), {text})
-            .then(r=>{
-                console.log(r);
-                props.setTextMetadataResponse(r);
-                return r;
-            });
+        props.submitText();
     }
 
     return (
@@ -33,10 +24,10 @@ export default function TextSubmit(props: TextSubmitProps){
                         label="text to audio"
                         multiline
                         rows={4}
-                        value={text}
+                        value={props.text}
                         margin={"normal"}
                         sx={{margin: 1}}
-                        onChange={event => setText(event.target.value)}
+                        onChange={event => props.setText(event.target.value)}
                     />
                 </Grid>
 

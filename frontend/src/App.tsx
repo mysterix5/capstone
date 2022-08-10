@@ -10,6 +10,7 @@ import LoginPage from "./usermanagement/LoginPage";
 import AuthProvider from "./usermanagement/AuthProvider";
 import GlobalVoverErrorDisplay from "./globalTools/GlobalVoverErrorDisplay";
 import UserPage from "./pages/userpage";
+import BatchRecord from "./pages/batchrecord/BatchRecord";
 
 const darkTheme = createTheme({
     palette: {
@@ -31,10 +32,13 @@ export default function App() {
                     <Header/>
                     <Routes>
                         <Route path="/" element={<Primary/>}/>
+                        <Route path="/h/:historyId" element={<Primary/>}/>
                         <Route path="/record" element={<Record/>}/>
                         <Route path="/login" element={<LoginPage/>}/>
                         <Route path="/register" element={<RegisterPage/>}/>
                         <Route path="/userpage" element={<UserPage/>}/>
+                        <Route path="/userpage/:category" element={<UserPage/>}/>
+                        <Route path="/batch" element={<BatchRecord/>}/>
                     </Routes>
                     <GlobalVoverErrorDisplay/>
                 </AuthProvider>

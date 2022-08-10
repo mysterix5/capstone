@@ -3,6 +3,8 @@ package com.github.mysterix5.vover.security;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.security.UserRegisterDTO;
 import com.github.mysterix5.vover.model.security.VoverUserEntity;
+import com.github.mysterix5.vover.static_tools.StringOperations;
+import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.PasswordData;
@@ -23,6 +25,7 @@ import java.util.Optional;
 @Slf4j
 public class UserService implements UserDetailsService {
     private final UserMongoRepository userRepository;
+    private final VoverUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final PasswordValidator passwordValidator;
 
@@ -30,7 +33,10 @@ public class UserService implements UserDetailsService {
         if (userCreationDTO.getUsername() == null || userCreationDTO.getUsername().isBlank()) {
             throw new MultipleSubErrorException("username is blank");
         }
-        if (userRepository.existsByUsername(userCreationDTO.getUsername())) {
+        if(!StringOperations.isUsername(userCreationDTO.getUsername())){
+            throw new MultipleSubErrorException("Your username is not valid");
+        }
+        if (userRepository.existsByUsernameIgnoreCase(userCreationDTO.getUsername())) {
             throw new MultipleSubErrorException("a user with this name already exists");
         }
         var tmp = new PasswordData(userCreationDTO.getUsername(), userCreationDTO.getPassword());
@@ -47,6 +53,7 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(userCreationDTO.getPassword()));
         user.setRoles(List.of("user"));
         userRepository.save(user);
+        userDetailsService.ensureUserDetails(user.getUsername());
     }
 
     @Override
@@ -58,6 +65,10 @@ public class UserService implements UserDetailsService {
 
     public Optional<VoverUserEntity> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public List<VoverUserEntity> findAll() {
+        return userRepository.findAll();
     }
 
 }

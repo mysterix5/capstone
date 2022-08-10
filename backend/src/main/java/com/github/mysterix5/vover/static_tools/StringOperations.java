@@ -1,4 +1,4 @@
-package com.github.mysterix5.vover.records;
+package com.github.mysterix5.vover.static_tools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,5 +21,10 @@ public class StringOperations {
         wordList = Arrays.stream(text.split("\\s+")).toList();
 
         return wordList;
+    }
+
+    public static boolean isUsername(String username) {
+        String usernameRegex = "^(?=.{3,20}$)(?![_-])(?!.*[_-]{2})[a-zA-Z0-9-_]+(?<![_-])$";
+        return username.matches(usernameRegex);
     }
 }
