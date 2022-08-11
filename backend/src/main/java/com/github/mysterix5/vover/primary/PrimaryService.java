@@ -164,7 +164,7 @@ public class PrimaryService {
         }
     }
 
-    public byte[] mergeAudioWithJaffree(List<InputStream> inputStreams) {
+    private byte[] mergeAudioWithJaffree(List<InputStream> inputStreams) {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
         ) {
             for (InputStream inputStream : inputStreams) {

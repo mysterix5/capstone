@@ -10,7 +10,6 @@ import com.github.mysterix5.vover.model.security.LoginResponse;
 import com.github.mysterix5.vover.model.security.UserAuthenticationDTO;
 import com.github.mysterix5.vover.model.security.UserRegisterDTO;
 import com.github.mysterix5.vover.model.user_details.HistoryEntry;
-import com.github.mysterix5.vover.primary.PrimaryService;
 import com.github.sardine.Sardine;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -42,9 +40,6 @@ public class VoverIT {
 
     @MockBean
     private Sardine sardine;
-
-    @SpyBean
-    private PrimaryService primaryService;
 
     @Test
     public void integrationTest() throws IOException {
@@ -113,11 +108,6 @@ public class VoverIT {
         ResponseEntity<RecordPage> recordPageResponse = restTemplate.exchange("/api/record/0/6?searchTerm=", HttpMethod.GET, new HttpEntity<>(headers), RecordPage.class);
         assertThat(recordPageResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-//        log.info("{}", recordPageResponse.getBody());
-//
-//        String cloudName = "public-user1-normal-PUBLIC-" + recordPageResponse.getBody().getRecords().get(0).getId() + ".mp3";
-//        log.info("{}", cloudName);
-
         Mockito.when(sardine.get(Mockito.any(String.class)))
                 .thenReturn(new FileInputStream(publicFile))
                 .thenReturn(new FileInputStream(publicFile))
@@ -141,10 +131,6 @@ public class VoverIT {
         assertThat(primarySubmitResponse.getBody().getTextWords().stream().filter(wordResponseDTO -> wordResponseDTO.getAvailability().equals(WordAvailability.AVAILABLE)).count()).isEqualTo(1);
 
         // request the merged audio and check history
-//        Mockito.when(primaryService.mergeAudioWithJaffree(Mockito.any())).thenReturn(new byte[]{});
-        Mockito.doReturn(new byte[]{})
-                .when(primaryService).mergeAudioWithJaffree(Mockito.any());
-
         ResponseEntity<Void> mergedAudioResponse = restTemplate.postForEntity("/api/primary/getaudio", new HttpEntity<>(recordPageResponse.getBody().getRecords().stream().map(RecordManagementDTO::getId).toList(), createHeaders(token1)), Void.class);
         assertThat(mergedAudioResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
