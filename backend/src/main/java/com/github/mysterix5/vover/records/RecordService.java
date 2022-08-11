@@ -117,4 +117,23 @@ public class RecordService {
             throw new RuntimeException("Something went wrong changing your record metadata");
         }
     }
+
+    public List<RecordDbEntity> findAllByUsername(String username){
+        return recordRepository.findAllByCreator(username, PageRequest.ofSize(10000)).getContent();
+    }
+
+    public void changeRecordCreatorAndSetPrivate(RecordDbEntity recordDbEntity, String newCreator){
+        recordDbEntity.setCreator(newCreator);
+        recordDbEntity.setAccessibility(Accessibility.PRIVATE);
+
+        String oldCloudName = recordDbEntity.getCloudFileName();
+        recordDbEntity.setCloudFileName(createCloudFileName(recordDbEntity.getWord(), recordDbEntity.getCreator(), recordDbEntity.getTag(), recordDbEntity.getAccessibility().toString()));
+        try {
+            cloudService.move(oldCloudName, recordDbEntity.getCloudFileName());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        recordRepository.save(recordDbEntity);
+    }
 }
