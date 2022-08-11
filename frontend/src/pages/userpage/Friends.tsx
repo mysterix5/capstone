@@ -48,71 +48,73 @@ export default function Friends() {
     }
 
     return (
-        <Box>
-            <Typography variant={"h6"} textAlign={"center"} color={"secondary"}>
-                Friends
-            </Typography>
-            <Box m={1} display={"flex"} flexDirection={"column"} alignContent={"center"}>
-                {friendUsers &&
-                    friendUsers.map((u, i) =>
-                        <FriendUserCard key={i}
-                                        user={u}
-                                        refresh={refreshData}
-                        />
-                    )
-                }
-            </Box>
-            <Divider/>
-            <Typography variant={"h6"} textAlign={"center"} color={"secondary"}>
-                Received friendship requests
-            </Typography>
-            <Box m={1} display={"flex"} flexDirection={"column"} alignContent={"center"}>
-                {pendingReceivedUsers &&
-                    pendingReceivedUsers.map((u, i) =>
-                        <PendingReceivedUserCard key={i}
-                                                 user={u}
-                                                 refresh={refreshData}
-                        />
-                    )
-                }
-            </Box>
-            <Divider/>
-            <Typography variant={"h6"} textAlign={"center"} color={"secondary"}>
-                Sent friendship requests
-            </Typography>
-            <Box m={1} display={"flex"} flexDirection={"column"} alignContent={"center"}>
-                {pendingSentUsers &&
-                    pendingSentUsers.map((u, i) =>
-                        <PendingSentUserCard key={i}
-                                             user={u}
-                                             refresh={refreshData}
-                        />
-                    )
-                }
-            </Box>
-            <Divider/>
-            <Typography variant={"h6"} textAlign={"center"} color={"secondary"}>
-                All other users
-            </Typography>
-            <Box m={1} display={"flex"} flexDirection={"column"} alignContent={"center"}>
-                <Box display={"flex"} justifyContent={"center"}>
-                    <TextField
-                        label="search for user"
-                        variant="outlined"
-                        onChange={event => setSearchString(event.target.value)}
-                    />
-                </Box>
-                {unrelatedUsers &&
-                    unrelatedUsers
-                        .filter(u => u.username.toLowerCase().includes(searchString.toLowerCase()))
-                        .map((u, i) =>
-                            <UnrelatedUserCard key={i}
-                                               user={u}
-                                               refresh={refreshData}
+        <div data-testid="friendspage">
+            <Box>
+                <Typography variant={"h6"} textAlign={"center"} color={"secondary"}>
+                    Friends
+                </Typography>
+                <Box m={1} display={"flex"} flexDirection={"column"} alignContent={"center"}>
+                    {friendUsers &&
+                        friendUsers.map((u, i) =>
+                            <FriendUserCard key={i}
+                                            user={u}
+                                            refresh={refreshData}
                             />
                         )
-                }
+                    }
+                </Box>
+                <Divider/>
+                <Typography variant={"h6"} textAlign={"center"} color={"secondary"}>
+                    Received friendship requests
+                </Typography>
+                <Box m={1} display={"flex"} flexDirection={"column"} alignContent={"center"}>
+                    {pendingReceivedUsers &&
+                        pendingReceivedUsers.map((u, i) =>
+                            <PendingReceivedUserCard key={i}
+                                                     user={u}
+                                                     refresh={refreshData}
+                            />
+                        )
+                    }
+                </Box>
+                <Divider/>
+                <Typography variant={"h6"} textAlign={"center"} color={"secondary"}>
+                    Sent friendship requests
+                </Typography>
+                <Box m={1} display={"flex"} flexDirection={"column"} alignContent={"center"}>
+                    {pendingSentUsers &&
+                        pendingSentUsers.map((u, i) =>
+                            <PendingSentUserCard key={i}
+                                                 user={u}
+                                                 refresh={refreshData}
+                            />
+                        )
+                    }
+                </Box>
+                <Divider/>
+                <Typography variant={"h6"} textAlign={"center"} color={"secondary"}>
+                    All other users
+                </Typography>
+                <Box m={1} display={"flex"} flexDirection={"column"} alignContent={"center"}>
+                    <Box display={"flex"} justifyContent={"center"}>
+                        <TextField
+                            label="search for user"
+                            variant="outlined"
+                            onChange={event => setSearchString(event.target.value)}
+                        />
+                    </Box>
+                    {unrelatedUsers &&
+                        unrelatedUsers
+                            .filter(u => u.username.toLowerCase().includes(searchString.toLowerCase()))
+                            .map((u, i) =>
+                                <UnrelatedUserCard key={i}
+                                                   user={u}
+                                                   refresh={refreshData}
+                                />
+                            )
+                    }
+                </Box>
             </Box>
-        </Box>
+        </div>
     )
 }
