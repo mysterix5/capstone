@@ -18,8 +18,8 @@ public class RecordDbEntity {
     private String word;
     private String creator;
     private String tag;
-    private String cloudFileName;
     private Accessibility accessibility = Accessibility.PUBLIC;
+    private String cloudFileName;
 
     public RecordDbEntity(String word, String creator, String tag, String cloudFileName){
         this.word = word.toLowerCase();
