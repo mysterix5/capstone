@@ -1,7 +1,7 @@
-
-<img align="right" src="https://user-images.githubusercontent.com/28150646/184107911-817a4dbd-908f-40ac-9d47-5c8b8b90191c.mp4" height="500">
-
 # Vover
+
+<img align="right" width="300" src="https://user-images.githubusercontent.com/28150646/184717435-95dbd022-cda1-4c74-9d08-90af28772f61.gif">
+
 With Vover you can create an amazing roboter-like voice messages with the voices of your
 friends. 
 
