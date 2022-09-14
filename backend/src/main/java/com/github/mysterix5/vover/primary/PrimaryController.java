@@ -1,6 +1,7 @@
 package com.github.mysterix5.vover.primary;
 
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
+import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
 import com.github.mysterix5.vover.model.primary.PrimarySubmitDTO;
 import com.github.mysterix5.vover.model.other.VoverErrorDTO;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,15 @@ public class PrimaryController {
     public ResponseEntity<Object> onSubmittedText(@RequestBody PrimarySubmitDTO primarySubmitDTO, Principal principal) {
         log.info("Text submitted by user '{}': {}", principal.getName(), primarySubmitDTO.getText());
         try {
-            return ResponseEntity.ok().body(primaryService.onSubmittedText(primarySubmitDTO, principal.getName()));
+            PrimaryResponseDTO submittedTextReturn = primaryService.onSubmittedText(primarySubmitDTO, principal.getName());
+            // TODO print works?
+            log.info("user '{}' successfully gets submitted text return for '{}'", principal.getName(), submittedTextReturn.getTextWords());
+            return ResponseEntity.ok().body(submittedTextReturn);
         } catch (MultipleSubErrorException e) {
+            log.info("user '{}' failed submit text request, bad request", principal.getName(), e);
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         } catch (Exception e) {
+            log.info("user '{}' failed submit text request, server error", principal.getName(), e);
             return ResponseEntity.internalServerError().body(new VoverErrorDTO("Unknown error while handling your request :("));
         }
     }
@@ -37,13 +43,16 @@ public class PrimaryController {
         log.info("user '{}' requests an audio with '{}' words. ids: {}", principal.getName(), ids.size(), ids);
         try {
             byte[] mergedAudio = primaryService.getMergedAudio(ids, principal.getName());
+            log.info("user '{}' requests an audio successfully", principal.getName());
             httpResponse.setContentType("audio/mp3");
             httpResponse.getOutputStream().write(mergedAudio);
             return ResponseEntity.ok().build();
         } catch (MultipleSubErrorException e) {
+            log.info("user '{}' failed get audio request, bad request", principal.getName(), e);
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new VoverErrorDTO("Unknown error while handling your request :("));
+            log.info("user '{}' failed get audio^                         request, server error", principal.getName(), e);
+            return ResponseEntity.badRequest().body(new VoverErrorDTO  ("Unknown error while handling your request :("));
         }
     }
 }
