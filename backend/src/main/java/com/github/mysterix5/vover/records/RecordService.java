@@ -1,5 +1,8 @@
 package com.github.mysterix5.vover.records;
 
+import com.github.kokorin.jaffree.ffmpeg.FFmpeg;
+import com.github.kokorin.jaffree.ffmpeg.PipeInput;
+import com.github.kokorin.jaffree.ffmpeg.PipeOutput;
 import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.record.Accessibility;
@@ -25,7 +28,7 @@ public class RecordService {
     private final RecordMongoRepository recordRepository;
     private final CloudService cloudService;
 
-    public void addRecordToDb(String word, String creator, String tag, String accessibility, byte[] audio) throws IOException {
+    public void addRecordToDb(String word, String creator, String tag, String accessibility, InputStream audio) {
         if(!StringOperations.isWord(word)){
             throw new MultipleSubErrorException("The metadata you send with your record was not acceptable",
                     List.of("This is not a valid word", "only letters, no white spaces, numbers or special characters"));
@@ -36,8 +39,24 @@ public class RecordService {
         }
         String cloudFileName = createCloudFileName(word, creator, tag, accessibility);
         RecordDbEntity recordDbEntity = new RecordDbEntity(word, creator, tag, accessibility, cloudFileName);
-        cloudService.save(cloudFileName, audio);
-        recordRepository.save(recordDbEntity);
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
+        ) {
+            FFmpeg.atPath()
+                    .addInput(PipeInput.pumpFrom(audio))
+                    .addArguments("-codec:a", "libmp3lame")
+                    .addArguments("-qscale:a", "5")
+                    .addArguments("-ar", "44100")
+                    .addOutput(
+                            PipeOutput.pumpTo(byteArrayOutputStream)
+                                    .setFormat("mp3")
+                    )
+                    .execute();
+
+            cloudService.save(cloudFileName, byteArrayOutputStream.toByteArray());
+            recordRepository.save(recordDbEntity);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String createCloudFileName(String word, String creator, String tag, String accessibility) {
@@ -120,6 +139,9 @@ public class RecordService {
 
     public List<RecordDbEntity> findAllByUsername(String username){
         return recordRepository.findAllByCreator(username, PageRequest.ofSize(10000)).getContent();
+    }
+    public List<RecordDbEntity> findAll(){
+        return recordRepository.findAll();
     }
 
     public void changeRecordCreatorAndSetPrivate(RecordDbEntity recordDbEntity, String newCreator){
