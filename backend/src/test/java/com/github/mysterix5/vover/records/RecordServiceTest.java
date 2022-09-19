@@ -49,14 +49,17 @@ class RecordServiceTest {
         Accessibility accessibility = Accessibility.PUBLIC;
         RecordDbEntity recordDbEntity = new RecordDbEntity(word, creator, tag, word + "-" + creator + "-" + tag + "-" + accessibility + "-" + myUuid + ".mp3");
 
+        File publicFile = new File("src/test/resources/cloud_storage/public.mp3");
+        InputStream publicStream = new FileInputStream(publicFile);
+
         Mockito.when(mockedRecordRepo.save(notNull())).thenReturn(recordDbEntity);
         try (MockedStatic<UUID> mb = Mockito.mockStatic(UUID.class)) {
             mb.when(UUID::randomUUID).thenReturn(myUuid);
 
-            recordService.addRecordToDb(word, creator, tag, accessibility.toString(), null);
+            recordService.addRecordToDb(word, creator, tag, accessibility.toString(), publicStream);
 
             try {
-                Mockito.verify(mockedCloudService).save(recordDbEntity.getCloudFileName(), null);
+                Mockito.verify(mockedCloudService).save(notNull(), notNull());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

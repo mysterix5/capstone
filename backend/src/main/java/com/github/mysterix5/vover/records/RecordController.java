@@ -29,8 +29,7 @@ public class RecordController {
                                         Principal principal
     ) {
         try {
-            byte[] audioBytes = audio.getBytes();
-            recordService.addRecordToDb(word.toLowerCase(), principal.getName(), tag.toLowerCase(), accessibility, audioBytes);
+            recordService.addRecordToDb(word.toLowerCase(), principal.getName(), tag.toLowerCase(), accessibility, audio.getInputStream());
         }catch(MultipleSubErrorException e){
             return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
         }catch(Exception e){
