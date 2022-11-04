@@ -2,28 +2,44 @@ import {Box, Button, Grid, Link, Slider, styled, Typography} from "@mui/material
 import {Download, Pause, PlayArrow, Stop} from "@mui/icons-material";
 import {useRef, useState} from "react";
 
+function computeTime(progress: number, duration: number){
+    return progress * duration / 100.0;
+}
+
 interface CustomAudioPlayerProps {
     audiofile: string,
     download: boolean,
     slider: boolean,
-    autoPlay: boolean
+    autoPlay: boolean,
+    audioRange: number[]
 }
 
 export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
 
-    const [currentTime, setCurrentTime] = useState(0.0);
+    const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(1.0)
 
     let audioRef = useRef<HTMLAudioElement>(null);
 
     const onLoadedMetadata = () => {
+        console.log("on loaded metadata " + audioRef.current!.currentTime + "   " + props.audioRange)
+        console.log("duration: " + audioRef.current!.duration)
+        // audioRef.current!.load();
         setDuration(audioRef.current!.duration);
+        audioRef.current!.currentTime = computeTime(props.audioRange[0], audioRef.current!.duration);
         if (props.autoPlay) {
-            audioRef.current!.play()
+            playAudio();
         }
+        console.log("on loaded metadata after " + audioRef.current!.currentTime + "   " + props.audioRange)
     };
 
+    function onEnded(){
+        audioRef.current!.pause();
+        audioRef.current!.currentTime = computeTime(props.audioRange[0], audioRef.current!.duration);
+    }
+
     function playAudio() {
+        console.log("play audio: " + audioRef.current!.currentTime + " duration: " + audioRef.current!.duration)
         audioRef.current!.play();
     }
 
@@ -33,12 +49,13 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
 
     function stopAudio() {
         audioRef.current!.pause();
-        audioRef.current!.currentTime = 0;
-        setCurrentTime(0);
+        audioRef.current!.currentTime = computeTime(props.audioRange[0], audioRef.current!.duration);
+        setCurrentTime(audioRef.current!.currentTime);
     }
 
     function onPlaying() {
-        setCurrentTime(audioRef.current!.currentTime);
+        console.log("on playing: " + audioRef.current!.currentTime + " duration: " + audioRef.current!.duration)
+        // setCurrentTime(audioRef.current!.currentTime);
     }
 
     const TinyText = styled(Typography)({
@@ -56,8 +73,12 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
                 onLoadedMetadata={onLoadedMetadata}
                 onTimeUpdate={onPlaying}
                 controls={false}
+                preload={"auto"}
                 title={"vover.mp3"}
-            />
+                onEnded={onEnded}
+            >
+                <source src={props.audiofile!} type="audio/mpeg"/>
+            </audio>
             <Box mt={1} mb={1} mr={2} ml={2}>
                 <Box>
                     {audioRef && audioRef.current &&
@@ -117,7 +138,7 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
                         size="small"
                         value={currentTime}
                         step={0.0001}
-                        min={0.0}
+                        min={props.audioRange[0]}
                         max={duration}
                         aria-label="Small"
                         valueLabelDisplay="off"
@@ -142,4 +163,8 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
             }
         </Box>
     )
+}
+
+CustomAudioPlayer.defaultProps = {
+    audioRange: [0.0,100.0]
 }

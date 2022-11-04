@@ -62,8 +62,20 @@ export function apiGetSingleRecordedAudio(id: string) {
             responseType: 'arraybuffer'
         })
         .then((response) => response.data)
-        .then(data => window.URL.createObjectURL(new Blob([data])));
+        .then(data => new Blob([data]));
 }
+//
+// export function apiGetSingleRecordedAudio(id: string) {
+//     const url = `/api/record/audio/${id}`;
+//     console.log(`get: ${url}`);
+//     return axios.get(url,
+//         {
+//             headers: {Authorization: `Bearer ${localStorage.getItem('jwt')}`},
+//             responseType: 'arraybuffer'
+//         })
+//         .then((response) => response.data)
+//         .then(data => window.URL.createObjectURL(new Blob([data])));
+// }
 
 
 export function apiSaveAudio(word: string, tag: string, accessibility: string, audioBlob: Blob) {

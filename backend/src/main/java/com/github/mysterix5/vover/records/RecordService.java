@@ -44,8 +44,11 @@ public class RecordService {
             FFmpeg.atPath()
                     .addInput(PipeInput.pumpFrom(audio))
                     .addArguments("-codec:a", "libmp3lame")
-                    .addArguments("-qscale:a", "5")
                     .addArguments("-ar", "44100")
+                    .addArguments("-ac", "1")
+                    .addArguments("-b:a", "128k")
+                    .addArguments("-write_xing", "0")
+                    .addArguments("-id3v2_version", "0")
                     .addOutput(
                             PipeOutput.pumpTo(byteArrayOutputStream)
                                     .setFormat("mp3")

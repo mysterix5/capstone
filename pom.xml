@@ -11,13 +11,14 @@
 	<groupId>com.github.mysterix5</groupId>
 	<artifactId>vover-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>vover-parent</name>
+	<name>${project.name}-parent</name>
 	<packaging>pom</packaging>
-	
+
 	<properties>
 		<java.version>18</java.version>
+		<project.name>vover</project.name>
 	</properties>
-	
+
 	<modules>
 		<module>backend</module>
 	</modules>
@@ -49,5 +50,5 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 </project>

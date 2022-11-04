@@ -120,7 +120,6 @@ export default function Primary() {
     useEffect(() => {
         apiGetFriendsAndScope()
             .then(fs => {
-                // TODO change this after implementing scopes in frontend
                 setFriends(fs.friends);
                 setScope(fs.scope);
             })

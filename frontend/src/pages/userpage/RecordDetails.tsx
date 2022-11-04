@@ -19,6 +19,8 @@ import {
 } from "../../services/apiServices";
 import {AxiosError} from "axios";
 import CustomAudioPlayer from "../primary/CustomAudioPlayer";
+import RecordCutTest from "../../showAudioPeaks/RecordCutTest";
+import CustomAudioPlayer2 from "../../showAudioPeaks/CustomAudioPlayer2";
 
 interface RecordDetailsProps {
     record: RecordInfo,
@@ -33,7 +35,7 @@ export default function RecordDetails(props: RecordDetailsProps) {
     const [tag, setTag] = useState(props.record.tag);
     const [accessibility, setAccessibility] = useState(props.record.accessibility);
 
-    const [audioFile, setAudioFile] = useState<any>();
+    const [audioBlob, setAudioBlob] = useState<Blob>();
 
     const {setError, defaultApiResponseChecks} = useAuth();
 
@@ -62,7 +64,7 @@ export default function RecordDetails(props: RecordDetailsProps) {
 
     function getAudio() {
         apiGetSingleRecordedAudio(props.record.id)
-            .then(setAudioFile)
+            .then(setAudioBlob)
             .catch((err: AxiosError<ArrayBuffer>) => {
                     defaultApiResponseChecks(err);
                     if (err.response) {
@@ -143,8 +145,12 @@ export default function RecordDetails(props: RecordDetailsProps) {
                         <Grid item>
                             <Button onClick={getAudio}>get audio</Button>
                         </Grid>
-                        {audioFile &&
-                            <CustomAudioPlayer audiofile={audioFile} slider={false} download={false} autoPlay={true}/>
+                        {audioBlob &&
+                            <>
+                                {/*<CustomAudioPlayer audiofile={window.URL.createObjectURL(audioBlob)} slider={false} download={false} autoPlay={true}/>*/}
+                                <RecordCutTest blob={audioBlob}/>
+                                {/*<CustomAudioPlayer2 audioSrc={window.URL.createObjectURL(audioBlob)}/>*/}
+                            </>
                         }
                         <Grid item>
                             <Button onClick={deleteRecord}>delete</Button>
