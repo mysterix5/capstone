@@ -4,12 +4,10 @@ import { Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typograp
 import { useAuth } from "../../usermanagement/AuthProvider";
 import { apiSaveAudio } from "../../services/apiServices";
 import CustomAudioPlayer from "../primary/CustomAudioPlayer";
+import Waveform from "../primary/Waveform";
 
 const mimeType = "audio/webm";
-const mediaRecorderOptions = {
-    mimeType: "audio/webm",
-    audioBitsPerSecond: 128000,
-};
+const audioBitsPerSecond = 128000;
 
 export default function Record() {
     const [isRecording, setIsRecording] = useState(false);
@@ -55,7 +53,7 @@ export default function Record() {
         }
         setIsRecording(true);
         //create new Media recorder instance using the stream
-        const media = new MediaRecorder(stream, mediaRecorderOptions);
+        const media = new MediaRecorder(stream, {mimeType: mimeType, audioBitsPerSecond: audioBitsPerSecond,});
         //set the MediaRecorder instance to the mediaRecorder ref
         mediaRecorder.current = media;
         //invokes the start method to start the recording process
@@ -146,7 +144,8 @@ export default function Record() {
                         <Box mt={2}>
                             <div className="audio-container">
                                 <audio src={audio} controls></audio>
-                                <CustomAudioPlayer audiofile={audio} slider={true} download={false} autoPlay={false}/>
+                                <CustomAudioPlayer audiofile={audio} slider={true} download={false} autoPlay={false} />
+                                <Waveform audio={audio} />
                             </div>
                         </Box>
                         <Box component={"form"} onSubmit={saveAudio} sx={{ mt: 7 }}>
