@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
 import { Pause, PlayArrow, Stop } from "@mui/icons-material";
-import { Box, Slider, Typography } from '@mui/material';
+import { Box, Slider } from '@mui/material';
 
 interface WaveformProps {
     audio: string,
@@ -9,7 +9,7 @@ interface WaveformProps {
 
 const minDistance = 10;
 
-const Waveform = (props: WaveformProps) => {
+export default function Waveform(props: WaveformProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const waveSurferRef = useRef<WaveSurfer>();
     const [isPlaying, setIsPlaying] = useState(false);
@@ -19,7 +19,7 @@ const Waveform = (props: WaveformProps) => {
     const [start, setStart] = useState(0.0);
     const [end, setEnd] = useState(100.0);
 
-    const handleChange = (
+    const handleSliderChange = (
         event: Event,
         newValue: number | number[],
         activeThumb: number,
@@ -85,51 +85,50 @@ const Waveform = (props: WaveformProps) => {
             waveSurfer.on('ready', () => { waveSurferRef.current = waveSurfer })
             waveSurfer.on('ready', () => { setEndCut(waveSurfer.getDuration()) })
             waveSurfer.on('ready', () => { setDuration(waveSurfer.getDuration()) })
-            waveSurfer.on('finish', () => { setIsPlaying(false) })
+            waveSurfer.on('finish', () => { stop() })
 
 
             return () => {
                 waveSurfer.destroy()
             }
         }
+        // eslint-disable-next-line
     }, [props.audio])
 
-    return (<Box border={2} borderRadius={5} m={1}>
-        <Box mt={1} mb={1} mr={2} ml={2}>
-            {isPlaying ?
+    return (
+        <Box border={2} borderRadius={5} mt={2}>
+            <Box mt={1} mb={1} mr={2} ml={2}>
+                {isPlaying ?
+                    <button onClick={() => {
+                        pause();
+                    }} type="button"
+                    >
+                        <Pause />
+                    </button>
+                    :
+                    <button onClick={() => {
+                        play()
+                    }} type="button"
+                    >
+                        <PlayArrow />
+                    </button>
+                }
                 <button onClick={() => {
-                    pause();
+                    stop()
                 }} type="button"
                 >
-                    <Pause />
+                    <Stop />
                 </button>
-                :
-                <button onClick={() => {
-                    play()
-                }} type="button"
-                >
-                    <PlayArrow />
-                </button>
-            }
-            <button onClick={() => {
-                stop()
-            }} type="button"
-            >
-                <Stop />
-            </button>
-            <div ref={containerRef} />
+                <div ref={containerRef} />
                 <Slider
                     getAriaLabel={() => 'Minimum distance'}
                     value={[start, end]}
-                    onChange={handleChange}
+                    onChange={handleSliderChange}
                     valueLabelDisplay="auto"
                     // getAriaValueText={valuetext}
                     disableSwap
                 />
+            </Box>
         </Box>
-    </Box>
     )
 }
-
-
-export default Waveform
