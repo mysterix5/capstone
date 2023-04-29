@@ -29,11 +29,11 @@ public class RecordService {
     private final CloudService cloudService;
 
     public void addRecordToDb(String word, String creator, String tag, String accessibility, InputStream audio) {
-        if(!StringOperations.isWord(word)){
+        if (!StringOperations.isWord(word)) {
             throw new MultipleSubErrorException("The metadata you send with your record was not acceptable",
                     List.of("This is not a valid word", "only letters, no white spaces, numbers or special characters"));
         }
-        if(!StringOperations.isWord(tag)){
+        if (!StringOperations.isWord(tag)) {
             throw new MultipleSubErrorException("The metadata you send with your record was not acceptable",
                     List.of("This is not a valid tag", "only letters, no white spaces, numbers or special characters"));
         }
@@ -137,14 +137,15 @@ public class RecordService {
         }
     }
 
-    public List<RecordDbEntity> findAllByUsername(String username){
+    public List<RecordDbEntity> findAllByUsername(String username) {
         return recordRepository.findAllByCreator(username, PageRequest.ofSize(10000)).getContent();
     }
-    public List<RecordDbEntity> findAll(){
+
+    public List<RecordDbEntity> findAll() {
         return recordRepository.findAll();
     }
 
-    public void changeRecordCreatorAndSetPrivate(RecordDbEntity recordDbEntity, String newCreator){
+    public void changeRecordCreatorAndSetPrivate(RecordDbEntity recordDbEntity, String newCreator) {
         recordDbEntity.setCreator(newCreator);
         recordDbEntity.setAccessibility(Accessibility.PRIVATE);
 
@@ -157,5 +158,30 @@ public class RecordService {
         }
 
         recordRepository.save(recordDbEntity);
+    }
+
+    public void updateAudio(String username, String id, InputStream audio) {
+        RecordDbEntity record = recordRepository.findById(id).orElseThrow();
+        if (!record.getCreator().equals(username)) {
+            throw new RuntimeException("The audio file you requested is not yours. Don't try to hack me! :(");
+        }
+
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
+        ) {
+            FFmpeg.atPath()
+                    .addInput(PipeInput.pumpFrom(audio))
+                    .addArguments("-codec:a", "libmp3lame")
+                    .addArguments("-qscale:a", "5")
+                    .addArguments("-ar", "44100")
+                    .addOutput(
+                            PipeOutput.pumpTo(byteArrayOutputStream)
+                                    .setFormat("mp3")
+                    )
+                    .execute();
+
+            cloudService.save(record.getCloudFileName(), byteArrayOutputStream.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -43,6 +43,7 @@ export default function BatchRecord() {
         apiSaveAudio(word, tag, accessibility, audioBlob!)
             .then(() => {
                 setAudioBlob(undefined);
+                setAudio("");
                 if (recordIndex < wordArray.length - 1) {
                     setWord(wordArray[recordIndex + 1]);
                     setRecordIndex((ri) => ri + 1);
@@ -73,7 +74,7 @@ export default function BatchRecord() {
             <RecordInfo word={word} setWord={setWord} tag={tag} setTag={setTag} accessibility={accessibility} setAccessibility={setAccessibility} />
             <Record setAudio={setAudio} setAudioBlob={setAudioBlob} />
             {audio &&
-                <Waveform audio={audio} />
+                <Waveform audio={audio} setAudio={setAudio} setAudioBlob={setAudioBlob}/>
             }
             {audioBlob &&
                 <Grid component={"form"} justifyContent={"center"} onSubmit={saveAudio} sx={{ mt: 2 }}>

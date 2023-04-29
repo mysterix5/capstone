@@ -1,5 +1,5 @@
 import { useState, FormEvent } from "react";
-import { Button, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 
 import { useAuth } from "../../usermanagement/AuthProvider";
 import { apiSaveAudio } from "../../services/apiServices";
@@ -40,21 +40,12 @@ export default function RecordPage() {
             <Typography variant={"h4"} align={"center"} mb={2}>
                 Record a new word
             </Typography>
-            <Grid
-                container
-                alignItems={"center"}
-                alignContent={"center"}
-                flexDirection={"column"}
-            >
+            <Box>
                 <Grid mt={2}>
                     <Record setAudio={setAudio} setAudioBlob={setAudioBlob} />
                 </Grid>
                 {audio &&
-                    <Grid mt={2}>
-                        <div className="audio-container">
-                            <Waveform audio={audio} />
-                        </div>
-                    </Grid>
+                    <Waveform audio={audio} setAudio={setAudio} setAudioBlob={setAudioBlob}/>
                 }
                 {audioBlob &&
                     <Grid component={"form"} onSubmit={saveAudio} sx={{ mt: 2 }}>
@@ -66,7 +57,7 @@ export default function RecordPage() {
                         </Grid>
                     </Grid>
                 }
-            </Grid >
+                </Box>
         </>
     );
 };
