@@ -262,5 +262,40 @@ class RecordServiceTest {
             throw new RuntimeException(e);
         }
     }
+    @Test
+    void updateAudioFailsBecauseAudioIsNotFromUser() throws IOException {
+        // Setup
+        String username = "testuser";
+        String usernameDb = "dbuser";
+        String id = UUID.randomUUID().toString();
+        RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id(id).word("test").creator(usernameDb).tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
 
+        Mockito.when(mockedRecordRepo.findById(id)).thenReturn(Optional.of(recordDbEntity1));
+
+        File publicFile = new File("src/test/resources/cloud_storage/public.mp3");
+        InputStream newAudio = new FileInputStream(publicFile);
+
+        // Exercise
+        Assertions.assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> recordService.updateAudio(username, id, newAudio))
+                .withMessage("The audio file you requested is not yours. Don't try to hack me! :(");
+    }
+
+    @Test
+    void updateAudio() throws IOException {
+        // Setup
+        String username = "testuser";
+        String id = UUID.randomUUID().toString();
+        RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id(id).word("test").creator(username).tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
+
+        Mockito.when(mockedRecordRepo.findById(id)).thenReturn(Optional.of(recordDbEntity1));
+
+        File publicFile = new File("src/test/resources/cloud_storage/public.mp3");
+        InputStream newAudio = new FileInputStream(publicFile);
+
+        // Exercise
+        recordService.updateAudio(username, id, newAudio);
+
+        Mockito.verify(mockedCloudService).save(notNull(), notNull());
+    }
 }

@@ -62,9 +62,8 @@ export function apiGetSingleRecordedAudio(id: string) {
             responseType: 'arraybuffer'
         })
         .then((response) => response.data)
-        .then(data => window.URL.createObjectURL(new Blob([data])));
+        .then(data => new Blob([data]));
 }
-
 
 export function apiSaveAudio(word: string, tag: string, accessibility: string, audioBlob: Blob) {
     const formData = new FormData();
@@ -78,6 +77,25 @@ export function apiSaveAudio(word: string, tag: string, accessibility: string, a
     console.log(`post: ${url}: formdata: word=${word}, tag=${tag}, accessibility=${accessibility}, audiodata`);
 
     return axios.post(url,
+        formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        }
+    )
+}
+
+export function apiUpdateAudio(id: string, audioBlob: Blob) {
+    const formData = new FormData();
+
+    formData.append("audio", audioBlob);
+
+    const url = `/api/record/${id}`;
+    console.log(`put: ${url}, audiodata`);
+
+    return axios.put(url,
         formData,
         {
             headers: {

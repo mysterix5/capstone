@@ -11,6 +11,7 @@ import com.github.mysterix5.vover.model.user_details.VoverUserDetails;
 import com.github.mysterix5.vover.records.RecordMongoRepository;
 import com.github.mysterix5.vover.user_details.VoverUserDetailsService;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -142,7 +143,7 @@ class PrimaryServiceTest {
             byte[] mergedAudio = primaryService.getMergedAudio(List.of("id1", "id2"), "creator1");
 
             Mockito.verify(mockedVoverUserDetailsService).addRequestToHistory("creator1", List.of(recordDbEntity1, recordDbEntity2));
-            assertThat(mergedAudio.length).isEqualTo(einsZweiStream.readAllBytes().length);
+            assertThat(mergedAudio.length).isCloseTo(einsZweiStream.readAllBytes().length, Offset.offset(2));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

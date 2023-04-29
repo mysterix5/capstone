@@ -1,6 +1,6 @@
-import {Box, Button, Grid, Link, Slider, styled, Typography} from "@mui/material";
-import {Download, Pause, PlayArrow, Stop} from "@mui/icons-material";
-import {useRef, useState} from "react";
+import { Box, Button, Grid, Link, Slider, styled, Typography } from "@mui/material";
+import { Download, Pause, PlayArrow, Stop } from "@mui/icons-material";
+import { useRef, useState } from "react";
 
 interface CustomAudioPlayerProps {
     audiofile: string,
@@ -17,9 +17,17 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
     let audioRef = useRef<HTMLAudioElement>(null);
 
     const onLoadedMetadata = () => {
-        setDuration(audioRef.current!.duration);
+        if (isFinite(audioRef.current!.duration)) {
+            setDuration(audioRef.current!.duration);
+        }
         if (props.autoPlay) {
             audioRef.current!.play()
+        }
+    };
+
+    const onDurationChange = () => { 
+        if (isFinite(audioRef.current!.duration)) {
+            setDuration(audioRef.current!.duration); 
         }
     };
 
@@ -54,6 +62,7 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
                 ref={audioRef}
                 src={props.audiofile!}
                 onLoadedMetadata={onLoadedMetadata}
+                onDurationChange={onDurationChange}
                 onTimeUpdate={onPlaying}
                 controls={false}
                 title={"vover.mp3"}
@@ -65,31 +74,31 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
                             {audioRef.current!.paused ?
                                 <Grid item>
                                     <Button onClick={playAudio}
-                                            variant="contained"
-                                            size="small"
-                                            sx={{minWidth: "45px"}}
+                                        variant="contained"
+                                        size="small"
+                                        sx={{ minWidth: "45px" }}
                                     >
-                                        <PlayArrow/>
+                                        <PlayArrow />
                                     </Button>
                                 </Grid>
                                 :
                                 <Grid item>
                                     <Button onClick={pauseAudio}
-                                            variant="contained"
-                                            size="small"
-                                            sx={{minWidth: "45px"}}
+                                        variant="contained"
+                                        size="small"
+                                        sx={{ minWidth: "45px" }}
                                     >
-                                        <Pause/>
+                                        <Pause />
                                     </Button>
                                 </Grid>
                             }
                             <Grid item ml={1}>
                                 <Button onClick={stopAudio}
-                                        variant="contained"
-                                        size="small"
-                                        sx={{minWidth: "45px"}}
+                                    variant="contained"
+                                    size="small"
+                                    sx={{ minWidth: "45px" }}
                                 >
-                                    <Stop/>
+                                    <Stop />
                                 </Button>
                             </Grid>
                             {props.download &&
@@ -101,9 +110,9 @@ export default function CustomAudioPlayer(props: CustomAudioPlayerProps) {
                                         href={props.audiofile}
                                         download="vover.mp3"
                                         datatype={"audio/mp3"}
-                                        sx={{minWidth: "45px"}}
+                                        sx={{ minWidth: "45px" }}
                                     >
-                                        <Download/>
+                                        <Download />
                                     </Button>
                                 </Grid>
                             }

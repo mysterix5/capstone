@@ -39,6 +39,22 @@ public class RecordController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> updateAudio(@PathVariable String id,
+                                          @RequestParam("audio") MultipartFile audio,
+                                        Principal principal
+    ) {
+        try {
+            recordService.updateAudio(principal.getName(), id, audio.getInputStream());
+        }catch(MultipleSubErrorException e){
+            return ResponseEntity.badRequest().body(new VoverErrorDTO(e));
+        }catch(Exception e){
+            return ResponseEntity.internalServerError().body(new VoverErrorDTO("Something went wrong while saving your recording"));
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/audio/{id}")
     public ResponseEntity<Object> getSingleAudio(@PathVariable String id, HttpServletResponse httpResponse, Principal principal){
         try {

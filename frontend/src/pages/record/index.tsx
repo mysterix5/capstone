@@ -1,54 +1,21 @@
-import {Recorder} from "vmsg";
-import {Box, Button, Grid, TextField, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
-import {FormEvent, MouseEvent, useEffect, useState} from "react";
-import {apiSaveAudio} from "../../services/apiServices";
-import {useAuth} from "../../usermanagement/AuthProvider";
-import CustomAudioPlayer from "../primary/CustomAudioPlayer";
+import { useState, FormEvent } from "react";
+import { Box, Button, Grid, Typography } from "@mui/material";
 
-const recorder = new Recorder({
-    wasmURL: "https://unpkg.com/vmsg@0.4.0/vmsg.wasm"
-});
+import { useAuth } from "../../usermanagement/AuthProvider";
+import { apiSaveAudio } from "../../services/apiServices";
+import Waveform from "./Waveform";
+import RecordInfo from "./RecordInfo";
+import Record from "./Record";
 
-export default function Record() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [isRecording, setIsRecording] = useState(false);
-
-    const [audioLink, setAudioLink] = useState("");
+export default function RecordPage() {
+    const [audio, setAudio] = useState<string>("");
     const [audioBlob, setAudioBlob] = useState<Blob>();
 
     const [word, setWord] = useState("");
     const [tag, setTag] = useState("normal");
     const [accessibility, setAccessibility] = useState("PUBLIC");
 
-    const {setError, defaultApiResponseChecks} = useAuth();
-
-    useEffect(() => {
-        recorder.initAudio();
-        recorder.initWorker();
-    }, [])
-
-    const record = async () => {
-        setIsLoading(true);
-
-        if (isRecording) {
-            const blob = await recorder.stopRecording();
-            setIsLoading(false);
-            setIsRecording(false);
-            setAudioBlob(blob);
-            setAudioLink(URL.createObjectURL(blob));
-        } else {
-            try {
-                await recorder.initAudio();
-                await recorder.initWorker();
-                recorder.startRecording();
-                setIsLoading(false);
-                setIsRecording(true);
-            } catch (e) {
-                console.error(e);
-                setIsLoading(false);
-            }
-        }
-    };
+    const { setError, defaultApiResponseChecks } = useAuth();
 
     function saveAudio(event: FormEvent) {
         event.preventDefault();
@@ -56,10 +23,11 @@ export default function Record() {
 
         apiSaveAudio(word, tag, accessibility, audioBlob!)
             .then(() => {
-                setAudioLink("");
+                setAudio("");
                 setAudioBlob(undefined);
                 setWord("");
-            }).catch((err) => {
+            })
+            .catch((err) => {
                 defaultApiResponseChecks(err);
                 if (err.response) {
                     setError(err.response.data);
@@ -67,81 +35,29 @@ export default function Record() {
             });
     }
 
-    const handleAccessibility = (
-        event: MouseEvent<HTMLElement>,
-        newAccessibility: string,
-    ) => {
-        setAccessibility(newAccessibility);
-    };
-
     return (
         <>
             <Typography variant={"h4"} align={"center"} mb={2}>
-                Record new words
+                Record a new word
             </Typography>
-            <Grid container alignItems={"center"} alignContent={"center"} flexDirection={"column"}>
-                <Grid item xs={4}>
-                    <Button variant="contained" disabled={isLoading} onClick={record}>
-                        {isRecording ? "Stop" : "Record"}
-                    </Button>
+            <Box>
+                <Grid mt={2}>
+                    <Record setAudio={setAudio} setAudioBlob={setAudioBlob} />
                 </Grid>
-                <Box mt={2}>
-                    {audioLink &&
-                        <CustomAudioPlayer audiofile={audioLink} slider={true} download={false} autoPlay={false}/>
-                    }
+                {audio &&
+                    <Waveform audio={audio} setAudio={setAudio} setAudioBlob={setAudioBlob}/>
+                }
+                {audioBlob &&
+                    <Grid component={"form"} onSubmit={saveAudio} sx={{ mt: 2 }}>
+                        <RecordInfo word={word} setWord={setWord} tag={tag} setTag={setTag} accessibility={accessibility} setAccessibility={setAccessibility} />
+                        <Grid item m={0.5}>
+                            <Button type="submit" variant="contained">
+                                save audio to db
+                            </Button>
+                        </Grid>
+                    </Grid>
+                }
                 </Box>
-                <div>
-                    {
-                        audioBlob &&
-                        <Box component={"form"} onSubmit={saveAudio} sx={{mt: 7}}>
-                            <Grid item m={0.5}>
-                                <TextField
-                                    label="Word"
-                                    variant="outlined"
-                                    value={word}
-                                    placeholder={"your word"}
-                                    onChange={event => setWord(event.target.value)}
-                                />
-                            </Grid>
-                            <Grid item m={0.5}>
-                                <TextField
-                                    label="Tag"
-                                    variant="outlined"
-                                    value={tag}
-                                    placeholder={tag}
-                                    onChange={event => setTag(event.target.value)}
-                                />
-                            </Grid>
-                            <Grid item m={0.5}>
-                                <ToggleButtonGroup
-                                    value={accessibility}
-                                    size={"small"}
-                                    exclusive
-                                    onChange={handleAccessibility}
-                                >
-                                    <ToggleButton value={"PUBLIC"}>
-                                        public
-                                    </ToggleButton>
-                                    <ToggleButton value={"FRIENDS"}>
-                                        friends
-                                    </ToggleButton>
-                                    <ToggleButton value={"PRIVATE"}>
-                                        private
-                                    </ToggleButton>
-                                </ToggleButtonGroup>
-                            </Grid>
-                            <Grid item m={0.5}>
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                >
-                                    save audio to db
-                                </Button>
-                            </Grid>
-                        </Box>
-                    }
-                </div>
-            </Grid>
         </>
-    )
-}
+    );
+};
