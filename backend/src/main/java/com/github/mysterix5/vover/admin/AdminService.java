@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -45,15 +45,15 @@ public class AdminService {
         var records = recordService.findAll();
 
         for (var r : records) {
-            var recordInputStream = cloudService.loadMultipleMp3FromCloud(List.of(r.getCloudFileName())).get(0);
-            log.info("record: {}", r.getCloudFileName());
-
-            ByteArrayOutputStream byteArrayOutputStream = audioProcessingService.processAudio(recordInputStream);
-
             try {
+                log.info("record: {}", r.getCloudFileName());
+                var recordInputStream = new ByteArrayInputStream(cloudService.find(r.getCloudFileName()));
+
+                ByteArrayOutputStream byteArrayOutputStream = audioProcessingService.processAudio(recordInputStream);
+
                 cloudService.save(r.getCloudFileName(), byteArrayOutputStream.toByteArray());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                log.error(e.toString());
             }
         }
     }
