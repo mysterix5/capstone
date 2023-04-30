@@ -1,8 +1,6 @@
 package com.github.mysterix5.vover.primary;
 
-import com.github.kokorin.jaffree.ffmpeg.FFmpeg;
-import com.github.kokorin.jaffree.ffmpeg.PipeInput;
-import com.github.kokorin.jaffree.ffmpeg.PipeOutput;
+import com.github.mysterix5.vover.audio_processing.AudioProcessingService;
 import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.primary.PrimaryResponseDTO;
@@ -17,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +26,7 @@ public class PrimaryService {
     private final RecordMongoRepository recordRepository;
     private final CloudService cloudService;
     private final VoverUserDetailsService voverUserDetailsService;
+    private final AudioProcessingService audioProcessingService;
 
     public PrimaryResponseDTO onSubmittedText(PrimarySubmitDTO primarySubmitDTO, String username) {
         List<String> wordList = StringOperations.splitText(primarySubmitDTO.getText());
@@ -149,7 +146,7 @@ public class PrimaryService {
                 .toList();
         try {
             List<InputStream> audioInputStreams = cloudService.loadMultipleMp3FromCloud(filePaths);
-            byte[] merged = mergeAudioWithJaffree(audioInputStreams);
+            byte[] merged = audioProcessingService.mergeAudioWithJaffree(audioInputStreams);
             voverUserDetailsService.addRequestToHistory(username,
                     ids.stream()
                             .map(id -> recordDbEntities.stream()
@@ -161,25 +158,6 @@ public class PrimaryService {
             return merged;
         } catch (Exception e) {
             throw new MultipleSubErrorException("An error occurred while creating your audio file");
-        }
-    }
-
-    private byte[] mergeAudioWithJaffree(List<InputStream> inputStreams) {
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
-        ) {
-            for (InputStream inputStream : inputStreams) {
-                FFmpeg.atPath()
-                        .addInput(PipeInput.pumpFrom(inputStream))
-                        .addOutput(
-                                PipeOutput.pumpTo(byteArrayOutputStream)
-                                        .setFormat("mp3")
-                        )
-                        .execute();
-            }
-
-            return byteArrayOutputStream.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

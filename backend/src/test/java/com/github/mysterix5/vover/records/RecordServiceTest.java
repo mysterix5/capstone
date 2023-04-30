@@ -1,5 +1,6 @@
 package com.github.mysterix5.vover.records;
 
+import com.github.mysterix5.vover.audio_processing.AudioProcessingService;
 import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.record.Accessibility;
 import com.github.mysterix5.vover.model.record.RecordManagementDTO;
@@ -28,13 +29,15 @@ class RecordServiceTest {
 
     RecordMongoRepository mockedRecordRepo;
     CloudService mockedCloudService;
+    AudioProcessingService audioProcessingService;
     RecordService recordService;
 
     @BeforeEach
     void setupUserService() {
         mockedRecordRepo = Mockito.mock(RecordMongoRepository.class);
         mockedCloudService = Mockito.mock(CloudService.class);
-        recordService = new RecordService(mockedRecordRepo, mockedCloudService);
+        audioProcessingService = new AudioProcessingService();
+        recordService = new RecordService(mockedRecordRepo, mockedCloudService, audioProcessingService);
     }
 
     // TODO only single and valid records allowed

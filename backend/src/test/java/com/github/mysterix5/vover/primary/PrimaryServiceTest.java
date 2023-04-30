@@ -1,5 +1,6 @@
 package com.github.mysterix5.vover.primary;
 
+import com.github.mysterix5.vover.audio_processing.AudioProcessingService;
 import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.primary.PrimarySubmitDTO;
@@ -38,7 +39,8 @@ class PrimaryServiceTest {
                 ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
-        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
+        AudioProcessingService mockedAudioProcessingService = Mockito.mock(AudioProcessingService.class);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService, mockedAudioProcessingService);
 
         VoverUserDetails userDetails = new VoverUserDetails();
         userDetails.setUsername("user");
@@ -67,7 +69,8 @@ class PrimaryServiceTest {
                 ));
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
-        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
+        AudioProcessingService mockedAudioProcessingService = Mockito.mock(AudioProcessingService.class);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService, mockedAudioProcessingService);
 
         VoverUserDetails userDetails = new VoverUserDetails();
         userDetails.setUsername("user");
@@ -109,7 +112,8 @@ class PrimaryServiceTest {
         VoverUserDetails userDetails = new VoverUserDetails();
         userDetails.setUsername("creator1");
         Mockito.when(mockedVoverUserDetailsService.getUserDetails("creator1")).thenReturn(userDetails);
-        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
+        AudioProcessingService mockedAudioProcessingService = Mockito.mock(AudioProcessingService.class);
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService, mockedAudioProcessingService);
 
         Assertions.assertThatExceptionOfType(MultipleSubErrorException.class)
                 .isThrownBy(() -> primaryService.getMergedAudio(List.of("id1", "id2"), "creator1"))
@@ -125,7 +129,8 @@ class PrimaryServiceTest {
 
         CloudService mockedCloudService = Mockito.mock(CloudService.class);
         VoverUserDetailsService mockedVoverUserDetailsService = Mockito.mock(VoverUserDetailsService.class);
-        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService);
+        AudioProcessingService audioProcessingService = new AudioProcessingService();
+        PrimaryService primaryService = new PrimaryService(mockedRecordRepo, mockedCloudService, mockedVoverUserDetailsService, audioProcessingService);
 
         File einsFile = new File("src/test/resources/cloud_storage/eins.mp3");
         File zweiFile = new File("src/test/resources/cloud_storage/zwei.mp3");

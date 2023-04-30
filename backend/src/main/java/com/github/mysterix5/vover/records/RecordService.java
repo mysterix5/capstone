@@ -1,8 +1,6 @@
 package com.github.mysterix5.vover.records;
 
-import com.github.kokorin.jaffree.ffmpeg.FFmpeg;
-import com.github.kokorin.jaffree.ffmpeg.PipeInput;
-import com.github.kokorin.jaffree.ffmpeg.PipeOutput;
+import com.github.mysterix5.vover.audio_processing.AudioProcessingService;
 import com.github.mysterix5.vover.cloud_storage.CloudService;
 import com.github.mysterix5.vover.model.other.MultipleSubErrorException;
 import com.github.mysterix5.vover.model.record.Accessibility;
@@ -27,6 +25,7 @@ import java.util.UUID;
 public class RecordService {
     private final RecordMongoRepository recordRepository;
     private final CloudService cloudService;
+    private final AudioProcessingService audioProcessingService;
 
     public void addRecordToDb(String word, String creator, String tag, String accessibility, InputStream audio) {
         if (!StringOperations.isWord(word)) {
@@ -39,19 +38,10 @@ public class RecordService {
         }
         String cloudFileName = createCloudFileName(word, creator, tag, accessibility);
         RecordDbEntity recordDbEntity = new RecordDbEntity(word, creator, tag, accessibility, cloudFileName);
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
-        ) {
-            FFmpeg.atPath()
-                    .addInput(PipeInput.pumpFrom(audio))
-                    .addArguments("-codec:a", "libmp3lame")
-                    .addArguments("-qscale:a", "5")
-                    .addArguments("-ar", "44100")
-                    .addOutput(
-                            PipeOutput.pumpTo(byteArrayOutputStream)
-                                    .setFormat("mp3")
-                    )
-                    .execute();
 
+        ByteArrayOutputStream byteArrayOutputStream = audioProcessingService.processAudio(audio);
+
+        try {
             cloudService.save(cloudFileName, byteArrayOutputStream.toByteArray());
             recordRepository.save(recordDbEntity);
         } catch (IOException e) {
@@ -166,19 +156,9 @@ public class RecordService {
             throw new RuntimeException("The audio file you requested is not yours. Don't try to hack me! :(");
         }
 
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
-        ) {
-            FFmpeg.atPath()
-                    .addInput(PipeInput.pumpFrom(audio))
-                    .addArguments("-codec:a", "libmp3lame")
-                    .addArguments("-qscale:a", "5")
-                    .addArguments("-ar", "44100")
-                    .addOutput(
-                            PipeOutput.pumpTo(byteArrayOutputStream)
-                                    .setFormat("mp3")
-                    )
-                    .execute();
+        ByteArrayOutputStream byteArrayOutputStream = audioProcessingService.processAudio(audio);
 
+        try {
             cloudService.save(record.getCloudFileName(), byteArrayOutputStream.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException(e);

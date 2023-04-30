@@ -132,7 +132,12 @@ export default function Waveform(props: WaveformProps) {
                 bufferSource.connect(mediaStreamDestination);
                 bufferSource.start();
 
-                const mediaRecorder = new MediaRecorder(mediaStreamDestination.stream);
+                const options = {
+                    mimeType: "audio/webm",
+                    audioBitsPerSecond: 128000,
+                };
+
+                const mediaRecorder = new MediaRecorder(mediaStreamDestination.stream, options);
                 const chunks: BlobPart[] = [];
 
                 mediaRecorder.ondataavailable = (event) => {
@@ -163,18 +168,15 @@ export default function Waveform(props: WaveformProps) {
     }
 
     function copyBuffer(fromBuffer: AudioBuffer, fromStart: number, fromEnd: number) {
-        var channels = fromBuffer.numberOfChannels
         var sampleRate = fromBuffer.sampleRate
         var frameCount = (fromEnd - fromStart) * sampleRate
-        var newBuffer = new AudioContext().createBuffer(channels, frameCount, sampleRate)
-        for (var i = 0; i < fromBuffer.numberOfChannels; i++) {
-            var fromChanData = fromBuffer.getChannelData(i)
-            var toChanData = new Float32Array(frameCount);
-            for (var j = 0, f = Math.round(fromStart * sampleRate), t = 0; j < frameCount; j++, f++, t++) {
-                toChanData[t] = fromChanData[f]
-            }
-            newBuffer.copyToChannel(toChanData, i);
+        var newBuffer = new AudioContext().createBuffer(1, frameCount, sampleRate)
+        var fromChanData = fromBuffer.getChannelData(0)
+        var toChanData = new Float32Array(frameCount);
+        for (var j = 0, f = Math.round(fromStart * sampleRate), t = 0; j < frameCount; j++, f++, t++) {
+            toChanData[t] = fromChanData[f]
         }
+        newBuffer.copyToChannel(toChanData, 0);
         return newBuffer;
     }
 
