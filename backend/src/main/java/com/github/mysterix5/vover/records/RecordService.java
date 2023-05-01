@@ -64,7 +64,7 @@ public class RecordService {
 
     public RecordPage getRecordPage(String username, int page, int size, String searchTerm) {
         Pageable paging = PageRequest.of(page, size);
-        Page<RecordDbEntity> resultPage = recordRepository.findAllByCreator(username, paging);
+        Page<RecordDbEntity> resultPage = recordRepository.findByCreatorAndWordLike(username, searchTerm, paging);
 
         return RecordPage.builder()
                 .page(resultPage.getNumber())
@@ -128,7 +128,7 @@ public class RecordService {
     }
 
     public List<RecordDbEntity> findAllByUsername(String username) {
-        return recordRepository.findAllByCreator(username, PageRequest.ofSize(10000)).getContent();
+        return recordRepository.findAllByCreator(username);
     }
 
     public List<RecordDbEntity> findAll() {

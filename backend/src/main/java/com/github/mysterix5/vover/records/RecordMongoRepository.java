@@ -12,7 +12,6 @@ import java.util.Set;
 @Repository
 public interface RecordMongoRepository extends MongoRepository<RecordDbEntity, String> {
     List<RecordDbEntity> findByWordIn(Set<String> words);
-
-
-    Page<RecordDbEntity> findAllByCreator(String creator, Pageable paging);
+    List<RecordDbEntity> findAllByCreator(String creator);
+    Page<RecordDbEntity> findByCreatorAndWordLike(String creator, String word, Pageable paging);
 }

@@ -9,8 +9,11 @@ import com.github.mysterix5.vover.model.record.RecordDbEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -25,17 +28,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.ArgumentMatchers.notNull;
 
+@ExtendWith(MockitoExtension.class)
 class RecordServiceTest {
-
+    @Mock
     RecordMongoRepository mockedRecordRepo;
+    @Mock
     CloudService mockedCloudService;
     AudioProcessingService audioProcessingService;
     RecordService recordService;
 
     @BeforeEach
     void setupUserService() {
-        mockedRecordRepo = Mockito.mock(RecordMongoRepository.class);
-        mockedCloudService = Mockito.mock(CloudService.class);
         audioProcessingService = new AudioProcessingService();
         recordService = new RecordService(mockedRecordRepo, mockedCloudService, audioProcessingService);
     }
@@ -74,17 +77,17 @@ class RecordServiceTest {
     void getRecordPage() {
         int page = 0;
         int size = 2;
-        String searchTerm = "";
-        Pageable paging = PageRequest.of(page, size);
 
+        String searchTerm = "";
         String username = "1";
 
         RecordDbEntity recordDbEntity1 = RecordDbEntity.builder().id("id1").word("test").creator("creator1").tag("tag1").cloudFileName("test.mp3").accessibility(Accessibility.PUBLIC).build();
         RecordDbEntity recordDbEntity2 = RecordDbEntity.builder().id("id2").word("eins").creator("creator2").tag("tag2").cloudFileName("eins.mp3").accessibility(Accessibility.PUBLIC).build();
 
+        Pageable paging = PageRequest.of(page, size);
         Page<RecordDbEntity> resultPage = new PageImpl<>(List.of(recordDbEntity1, recordDbEntity2), paging, 2);
 
-        Mockito.when(mockedRecordRepo.findAllByCreator(username, paging)).thenReturn(resultPage);
+        Mockito.when(mockedRecordRepo.findByCreatorAndWordLike(username, searchTerm, paging)).thenReturn(resultPage);
 
         RecordPage recordPage = recordService.getRecordPage(username, page, size, searchTerm);
 
@@ -265,6 +268,7 @@ class RecordServiceTest {
             throw new RuntimeException(e);
         }
     }
+
     @Test
     void updateAudioFailsBecauseAudioIsNotFromUser() throws IOException {
         // Setup
