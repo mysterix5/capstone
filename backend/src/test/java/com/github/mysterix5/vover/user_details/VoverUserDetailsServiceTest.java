@@ -31,20 +31,17 @@ class VoverUserDetailsServiceTest {
 
         VoverUserDetails testUserDetails = new VoverUserDetails(username);
 
+        var time = LocalDateTime.now();
+        HistoryEntry historyEntry = new HistoryEntry(null, "ein kleiner test", List.of("id1", "id2", "id3"), time);
+
         Mockito.when(mockedUserDetailsRepository.findById(username)).thenReturn(Optional.of(testUserDetails));
 
         try (MockedStatic<LocalDateTime> mb = Mockito.mockStatic(LocalDateTime.class)) {
-            var time = LocalDateTime.now();
-            mb.when(LocalDateTime::now).thenReturn(time);
-
-            HistoryEntry historyEntry = new HistoryEntry(null, "ein kleiner test", List.of("id1", "id2", "id3"), time);
+            mb.when(LocalDateTime::now).thenReturn(time).thenReturn(time);
 
             voverUserDetailsService.addRequestToHistory(username, records);
 
-            var expected = new VoverUserDetails(username);
-            expected.getHistory().add("dummyid");
-
-            Mockito.verify(mockedUserDetailsRepository).save(expected);
+            Mockito.verify(mockedUserDetailsRepository).save(testUserDetails);
             Mockito.verify(mockedHistoryService).save(testUserDetails, historyEntry);
         }
     }
