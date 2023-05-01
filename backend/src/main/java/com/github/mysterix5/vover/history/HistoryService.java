@@ -38,6 +38,6 @@ public class HistoryService {
     }
 
     public List<HistoryEntry> getAllByIds(List<String> historyIds) {
-        return historyRepository.findAllByIdIn(historyIds, Sort.by(Sort.Direction.ASC, "requestTime"));
+        return historyRepository.findAllByIdIn(historyIds, Sort.by(Sort.Direction.DESC, "requestTime"));
     }
 }

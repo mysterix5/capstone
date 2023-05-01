@@ -1,5 +1,6 @@
 package com.github.mysterix5.vover.model.user_details;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class HistoryEntry {
     private String id;
     private String text;
     private List<String> choices;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime requestTime;
 
     public boolean sameRequest(HistoryEntry historyEntry) {
