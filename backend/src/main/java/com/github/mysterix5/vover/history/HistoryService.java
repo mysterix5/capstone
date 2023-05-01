@@ -26,10 +26,11 @@ public class HistoryService {
                     h.setRequestTime(LocalDateTime.now());
                     historyRepository.save(h);
                 },
-                () -> historyRepository.save(historyEntry)
+                () -> {
+                    historyRepository.save(historyEntry);
+                    userDetails.getHistory().add(historyEntry.getId());
+                }
         );
-
-        userDetails.getHistory().add(historyEntry.getId());
     }
 
     public HistoryEntry getById(String id) {

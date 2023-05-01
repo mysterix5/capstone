@@ -38,8 +38,6 @@ class VoverUserDetailsServiceTest {
             mb.when(LocalDateTime::now).thenReturn(time);
 
             HistoryEntry historyEntry = new HistoryEntry(null, "ein kleiner test", List.of("id1", "id2", "id3"), time);
-            HistoryEntry historyEntryReturnFromSave = new HistoryEntry("dummyid", "ein kleiner test", List.of("id1", "id2", "id3"), time);
-            Mockito.when(mockedHistoryService.save(historyEntry)).thenReturn(historyEntryReturnFromSave);
 
             voverUserDetailsService.addRequestToHistory(username, records);
 
@@ -47,7 +45,7 @@ class VoverUserDetailsServiceTest {
             expected.getHistory().add("dummyid");
 
             Mockito.verify(mockedUserDetailsRepository).save(expected);
-
+            Mockito.verify(mockedHistoryService).save(testUserDetails, historyEntry);
         }
     }
 
@@ -58,7 +56,6 @@ class VoverUserDetailsServiceTest {
         VoverUserDetailsService voverUserDetailsService = new VoverUserDetailsService(mockedUserDetailsRepository, mockedHistoryService);
 
         String username = "user";
-        List<String> words = List.of("ein", "kleiner", "test");
         List<HistoryEntry> history = List.of(new HistoryEntry(
                 "testid",
                 "ein kleiner test",
