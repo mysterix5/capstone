@@ -16,7 +16,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping("/userdetails")
-    public void ensureUserDetailsForAllUsers(){
+    public void ensureUserDetailsForAllUsers() {
         log.info("ADMIN: ensure user details for all users");
         adminService.ensureUserDetailsForAllUsers();
     }
@@ -25,16 +25,24 @@ public class AdminController {
      * A strange bug occurred where one users audio recordings couldnt be mixed with recordings from other people.
      * The audio must be somehow corrupted or recorded with a total different codec setting.
      * This way i save the audio on a debug account for later debugging but remove them from the public db.
-     * @param recordingsTransferDTO
      */
     @PostMapping("/transferrecordings")
     public void transferAllUserRecordingsToBugfixUser(@RequestBody RecordingsTransferDTO recordingsTransferDTO) {
         adminService.transferAllUserRecordingsToBugfixUser(recordingsTransferDTO.getBuggyUser(), recordingsTransferDTO.getBugfixUser());
     }
 
+    /**
+     * execute FFMpeg audio processing on all records
+     */
     @PutMapping("/changecodec")
-    public void changeCodecToStandard(){
+    public void changeCodecToStandard() {
         log.info("ADMIN: change codec of all records to standard");
         adminService.changeCodecToStandard();
+    }
+
+    @PutMapping("/history-cleanup")
+    public void historyCleanup() {
+        log.info("ADMIN: cleanup history");
+        adminService.historyCleanup();
     }
 }
