@@ -9,8 +9,11 @@ import com.github.mysterix5.vover.model.record.RecordDbEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -25,17 +28,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.ArgumentMatchers.notNull;
 
+@ExtendWith(MockitoExtension.class)
 class RecordServiceTest {
-
+    @Mock
     RecordMongoRepository mockedRecordRepo;
+    @Mock
     CloudService mockedCloudService;
     AudioProcessingService audioProcessingService;
     RecordService recordService;
 
     @BeforeEach
     void setupUserService() {
-        mockedRecordRepo = Mockito.mock(RecordMongoRepository.class);
-        mockedCloudService = Mockito.mock(CloudService.class);
         audioProcessingService = new AudioProcessingService();
         recordService = new RecordService(mockedRecordRepo, mockedCloudService, audioProcessingService);
     }
@@ -265,6 +268,7 @@ class RecordServiceTest {
             throw new RuntimeException(e);
         }
     }
+
     @Test
     void updateAudioFailsBecauseAudioIsNotFromUser() throws IOException {
         // Setup
