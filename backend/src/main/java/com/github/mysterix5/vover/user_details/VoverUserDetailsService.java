@@ -32,11 +32,10 @@ public class VoverUserDetailsService {
         historyEntry.setChoices(ids);
         historyEntry.setRequestTime(LocalDateTime.now());
 
-        historyEntry = historyService.save(historyEntry);
-
         VoverUserDetails voverUserDetails = getUserDetails(username);
-        voverUserDetails.getHistory().add(historyEntry.getId());
+        historyService.save(voverUserDetails, historyEntry);
         userDetailsRepository.save(voverUserDetails);
+
         log.info("text '{}' is added to history of user '{}'", text, username);
     }
 

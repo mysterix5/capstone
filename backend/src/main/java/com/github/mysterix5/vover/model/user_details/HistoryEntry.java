@@ -19,4 +19,15 @@ public class HistoryEntry {
     private String text;
     private List<String> choices;
     private LocalDateTime requestTime;
+
+    public boolean sameRequest(HistoryEntry historyEntry) {
+        if (this == historyEntry) return true;
+        if (this.choices.size() != historyEntry.choices.size()) return false;
+        for (int i = 0; i < this.choices.size(); i++) {
+            if (!this.choices.get(i).equals(historyEntry.choices.get(i))) {
+                return false;
+            }
+        }
+        return text.equals(historyEntry.text);
+    }
 }
