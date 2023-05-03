@@ -115,14 +115,19 @@ export default function Waveform(props: WaveformProps) {
             waveSurferRef.current.load(props.audio);
             waveSurferRef.current.on('ready', () => {
                 if (waveSurferRef.current) {
-                    setEndCut(waveSurferRef.current.getDuration());
-                    setDuration(waveSurferRef.current.getDuration());
+                    var theDuration = waveSurferRef.current.getDuration();
+                    setEndCut(theDuration);
+                    setDuration(theDuration);
 
                     var buffer = (waveSurferRef.current as WaveSurferExtended).getBuffer();
 
-                    var [sliderStart, sliderEnd] = findAutomaticCut(buffer, 0.002, 30, 5);
-                    setSliderLimits(sliderStart, sliderEnd);
-                    console.log(sliderStart, sliderEnd, duration);
+                    var [sliderStart, sliderEnd] = findAutomaticCut(buffer, 0.01, 0.001, 5);
+                    setSliderLimits(sliderStart, sliderEnd, theDuration);
+                }
+            });
+            waveSurferRef.current.on('pause', () => {
+                if (waveSurferRef.current && waveSurferRef.current.getCurrentTime() >= endCut) {
+                    stop();
                 }
             });
             waveSurferRef.current.on('finish', () => { stop() });
@@ -217,16 +222,16 @@ export default function Waveform(props: WaveformProps) {
         })
     }
 
-    function setSliderLimits(sliderStart: number, sliderEnd: number) {
+    function setSliderLimits(sliderStart: number, sliderEnd: number, durationIn: number) {
 
         setStart(sliderStart * 100.0);
-        setStartCut(sliderStart * duration);
+        setStartCut(sliderStart * durationIn);
         setEnd(sliderEnd * 100.0);
-        setEndCut(sliderEnd * duration);
+        setEndCut(sliderEnd * durationIn);
         if (waveSurferRef.current) {
             waveSurferRef.current.stop();
-            waveSurferRef.current.setCurrentTime(sliderStart * duration);
-            waveSurferRef.current.setPlayEnd(sliderEnd * duration);
+            waveSurferRef.current.setCurrentTime(sliderStart * durationIn);
+            waveSurferRef.current.setPlayEnd(sliderEnd * durationIn);
             setIsPlaying(false);
         }
     }
@@ -235,7 +240,6 @@ export default function Waveform(props: WaveformProps) {
         const audioLength = buffer.length;
         var data = buffer.getChannelData(0);
         var peak = getPeak(data);
-        console.log(`peak: ${peak}`);
 
         var limit = peak * treshold;
 
@@ -256,15 +260,15 @@ export default function Waveform(props: WaveformProps) {
                 }
                 resetCounter++;
             }
-            if (counter > consecutive) {
+            if (counter > consecutive * audioLength) {
                 startPos = index / (audioLength - 1);
                 break;
             }
         }
 
-        var counter = 0;
-        var resetCounter = 0;
-        var index = 0;
+        counter = 0;
+        resetCounter = 0;
+        index = 0;
         var endPos = 0;
         for (let i = audioLength - 1; i >= 0; i--) {
             if (Math.abs(data[i]) > limit) {
@@ -279,7 +283,7 @@ export default function Waveform(props: WaveformProps) {
                 }
                 resetCounter++;
             }
-            if (counter > consecutive) {
+            if (counter > consecutive * audioLength) {
                 endPos = index / (audioLength - 1);
                 break;
             }
