@@ -92,6 +92,16 @@ export default function Waveform(props: WaveformProps) {
         }
     }
 
+    function getPeak(array: Float32Array) {
+        var max = 0;
+        array.forEach(element => {
+            if (Math.abs(element) > max) {
+                max = Math.abs(element);
+            }
+        });
+        return max;
+    }
+
     useEffect(() => {
         if (containerRef && containerRef.current) {
             waveSurferRef.current = WaveSurferExtended.create({
@@ -100,19 +110,31 @@ export default function Waveform(props: WaveformProps) {
                 cursorWidth: 1,
                 barWidth: 1,
                 barHeight: 5,
-            })
-            waveSurferRef.current.load(props.audio)
+                cursorColor: 'purple',
+            });
+            waveSurferRef.current.load(props.audio);
             waveSurferRef.current.on('ready', () => {
                 if (waveSurferRef.current) {
-                    setEndCut(waveSurferRef.current.getDuration());
-                    setDuration(waveSurferRef.current.getDuration());
+                    var theDuration = waveSurferRef.current.getDuration();
+                    setEndCut(theDuration);
+                    setDuration(theDuration);
+
+                    var buffer = (waveSurferRef.current as WaveSurferExtended).getBuffer();
+
+                    var [sliderStart, sliderEnd] = findAutomaticCut(buffer, 0.01, 0.001, 5);
+                    setSliderLimits(sliderStart, sliderEnd, theDuration);
                 }
-            })
-            waveSurferRef.current.on('finish', () => { stop() })
+            });
+            waveSurferRef.current.on('pause', () => {
+                if (waveSurferRef.current && waveSurferRef.current.getCurrentTime() >= endCut) {
+                    stop();
+                }
+            });
+            waveSurferRef.current.on('finish', () => { stop() });
             waveSurferRef.current.on('error', (e) => {
                 console.log("error");
                 console.log(e);
-            })
+            });
 
             if (waveSurferRef && waveSurferRef.current) {
                 return () => waveSurferRef.current?.destroy();
@@ -198,7 +220,75 @@ export default function Waveform(props: WaveformProps) {
             props.setAudio(URL.createObjectURL(blob));
             props.setAudioBlob(blob);
         })
+    }
 
+    function setSliderLimits(sliderStart: number, sliderEnd: number, durationIn: number) {
+
+        setStart(sliderStart * 100.0);
+        setStartCut(sliderStart * durationIn);
+        setEnd(sliderEnd * 100.0);
+        setEndCut(sliderEnd * durationIn);
+        if (waveSurferRef.current) {
+            waveSurferRef.current.stop();
+            waveSurferRef.current.setCurrentTime(sliderStart * durationIn);
+            waveSurferRef.current.setPlayEnd(sliderEnd * durationIn);
+            setIsPlaying(false);
+        }
+    }
+
+    function findAutomaticCut(buffer: AudioBuffer, treshold: number, consecutive: number, resetMax: number) {
+        const audioLength = buffer.length;
+        var data = buffer.getChannelData(0);
+        var peak = getPeak(data);
+
+        var limit = peak * treshold;
+
+        var counter = 0;
+        var resetCounter = 0;
+        var index = 0;
+        var startPos = 0;
+        for (let i = 0; i < audioLength; i++) {
+            if (Math.abs(data[i]) > limit) {
+                if (counter === 0) {
+                    index = i;
+                }
+                resetCounter = 0;
+                counter++;
+            } else {
+                if (resetCounter > resetMax) {
+                    counter = 0;
+                }
+                resetCounter++;
+            }
+            if (counter > consecutive * audioLength) {
+                startPos = index / (audioLength - 1);
+                break;
+            }
+        }
+
+        counter = 0;
+        resetCounter = 0;
+        index = 0;
+        var endPos = 0;
+        for (let i = audioLength - 1; i >= 0; i--) {
+            if (Math.abs(data[i]) > limit) {
+                if (counter === 0) {
+                    index = i;
+                }
+                resetCounter = 0;
+                counter++;
+            } else {
+                if (resetCounter > resetMax) {
+                    counter = 0;
+                }
+                resetCounter++;
+            }
+            if (counter > consecutive * audioLength) {
+                endPos = index / (audioLength - 1);
+                break;
+            }
+        }
+        return [startPos, endPos];
     }
 
     return (
